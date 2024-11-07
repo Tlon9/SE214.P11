@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:user_registration/bloc/auth/registration/RegistrationEvent.dart';
-import 'package:user_registration/bloc/auth/registration/RegistrationState.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationEvent.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationState.dart';
 import 'dart:convert';
 
 class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
@@ -26,7 +26,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       if (response.statusCode == 201) {
         emit(RegistrationSuccess());
       } else {
-        final errorMessage = json.decode(response.body)['error'] ?? 'Registration failed';
+        final errorMessage =
+            json.decode(response.body)['error'] ?? 'Registration failed';
         emit(RegistrationFailure(error: errorMessage));
       }
     } catch (error) {
