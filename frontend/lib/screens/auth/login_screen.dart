@@ -1,6 +1,6 @@
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
-// import 'package:user_registration/register_screen.dart';
+// import 'package:travelowkey/register_screen.dart';
 // import 'dart:convert';
 
 // class LoginScreen extends StatefulWidget {
@@ -177,15 +177,12 @@
 //   }
 // }
 
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/auth/login/LoginBloc.dart';
-import 'package:user_registration/bloc/auth/login/LoginEvent.dart';
-import 'package:user_registration/bloc/auth/login/LoginState.dart';
+import 'package:travelowkey/bloc/auth/login/LoginBloc.dart';
+import 'package:travelowkey/bloc/auth/login/LoginEvent.dart';
+import 'package:travelowkey/bloc/auth/login/LoginState.dart';
 // import 'dart:io';
-
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -198,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isPasswordVisible = false;
   bool isEmailValid = false;
   Widget build(BuildContext context) {
-  // Chiều cao của container trên
+    // Chiều cao của container trên
     double topContainerHeight = 250.0;
 
     return Scaffold(
@@ -210,7 +207,8 @@ class _LoginScreenState extends State<LoginScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/backgroundLogin_2.jpg'), // Thay bằng đường dẫn hình ảnh của bạn
+                image: AssetImage(
+                    'assets/backgroundLogin_2.jpg'), // Thay bằng đường dẫn hình ảnh của bạn
                 fit: BoxFit.cover,
               ),
             ),
@@ -232,7 +230,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // Dịch chuyển Container dưới lên trên một phần
           Transform.translate(
-            offset: Offset(0, -100.0), // Điều chỉnh giá trị offset để "đè" lên phần trên
+            offset: Offset(
+                0, -100.0), // Điều chỉnh giá trị offset để "đè" lên phần trên
             child: Container(
               // margin: EdgeInsets.symmetric(horizontal: 16.0),
               padding: EdgeInsets.all(16.0),
@@ -274,18 +273,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // Email input
-                                      Text("Email", style: TextStyle(fontSize: 16)),
+                                      Text("Email",
+                                          style: TextStyle(fontSize: 16)),
                                       SizedBox(height: 8),
                                       TextFormField(
                                         controller: emailController,
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                         decoration: InputDecoration(
                                           hintText: "example@example.com",
                                           suffixIcon: isEmailValid
-                                              ? Icon(Icons.check_circle, color: Colors.green)
+                                              ? Icon(Icons.check_circle,
+                                                  color: Colors.green)
                                               : null,
                                           border: OutlineInputBorder(),
                                         ),
@@ -305,7 +308,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       SizedBox(height: 16),
                                       // Password input
-                                      Text("Mật khẩu", style: TextStyle(fontSize: 16)),
+                                      Text("Mật khẩu",
+                                          style: TextStyle(fontSize: 16)),
                                       SizedBox(height: 8),
                                       TextFormField(
                                         controller: passwordController,
@@ -314,11 +318,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           border: OutlineInputBorder(),
                                           suffixIcon: IconButton(
                                             icon: Icon(
-                                              isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                              isPasswordVisible
+                                                  ? Icons.visibility
+                                                  : Icons.visibility_off,
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                isPasswordVisible = !isPasswordVisible;
+                                                isPasswordVisible =
+                                                    !isPasswordVisible;
                                               });
                                             },
                                           ),
@@ -332,7 +339,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           Expanded(
                                             child: Text(
                                               "Chúng tôi sẽ bảo vệ dữ liệu của bạn để ngăn ngừa rủi ro bảo mật.",
-                                              style: TextStyle(color: Colors.grey),
+                                              style:
+                                                  TextStyle(color: Colors.grey),
                                             ),
                                           ),
                                         ],
@@ -344,7 +352,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           onPressed: () {},
                                           child: Text(
                                             "Quên mật khẩu?",
-                                            style: TextStyle(color: Colors.blue),
+                                            style:
+                                                TextStyle(color: Colors.blue),
                                           ),
                                         ),
                                       ),
@@ -352,19 +361,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                         width: double.infinity,
                                         child: ElevatedButton(
                                           onPressed: () {
-                                            BlocProvider.of<LoginBloc>(context).add(
+                                            BlocProvider.of<LoginBloc>(context)
+                                                .add(
                                               LoginButtonPressed(
                                                 email: emailController.text,
-                                                password: passwordController.text,
+                                                password:
+                                                    passwordController.text,
                                               ),
                                             );
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.blue,
                                             foregroundColor: Colors.white,
-                                            minimumSize: Size(double.infinity, 50),
+                                            minimumSize:
+                                                Size(double.infinity, 50),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                           ),
                                           child: Text("Đăng nhập"),
@@ -395,7 +408,7 @@ class _LoginScreenState extends State<LoginScreen> {
   //     body: LayoutBuilder(
   //       builder: (context, constraints) {
   //         double topDistance = constraints.maxHeight * 0.2; // 20% of the screen height for the distance from top
-          
+
   //         return Column(
   //           children: [
   //             // Top Container (acts like a custom app bar)

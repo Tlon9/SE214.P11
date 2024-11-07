@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 // import 'dart:convert';
-import 'package:user_registration/bloc/auth/login/LoginState.dart';
-import 'package:user_registration/bloc/auth/login/LoginEvent.dart';
+import 'package:travelowkey/bloc/auth/login/LoginState.dart';
+import 'package:travelowkey/bloc/auth/login/LoginEvent.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitial()) {

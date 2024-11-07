@@ -168,12 +168,11 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/auth/registration/RegistrationBloc.dart';
-import 'package:user_registration/bloc/auth/registration/RegistrationState.dart';
-import 'package:user_registration/bloc/auth/registration/RegistrationEvent.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationBloc.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationState.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationEvent.dart';
 
 class RegistrationScreen extends StatelessWidget {
   final TextEditingController fullnameController = TextEditingController();
