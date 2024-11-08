@@ -1,8 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:travelowkey/widgets/destination_card.dart';
 import 'package:travelowkey/widgets/destination_tab.dart';
 import 'package:travelowkey/widgets/datepicker.dart';
+import 'package:travelowkey/widgets/submit_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travelowkey/bloc/flight/flight_search/FlightSearchBloc.dart';
 import 'package:travelowkey/bloc/flight/flight_search/FlightSearchEvent.dart';
@@ -11,6 +11,56 @@ import 'package:travelowkey/repositories/flightSearch_repository.dart';
 import 'package:travelowkey/services/api_service.dart';
 
 class FlightSearchScreen extends StatelessWidget {
+  void _onSearchButtonPressed(BuildContext context) {
+// Access the current state of the FlightSearchBloc
+    final flightSearchBloc = BlocProvider.of<FlightSearchBloc>(context);
+    final state = flightSearchBloc.state;
+
+    // Check if required fields are null
+    if (state is FlightSearchDataLoaded) {
+      final departure = state.selectedDeparture;
+      final destination = state.selectedDestination;
+      final date =
+          state.selectedDepartureDate; // assuming DatePickerField sets this
+      final seatClass = state.selectedSeatClass;
+      final passengerCount = state.selectedPassengerCount;
+      if (departure == null ||
+          destination == null ||
+          date == null ||
+          seatClass == null ||
+          passengerCount == null) {
+        // Show a dialog if any field is missing
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Thiếu thông tin'),
+              content: Text(
+                  'Vui lòng điền đầy đủ thông tin để tìm kiếm chuyến bay.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Đóng'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Navigate to the flight results screen if all fields are filled
+        Navigator.pushNamed(
+            context, '/flight_result', // replace with your actual route
+            arguments: {
+              'departure': departure,
+              'destination': destination,
+              'date': date,
+              'seatClass': seatClass,
+              'passengerCount': passengerCount,
+            });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -67,237 +117,239 @@ class FlightSearchScreen extends StatelessWidget {
                   BlocBuilder<FlightSearchBloc, FlightSearchState>(
                     builder: (context, state) {
                       if (state is FlightSearchDataLoaded) {
-                        return Container(
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 10,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Departure Dropdown
-                              Text("Từ"),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(Icons.flight_takeoff,
-                                      color: Colors.blue),
-                                  Container(
-                                    width:
-                                        MediaQuery.sizeOf(context).width * 0.7,
-                                    child: DropdownButton<String>(
-                                      underline: Container(),
-                                      isExpanded: true,
-                                      value: state.selectedDeparture,
-                                      hint: Text("Chọn nơi đi"),
-                                      items: state.departures
-                                          .map((String departure) {
-                                        return DropdownMenuItem<String>(
-                                          value: departure,
-                                          child: Text(departure),
-                                        );
-                                      }).toList(),
-                                      onChanged: (value) {
-                                        if (value != null) {
-                                          BlocProvider.of<FlightSearchBloc>(
-                                                  context)
-                                              .add(SelectDeparture(value));
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(),
-
-                              // Destination Dropdown
-                              Text("Đến"),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(Icons.flight_land, color: Colors.blue),
-                                  Container(
-                                    width:
-                                        MediaQuery.sizeOf(context).width * 0.7,
-                                    child: DropdownButton<String>(
-                                      underline: Container(),
-                                      isExpanded: true,
-                                      value: state.selectedDestination,
-                                      hint: Text("Chọn nơi đến"),
-                                      items: state.destinations
-                                          .map((String destination) {
-                                        return DropdownMenuItem<String>(
-                                          value: destination,
-                                          child: Text(destination),
-                                        );
-                                      }).toList(),
-                                      onChanged: (value) {
-                                        if (value != null) {
-                                          BlocProvider.of<FlightSearchBloc>(
-                                                  context)
-                                              .add(SelectDestination(value));
-                                        }
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-
-                              Divider(),
-
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Ngày đi'),
-                                  Container(
+                        return Column(children: [
+                          Container(
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 10,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Departure Dropdown
+                                Text("Từ"),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(Icons.flight_takeoff,
+                                        color: Colors.blue),
+                                    Container(
                                       width: MediaQuery.sizeOf(context).width *
                                           0.7,
-                                      child: DatePickerField()),
-                                  Divider(),
-                                ],
-                              ),
+                                      child: DropdownButton<String>(
+                                        underline: Container(),
+                                        isExpanded: true,
+                                        value: state.selectedDeparture,
+                                        hint: Text("Chọn nơi đi"),
+                                        items: state.departures
+                                            .map((String departure) {
+                                          return DropdownMenuItem<String>(
+                                            value: departure,
+                                            child: Text(departure),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          if (value != null) {
+                                            BlocProvider.of<FlightSearchBloc>(
+                                                    context)
+                                                .add(SelectDeparture(value));
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Divider(),
 
-                              // Seat Class Dropdown
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
+                                // Destination Dropdown
+                                Text("Đến"),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(Icons.flight_land, color: Colors.blue),
+                                    Container(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.7,
+                                      child: DropdownButton<String>(
+                                        underline: Container(),
+                                        isExpanded: true,
+                                        value: state.selectedDestination,
+                                        hint: Text("Chọn nơi đến"),
+                                        items: state.destinations
+                                            .map((String destination) {
+                                          return DropdownMenuItem<String>(
+                                            value: destination,
+                                            child: Text(destination),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          if (value != null) {
+                                            BlocProvider.of<FlightSearchBloc>(
+                                                    context)
+                                                .add(SelectDestination(value));
+                                          }
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+
+                                Divider(),
+
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Ngày đi'),
+                                    Container(
+                                        width:
+                                            MediaQuery.sizeOf(context).width *
+                                                0.7,
+                                        child: DatePickerField(
+                                          onChanged: (value) {
+                                            BlocProvider.of<FlightSearchBloc>(
+                                                    context)
+                                                .add(SelectDepartureDate(
+                                              DateTime.parse(value),
+                                            ));
+                                          },
+                                        )),
+                                    Divider(),
+                                  ],
+                                ),
+
+                                // Seat Class Dropdown
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Hạng ghế"),
+                                          Row(children: [
+                                            Icon(
+                                                Icons
+                                                    .airline_seat_recline_normal,
+                                                color: Colors.blue),
+                                            Container(
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  0.3,
+                                              child: DropdownButton<String>(
+                                                underline: Container(),
+                                                isExpanded: true,
+                                                value: state.selectedSeatClass,
+                                                hint: Center(
+                                                    child: Text(
+                                                  "Chọn hạng ghế",
+                                                  style:
+                                                      TextStyle(fontSize: 13),
+                                                )),
+                                                items: state.seatClasses
+                                                    .map((String seatClass) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: seatClass,
+                                                    child: Center(
+                                                        child: Text(seatClass)),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (value) {
+                                                  if (value != null) {
+                                                    BlocProvider.of<
+                                                                FlightSearchBloc>(
+                                                            context)
+                                                        .add(SelectSeatClass(
+                                                            value));
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ]),
+                                          Divider(),
+                                        ]),
+
+                                    // Passenger Count Dropdown
+                                    Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text("Hạng ghế"),
-                                        Row(children: [
-                                          Icon(
-                                              Icons.airline_seat_recline_normal,
-                                              color: Colors.blue),
-                                          Container(
-                                            width: MediaQuery.sizeOf(context)
-                                                    .width *
-                                                0.3,
-                                            child: DropdownButton<String>(
-                                              underline: Container(),
-                                              isExpanded: true,
-                                              value: state.selectedSeatClass,
-                                              hint: Center(
-                                                  child: Text(
-                                                "Chọn hạng ghế",
-                                                style: TextStyle(fontSize: 13),
-                                              )),
-                                              items: state.seatClasses
-                                                  .map((String seatClass) {
-                                                return DropdownMenuItem<String>(
-                                                  value: seatClass,
-                                                  child: Center(
-                                                      child: Text(seatClass)),
-                                                );
-                                              }).toList(),
-                                              onChanged: (value) {
-                                                if (value != null) {
-                                                  BlocProvider.of<
-                                                              FlightSearchBloc>(
-                                                          context)
-                                                      .add(SelectSeatClass(
-                                                          value));
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ]),
-                                        Divider(),
-                                      ]),
-
-                                  // Passenger Count Dropdown
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Số hành khách"),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Icon(Icons.person,
-                                              color: Colors.blue),
-                                          Container(
-                                            width: MediaQuery.sizeOf(context)
-                                                    .width *
-                                                0.35,
-                                            child: DropdownButton<int>(
-                                              underline: Container(),
-                                              isExpanded: true,
-                                              value:
-                                                  state.selectedPassengerCount,
-                                              hint: Center(
-                                                child: Text("Chọn số lượng",
-                                                    style: TextStyle(
-                                                        fontSize: 13)),
+                                        Text("Số hành khách"),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Icon(Icons.person,
+                                                color: Colors.blue),
+                                            Container(
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  0.35,
+                                              child: DropdownButton<int>(
+                                                underline: Container(),
+                                                isExpanded: true,
+                                                value: state
+                                                    .selectedPassengerCount,
+                                                hint: Center(
+                                                  child: Text("Chọn số lượng",
+                                                      style: TextStyle(
+                                                          fontSize: 13)),
+                                                ),
+                                                items: state.passengerCounts
+                                                    .map((int count) {
+                                                  return DropdownMenuItem<int>(
+                                                    value: count,
+                                                    child: Center(
+                                                        child: Text(
+                                                            count.toString())),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (value) {
+                                                  if (value != null) {
+                                                    BlocProvider.of<
+                                                                FlightSearchBloc>(
+                                                            context)
+                                                        .add(
+                                                            SelectPassengerCount(
+                                                                value));
+                                                  }
+                                                },
                                               ),
-                                              items: state.passengerCounts
-                                                  .map((int count) {
-                                                return DropdownMenuItem<int>(
-                                                  value: count,
-                                                  child: Center(
-                                                      child: Text(
-                                                          count.toString())),
-                                                );
-                                              }).toList(),
-                                              onChanged: (value) {
-                                                if (value != null) {
-                                                  BlocProvider.of<
-                                                              FlightSearchBloc>(
-                                                          context)
-                                                      .add(SelectPassengerCount(
-                                                          value));
-                                                }
-                                              },
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Divider(),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
+                                          ],
+                                        ),
+                                        Divider(),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        );
+                          SizedBox(height: 20),
+                          Center(
+                            child: SubmitButton(
+                                label: 'Tìm kiếm',
+                                onTap: () => _onSearchButtonPressed(context)),
+                          ),
+                        ]);
                       } else if (state is FlightSearchLoading) {
                         return Center(child: CircularProgressIndicator());
                       } else {
                         return Center(child: Text('Error loading data.'));
                       }
                     },
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: ElevatedButton(
-                        onPressed: () {},
-                        child: Text(
-                          'Tìm kiếm',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFF4800),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 50, vertical: 10),
-                            textStyle: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30)))),
                   ),
 
                   SizedBox(height: 20),

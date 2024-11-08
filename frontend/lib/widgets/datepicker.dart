@@ -5,13 +5,14 @@ class DatePickerField extends StatefulWidget {
   final DateTime? initialDate;
   final DateTime? firstDate;
   final DateTime? lastDate;
-
+  final ValueChanged<String>? onChanged;
   const DatePickerField({
     Key? key,
     this.controller,
     this.initialDate,
     this.firstDate,
     this.lastDate,
+    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -47,6 +48,7 @@ class _DatePickerFieldState extends State<DatePickerField> {
       setState(() {
         _dateController.text = pickedDate.toString().split(" ")[0];
       });
+      widget.onChanged?.call(_dateController.text);
     }
   }
 
