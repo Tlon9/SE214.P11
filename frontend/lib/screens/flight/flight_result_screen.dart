@@ -245,71 +245,82 @@ class FlightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 5,
-      shadowColor: Colors.black,
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(flight.name ?? '',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      "${flight.departureTime}",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Text(
-                      "${flight.from}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      "${flight.travelTime}",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    SvgPicture.asset(
-                      'assets/icons/Arrow_1.svg',
-                      height: 10,
-                      width: 10,
-                    ),
-                    Text(
-                      "${flight.stopDirect ?? 'Bay thẳng'}",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      "${flight.arrivalTime}",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Text(
-                      "${flight.to}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-                Text(
-                  "VND ${flight.price} /khách",
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          '/flight_payment',
+          arguments: {
+            'flight': flight,
+          },
+        );
+      },
+      child: Card(
+        color: Colors.white,
+        elevation: 5,
+        shadowColor: Colors.black,
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(flight.name ?? '',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        "${flight.departureTime}",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Text(
+                        "${flight.from}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        "${flight.travelTime}",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      SvgPicture.asset(
+                        'assets/icons/Arrow_1.svg',
+                        height: 10,
+                        width: 10,
+                      ),
+                      Text(
+                        "${flight.stopDirect ?? 'Bay thẳng'}",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        "${flight.arrivalTime}",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Text(
+                        "${flight.to}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  Text(
+                    "VND ${flight.price} /khách",
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
