@@ -32,16 +32,19 @@ class FlightResultScreen extends StatelessWidget {
       'seatClass': seatClass,
       'passengers': passengers.toString(),
     };
+    final apiUrl =
+        'http://10.0.2.2:8000/flights/results?departure=${Uri.encodeComponent(searchInfo['departure']!)}&destination=${Uri.encodeComponent(searchInfo['destination']!)}&date=${Uri.encodeComponent(searchInfo['date']!.toString().substring(0, 10))}&seatClass=${Uri.encodeComponent(searchInfo['seatClass']!)}&passengers=${Uri.encodeComponent(searchInfo['passengers']!)}';
+
     return BlocProvider(
         create: (context) => FlightResultBloc(
-              repository: FlightResultRepository(
-                  dataProvider: FlightResultDataProvider(
-                      apiUrl: 'http://localhost:8000/apis/flight_result/')),
-            )..add(
-                LoadFlightResults(
-                  searchInfo: searchInfo,
-                ),
-              ),
+            repository: FlightResultRepository(
+                dataProvider: FlightResultDataProvider(
+                    apiUrl: apiUrl))) // Pass the apiUrl to the data provider
+          ..add(
+            LoadFlightResults(
+              searchInfo: searchInfo,
+            ),
+          ),
         child: Builder(
           builder: (context) => Scaffold(
             appBar: AppBar(
@@ -278,7 +281,7 @@ class FlightCard extends StatelessWidget {
                         style: TextStyle(color: Colors.grey),
                       ),
                       Text(
-                        "${flight.from}",
+                        "${flight.from.toString().substring(flight.from.toString().indexOf('(') + 1, flight.from.toString().length - 1)}",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )
                     ],
@@ -307,7 +310,7 @@ class FlightCard extends StatelessWidget {
                         style: TextStyle(color: Colors.grey),
                       ),
                       Text(
-                        "${flight.to}",
+                        "${flight.to.toString().substring(flight.to.toString().indexOf('(') + 1, flight.to.toString().length - 1)}",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )
                     ],
