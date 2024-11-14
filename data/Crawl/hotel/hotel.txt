@@ -1,0 +1,62 @@
+{"name": "Davue Hotel Da Nang", "address": "57-59 Đỗ Bí, Mỹ An, Ngũ Hành Sơn, Đà Nẵng, Việt Nam, 550000\nXem bản đồ"}
+{"name": "Gold Plaza Hotel Da Nang", "address": "11 Trần Thị Lý, Quận Hải Châu, Đà Nẵng, Việt Nam, 550000\nXem bản đồ"}
+{"name": "La Beach Hotel", "address": "22 Lê Bình, Phước Mỹ, Sơn Trà, Đà Nẵng, Việt Nam, 550000\nXem bản đồ"}
+{"name": "Alibaba Hotel Da Nang", "address": "168 Hồ Nghinh, Phước Mỹ, Sơn Trà, Đà Nẵng, Việt Nam, 55000\nXem bản đồ"}
+{"name": "Seashore Hotel & Apartment ", "address": "15-16 Hoàng Sa, Mân Thái, Sơn Trà, Đà Nẵng, Việt Nam, 550000\nXem bản đồ"}
+{"name": "Khách sạn La Vela Saigon", "address": "280 đường Nam Kỳ Khởi Nghĩa, Phường 8, Quận 3, phường 8, Quận 3, Thành phố Hồ Chí Minh, Việt Nam, 70000\nXem bản đồ"}
+{"name": "Muong Thanh Luxury Saigon Hotel", "address": "261C Nguyen Van Troi, Ward 10, Phu Nhuan, Ho Chi Minh, phường 10, Quận Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Cozrum Homes - Sonata Residence", "address": "41 Nguyễn Thị Thập, Phường Tân Phú, Quận 7, Tân Phú, Quận 7, Thành phố Hồ Chí Minh, Việt Nam, 70000\nXem bản đồ"}
+{"name": "Cozrum Lux Hotel", "address": "19C Bùi Thị Xuân, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "ACE Hotel Saigon", "address": "139H Nguyễn Trãi, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 711090\nXem bản đồ"}
+{"name": "LA PAIX SAIGON BOUTIQUE HOTEL  ", "address": "59 Hai Bà Trưng, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Hotel Nikko Saigon ", "address": "235 Nguyễn Văn Cừ, Phường Nguyễn Cư Trinh, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Wink Hotel Saigon Centre- Full 24hrs stay upon check-in", "address": "75 Nguyễn Bỉnh Khiêm, Phường Đa Kao, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 70000\nXem bản đồ"}
+{"name": "Palace Hotel Saigon", "address": "56 - 66 Nguyễn Huệ, Phường Bến Nghé, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Eastin Grand Hotel Saigon ", "address": "253 Nguyễn Văn Trỗi, phường 10, Quận Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Khách sạn C Central Đề Thám", "address": "216 Đề Thám , Phạm Ngũ Lão, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "An Lam Retreats Saigon River", "address": "21/4 khu phố Trung, phường Vĩnh Phú, thành phố Thuận An, tỉnh Bình Dương, Bến tàu tại,, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 70000\nXem bản đồ"}
+{"name": "Oakwood Hotel & Apartments Saigon ", "address": "330 Ung Văn Khiêm, Phường 25, Phường 25, Quận Bình Thạnh, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "My Villa Airport Hotel ", "address": "54/34 Bạch Đằng, Phường 2, Quận Tân Bình, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Justay Pink Church", "address": "22 Lý Chính Thắng, phường 8, Quận 3, Thành phố Hồ Chí Minh, Việt Nam, 70000\nXem bản đồ"}
+{"name": "Windsor Plaza Hotel", "address": "18 An Dương Vương, phường 9, Quận 5, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "The Reverie Saigon", "address": "22 - 36 Nguyễn Huệ, Phường Bến Nghé, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": " California Hotel Saigon", "address": "52-54 Đường Thủ Khoa Huân, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 711007\nXem bản đồ"}
+{"name": "Cozrum Homes Charming Corner 2", "address": "453/48 Nguyen Dinh Chieu, phường 5, Quận 3, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Cozrum Homes Saphera Residence", "address": "55/30-32 Trần Đình Xu, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Thanh Long Hotel", "address": "18-20 Trà Khúc, Phường 2, Quận Tân Bình, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Amory Apartment", "address": "88 Lê Lai, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, 700000\nXem bản đồ"}
+{"name": "Ha Noi Le Grand Hotel", "address": "3 B9 Đầm Trấu, Bạch Đằng, Quận Hai Bà Trưng, Hà Nội, Việt Nam, 11600\nXem bản đồ"}
+{"name": "3T Hotel & Travel", "address": "41 Nguyễn Thái Học, Điện Biên, Quận Ba Đình, Hà Nội, Việt Nam, 10000\nXem bản đồ"}
+{"name": "Classy Boutique Hotel", "address": "21 Hàng Cá, Hàng Đào, Quận Hoàn Kiếm, Hà Nội, Việt Nam, 101113\nXem bản đồ"}
+{"name": "22land Residence Hotel 71 Hang Bong", "address": "Số 71 Hàng Bông, Hoàn Kiếm, , Hàng Bông, Quận Hoàn Kiếm, Hà Nội, Việt Nam, 11000\nXem bản đồ"}
+{"name": "22land Residence Hotel 52 Ngo Huyen", "address": "52 Ngõ Huyện, Phường Hàng Trống, Quận Hoàn Kiếm, Hà Nội, Việt Nam, 11000\nXem bản đồ"}
+{"name": "SOJO Ga Hanoi", "address": "115 Trần Hưng Đạo, Cửa  Nam, Quận Hoàn Kiếm, Hà Nội, Việt Nam, 10000\nXem bản đồ"}
+{"name": "Le Grand Hanoi Hotel - The Charm", "address": "8 Ngõ 48 Trần Duy Hưng, Phường Trung Hòa, Quận Cầu Giấy, Hà Nội, Việt Nam, 100000\nXem bản đồ"}
+{"name": "Premier Pearl Hotel Vung Tau", "address": "69 Thuy Van, Ward 2, Phường 2, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 78000\nXem bản đồ"}
+{"name": "Milan Homestay - The Song Vung Tau", "address": "28 Đường Thi Sách, Thắng Tam, Thành phố Vũng Tầu, Bà Rịa - Vũng Tàu, Việt Nam, Thắng Tam, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 78000\nXem bản đồ"}
+{"name": "Khách sạn Imperial Vũng Tàu", "address": "159 Thùy Vân, Thắng Tam, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 793918\nXem bản đồ"}
+{"name": "Melia Ho Tram Beach Resort", "address": "Hồ Tràm, Xã Phước Thuận, Thành phố Vũng Tàu, Xuyên Mộc, Bà Rịa - Vũng Tàu, Việt Nam, 790000\nXem bản đồ"}
+{"name": "IXORA Ho Tram by Fusion", "address": "Ho Tram Hamlet, Phuoc Thuan Commune, Xuyen Moc District, Ba Ria Vung Tau Province, Viet Nam, Thành phố Vũng Tàu, Xuyên Mộc, Bà Rịa - Vũng Tàu, Việt Nam, 794800\nXem bản đồ"}
+{"name": "Nolis Hotel Vung Tau", "address": "19 Thùy Vân, Phường 2, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 791015\nXem bản đồ"}
+{"name": "The Cap Hotel", "address": "01 Thi Sách P. Thắng Tam, Phường 8, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 78000\nXem bản đồ"}
+{"name": "Song Homestay - The Song Vung Tau", "address": "28 Thi Sach, Thang Tam Ward, Thắng Tam, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 78000\nXem bản đồ"}
+{"name": "Fusion Suites Vung Tau", "address": "2 Trương Công Định, Phường 2, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 79000\nXem bản đồ"}
+{"name": "Lan Rung Phuoc Hai Resort & Spa", "address": "Tỉnh Lộ 44A, Phước Hải, Phước Hải, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 794656\nXem bản đồ"}
+{"name": "Hotel D'Melin", "address": "12 Trương Công Định, Phường 2, Phường 2, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 791107\nXem bản đồ"}
+{"name": "Khách sạn Malibu", "address": "263 Lê Hồng Phong, Quận Thắng Tam, Thắng Tam, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 793965\nXem bản đồ"}
+{"name": "Xuan Homestay - The Song Vung Tau", "address": "28 Thi Sách, Phường Thắng Tam, TP.Vũng Tàu, Thắng Tam, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 78000\nXem bản đồ"}
+{"name": "Annata Beach Hotel", "address": "165 Thùy Vân, Thắng Tam, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 790000\nXem bản đồ"}
+{"name": "Bella VT Hotel", "address": "17 Phan Văn Trị, Thắng Tam, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Việt Nam, 790000\nXem bản đồ"}
+{"name": "Dhawa Ho Tram", "address": "Đường Ven Biển, Thành phố Vũng Tàu, Xuyên Mộc, Bà Rịa - Vũng Tàu, Việt Nam, 78507\nXem bản đồ"}
+{"name": "Terracotta Hotel & Resort Đà Lạt", "address": "Phân khu chức năng 7.9, KDL hồ Tuyền Lâm, Phường 3, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "Hôtel Colline Dalat", "address": "10 Phan Bội Châu, Phường 1, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "Khách sạn Goldient Boutique", "address": "26 To Hien Thanh Street, 3 Ward, Dalat city, Lam Dong Province, Phường 3, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "Dalat Edensee Lake Resort & Spa", "address": "Hồ Tuyền Lâm, Khu VII.2, Phường 4, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "The Luxe Hotel", "address": "17-17Bis 3/4 , Phường 3, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "Pontus Hotel", "address": "11 Đường Nam Kỳ Khởi Nghĩa, Phường 1, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "Le Recit Boutique Hotel de Dalat", "address": "117 Bùi Thị Xuân, Phường 2, Phường 2, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "Khách sạn The Grace Dalat", "address": "51 Nam Kỳ Khởi Nghĩa, Phường 1, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 671552\nXem bản đồ"}
+{"name": "New Century Hotel Dalat", "address": "14B Đống Đa, Phường 3, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "New Life Hotel Dalat", "address": "6 Đống Đa, Phường 3, Đà Lạt, Tỉnh Lâm Đồng, Việt Nam, 670000\nXem bản đồ"}
+{"name": "Vinpearl Wonderworld Phu Quoc", "address": "Bãi Dài, Gành Dầu, xã Gành Dầu, Phú Quốc, Tỉnh Kiên Giang, Việt Nam, 91000\nXem bản đồ"}
+{"name": "Vinholidays Fiesta Phu Quoc", "address": "Bãi Dài, Gành Dầu, xã Gành Dầu, Phú Quốc, Tỉnh Kiên Giang, Việt Nam, 920000\nXem bản đồ"}

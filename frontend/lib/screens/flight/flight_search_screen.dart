@@ -67,7 +67,7 @@ class FlightSearchScreen extends StatelessWidget {
       create: (context) => FlightSearchBloc(
           repository: FlightSearchRepository(
               dataProvider: FlightSearchDataProvider(
-                  apiUrl: 'http://localhost:8000/apis/flight_search/')))
+                  apiUrl: 'http://10.0.2.2:8000/flights/searchInfo/')))
         ..add(LoadFlightSearchData()),
       child: Scaffold(
         appBar: AppBar(
@@ -262,7 +262,12 @@ class FlightSearchScreen extends StatelessWidget {
                                                       String>(
                                                     value: seatClass,
                                                     child: Center(
-                                                        child: Text(seatClass)),
+                                                      child: FittedBox(
+                                                        // This will resize the text if needed
+                                                        fit: BoxFit.scaleDown,
+                                                        child: Text(seatClass),
+                                                      ),
+                                                    ),
                                                   );
                                                 }).toList(),
                                                 onChanged: (value) {
