@@ -60,7 +60,7 @@ class FlightResultScreen extends StatelessWidget {
                 },
               ),
               title: Text(
-                '$departure -> $destination ${date.toString().substring(0, 10)} - $seatClass - $passengers passengers',
+                '$departure -> $destination ${date.toString().substring(0, 10)} - $seatClass - $passengers hành khách',
                 maxLines: 2,
               ),
               actions: [
@@ -168,7 +168,8 @@ class FlightResultScreen extends StatelessWidget {
                                   itemCount: state.flights.length,
                                   itemBuilder: (context, index) {
                                     final flight = state.flights[index];
-                                    return FlightCard(flight: flight);
+                                    return FlightCard(
+                                        flight: flight, passengers: passengers);
                                   },
                                 ),
                               );
@@ -193,7 +194,7 @@ Future<String?> showFilterDialog(BuildContext context) async {
   // List of filter options
   final filterOptions = [
     'Vietnam Airlines',
-    'VietJet',
+    'VietJet Air',
     'Bamboo Airways',
     'Pacific Airlines'
   ];
@@ -243,8 +244,9 @@ Future<String?> showSortDialog(BuildContext context) async {
 
 class FlightCard extends StatelessWidget {
   final Flight flight;
+  final int passengers;
 
-  const FlightCard({required this.flight});
+  const FlightCard({required this.flight, required this.passengers});
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +257,7 @@ class FlightCard extends StatelessWidget {
           '/flight_payment',
           arguments: {
             'flight': flight,
+            'passengers': passengers,
           },
         );
       },

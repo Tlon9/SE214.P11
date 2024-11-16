@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:travelowkey/models/flight_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travelowkey/widgets/submit_button.dart';
+import 'package:intl/intl.dart';
 
 class PaymentScreen extends StatelessWidget {
   final Flight flight;
+  final int passengers;
 
-  const PaymentScreen({required this.flight});
+  const PaymentScreen({required this.flight, required this.passengers});
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +18,15 @@ class PaymentScreen extends StatelessWidget {
         'wifi khong co san',
         'dich vu an uong',
         'airbus A350'
+      ],
+      'Vietnam Airlines': [
+        '7kg hanh ly xach tay',
+        'wifi khong co san',
+        'dich vu an uong',
+        'airbus A350'
+      ],
+      'Bamboo Airways': [
+        '7kg hanh ly xach tay',
       ]
     };
     return Scaffold(
@@ -34,7 +45,7 @@ class PaymentScreen extends StatelessWidget {
           children: [
             Text("${flight.name}", style: TextStyle(fontSize: 20)),
             Text(
-                "${flight.from} - ${flight.to} - ${flight.travelTime} - ${flight.stopDirect ?? 'Bay thẳng'}",
+                "${flight.from.toString().substring(flight.from.toString().indexOf('(') + 1, flight.from.toString().length - 1)} - ${flight.to.toString().substring(flight.to.toString().indexOf('(') + 1, flight.to.toString().length - 1)} - ${flight.travelTime} - ${flight.stopDirect ?? 'Bay thẳng'}",
                 style: TextStyle(fontSize: 12)),
           ],
         ),
@@ -62,7 +73,7 @@ class PaymentScreen extends StatelessWidget {
                       children: [
                         Text("${flight.from}",
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                                fontSize: 15, fontWeight: FontWeight.bold)),
                         SizedBox(width: 10),
                         SvgPicture.asset(
                           'assets/icons/Arrow_1.svg',
@@ -72,16 +83,16 @@ class PaymentScreen extends StatelessWidget {
                         SizedBox(width: 10),
                         Text("${flight.to}",
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                                fontSize: 15, fontWeight: FontWeight.bold)),
                       ],
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Icon(Icons.access_time_outlined),
                         SizedBox(width: 10),
                         Text("${flight.travelTime}",
-                            style: TextStyle(fontSize: 20)),
+                            style: TextStyle(fontSize: 15)),
                       ],
                     )
                   ]),
@@ -140,7 +151,7 @@ class PaymentScreen extends StatelessWidget {
                                 )
                               : Text('Khong co dich vu',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold)),
                         ),
@@ -154,8 +165,16 @@ class PaymentScreen extends StatelessWidget {
               ),
             ],
           ),
-
-          SizedBox(height: 30),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+              "${formatMoney((flight.price as int) * passengers)} (${passengers} vé)",
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red)),
+          SizedBox(height: 10),
           SubmitButton(
               label: 'Thanh toán',
               onTap: () {
@@ -166,4 +185,9 @@ class PaymentScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String formatMoney(int price) {
+  final formatter = NumberFormat.simpleCurrency(locale: 'vi');
+  return formatter.format(price);
 }

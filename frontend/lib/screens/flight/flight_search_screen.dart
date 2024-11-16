@@ -46,6 +46,23 @@ class FlightSearchScreen extends StatelessWidget {
             );
           },
         );
+      } else if (departure == destination) {
+        // Show a dialog if departure and destination are the same
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Lưu ý'),
+              content: Text('Nơi đi và nơi đến không thể giống nhau.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Đóng'),
+                ),
+              ],
+            );
+          },
+        );
       } else {
         // Navigate to the flight results screen if all fields are filled
         Navigator.pushNamed(

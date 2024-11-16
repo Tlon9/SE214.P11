@@ -32,8 +32,12 @@ class AppRouter {
       case '/flight_payment':
         final args = settings.arguments as Map<String, dynamic>;
         final flight = args['flight'] as Flight;
+        final passengers = args['passengers'] as int;
         return MaterialPageRoute(
-          builder: (_) => PaymentScreen(flight: flight),
+          builder: (_) => PaymentScreen(
+            flight: flight,
+            passengers: passengers,
+          ),
         );
       default:
         return MaterialPageRoute(builder: (_) => MainScreen());

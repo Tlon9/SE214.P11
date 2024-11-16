@@ -26,6 +26,7 @@ class _DatePickerFieldState extends State<DatePickerField> {
   void initState() {
     super.initState();
     _dateController = widget.controller ?? TextEditingController();
+    // _dateController.text = DateTime.now().toString().split(" ")[0];
   }
 
   @override
@@ -40,7 +41,7 @@ class _DatePickerFieldState extends State<DatePickerField> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: widget.initialDate ?? DateTime.now(),
-      firstDate: widget.firstDate ?? DateTime(2021),
+      firstDate: widget.firstDate ?? DateTime.now(),
       lastDate: widget.lastDate ?? DateTime(2101),
     );
 
