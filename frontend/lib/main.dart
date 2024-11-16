@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:user_registration/screens/auth/login_screen.dart';
-// import 'register_screen.dart';
+import 'package:user_registration/screens/auth/register_screen.dart';
+import 'package:user_registration/screens/auth/login_google.dart';
+
+import 'package:user_registration/bloc/auth/login_google/auth_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,6 +16,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // return BlocProvider(
+    //   create: (context) => AuthBloc(),
+    //   child: MaterialApp(
+    //     title: 'Social Auth Demo',
+    //     theme: ThemeData(primarySwatch: Colors.blue),
+    //     home: LoginScreen_Google(),
+    //   ),
+    // );
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -37,6 +49,7 @@ class MyApp extends StatelessWidget {
       // home: SignUpScreen(),
       // home: RegistrationScreen()
       home: LoginScreen()
+      // home: LoginScreen_Google()
     );
   }
 }
