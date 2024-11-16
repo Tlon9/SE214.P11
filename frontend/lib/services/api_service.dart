@@ -75,10 +75,10 @@ class FlightResultDataProvider {
     if (response.statusCode == 200) {
       // Parse the JSON data
       final data = json.decode(utf8.decode(response.bodyBytes));
-      final check_response = (data['flights'] as List);
+      // final check_response = (data['flights'] as List);
       // .map((json) => Flight.fromJson(json))
       // .toList();
-      print(check_response[0]);
+      // print(check_response[0]);
       return (data['flights'] as List)
           .map((json) => Flight.fromJson(json))
           .toList();
