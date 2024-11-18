@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:travelowkey/widgets/destination_card.dart';
-import 'package:travelowkey/widgets/destination_tab.dart';
-import 'package:travelowkey/widgets/badge.dart';
-import 'package:travelowkey/widgets/service_button.dart';
+import 'package:user_registration/widgets/destination_card.dart';
+import 'package:user_registration/widgets/destination_tab.dart';
+import 'package:user_registration/widgets/badge.dart';
+import 'package:user_registration/widgets/service_button.dart';
 
 class HomePage extends StatelessWidget {
   @override

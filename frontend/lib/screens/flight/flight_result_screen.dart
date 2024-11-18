@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travelowkey/bloc/flight/flight_results/FlightResultBloc.dart';
-import 'package:travelowkey/bloc/flight/flight_results/FlightResultEvent.dart';
-import 'package:travelowkey/bloc/flight/flight_results/FlightResultState.dart';
-import 'package:travelowkey/repositories/flightResult_repository.dart';
-import 'package:travelowkey/services/api_service.dart';
-import 'package:travelowkey/models/flight_model.dart';
+import 'package:user_registration/bloc/flight/flight_results/FlightResultBloc.dart';
+import 'package:user_registration/bloc/flight/flight_results/FlightResultEvent.dart';
+import 'package:user_registration/bloc/flight/flight_results/FlightResultState.dart';
+import 'package:user_registration/repositories/flightResult_repository.dart';
+import 'package:user_registration/services/api_service.dart';
+import 'package:user_registration/models/flight_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class FlightResultScreen extends StatelessWidget {

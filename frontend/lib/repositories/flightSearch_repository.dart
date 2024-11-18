@@ -1,6 +1,6 @@
 // flight_search_repository.dart
-import 'package:travelowkey/services/api_service.dart';
-import 'package:travelowkey/models/flightSearch_model.dart';
+import 'package:user_registration/services/api_service.dart';
+import 'package:user_registration/models/flightSearch_model.dart';
 
 class FlightSearchRepository {
   final FlightSearchDataProvider dataProvider;

@@ -1,8 +1,8 @@
 // flight_search_data_provider.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:travelowkey/models/flightSearch_model.dart';
-import 'package:travelowkey/models/flight_model.dart';
+import 'package:user_registration/models/flightSearch_model.dart';
+import 'package:user_registration/models/flight_model.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;

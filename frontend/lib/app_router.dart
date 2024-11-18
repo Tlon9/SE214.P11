@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:travelowkey/screens/auth/login_screen.dart';
-import 'package:travelowkey/screens/auth/register_screen.dart';
-import 'package:travelowkey/screens/home/main_screen.dart';
-import 'package:travelowkey/screens/flight/flight_search_screen.dart';
-import 'package:travelowkey/screens/flight/flight_result_screen.dart';
-import 'package:travelowkey/screens/flight/flight_payment_screen.dart';
-import 'package:travelowkey/models/flight_model.dart';
+import 'package:user_registration/screens/auth/login_screen.dart';
+import 'package:user_registration/screens/auth/register_screen.dart';
+import 'package:user_registration/screens/home/main_screen.dart';
+import 'package:user_registration/screens/flight/flight_search_screen.dart';
+import 'package:user_registration/screens/flight/flight_result_screen.dart';
+import 'package:user_registration/screens/flight/flight_payment_screen.dart';
+import 'package:user_registration/models/flight_model.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {

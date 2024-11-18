@@ -1,8 +1,8 @@
 // flight_search_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travelowkey/bloc/flight/flight_search/FlightSearchEvent.dart';
-import 'package:travelowkey/bloc/flight/flight_search/FlightSearchState.dart';
-import 'package:travelowkey/repositories/flightSearch_repository.dart';
+import 'package:user_registration/bloc/flight/flight_search/FlightSearchEvent.dart';
+import 'package:user_registration/bloc/flight/flight_search/FlightSearchState.dart';
+import 'package:user_registration/repositories/flightSearch_repository.dart';
 
 class FlightSearchBloc extends Bloc<FlightSearchEvent, FlightSearchState> {
   final FlightSearchRepository repository;

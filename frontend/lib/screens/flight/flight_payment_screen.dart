@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:travelowkey/models/flight_model.dart';
+import 'package:user_registration/models/flight_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:travelowkey/widgets/submit_button.dart';
+import 'package:user_registration/widgets/submit_button.dart';
 import 'package:intl/intl.dart';
 
 class PaymentScreen extends StatelessWidget {

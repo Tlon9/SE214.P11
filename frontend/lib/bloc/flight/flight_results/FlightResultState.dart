@@ -1,6 +1,6 @@
 // flight_result_state.dart
 import 'package:equatable/equatable.dart';
-import 'package:travelowkey/models/flight_model.dart'; // Model for flight result data
+import 'package:user_registration/models/flight_model.dart'; // Model for flight result data
 
 abstract class FlightResultState extends Equatable {
   @override
