@@ -31,7 +31,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/backgroundLogin_2.jpg'),
+                  image: AssetImage('assets/images/backgroundLogin_2.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),

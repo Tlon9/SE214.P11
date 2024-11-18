@@ -28,7 +28,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       if (response.statusCode == 201) {
         emit(RegistrationSuccess());
       } else {
-        final errorMessage = json.decode(response.body)['error'] ?? 'Registration failed';
+        final errorMessage =
+            json.decode(response.body)['error'] ?? 'Registration failed';
         emit(RegistrationFailure(error: errorMessage));
       }
     } catch (error) {
