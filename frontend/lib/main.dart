@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_registration/screens/auth/login_screen.dart';
+// import 'package:user_registration/screens/auth/login_screen.dart';
 // import 'register_screen.dart';
 import 'package:user_registration/app_router.dart';
 void main() {
@@ -24,11 +24,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // onGenerateRoute: AppRouter.onGenerateRoute,
+      onGenerateRoute: AppRouter.onGenerateRoute,
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
       // home: SignUpScreen(),
       // home: RegistrationScreen()
-      home: LoginScreen()
+      // home: LoginScreen()
     );
   }
 }
