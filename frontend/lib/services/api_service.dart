@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:user_registration/models/flightSearch_model.dart';
 import 'package:user_registration/models/flight_model.dart';
+import 'package:user_registration/models/hotelSearch_model.dart';
+import 'package:user_registration/models/hotel_model.dart';
+import 'package:user_registration/models/room_model.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;
@@ -84,6 +87,75 @@ class FlightResultDataProvider {
           .toList();
     } else {
       throw Exception("Failed to load flight data");
+    }
+  }
+}
+
+class HotelSearchDataProvider {
+  final String apiUrl;
+  final List<String> areas = [
+    "TP HCM",
+    "Hà Nội",
+    "Đà Nẵng",
+    "Đà Lạt"
+  ];
+
+  final List<int> customerCounts = [1, 2, 3, 4, 5];
+
+  HotelSearchDataProvider({required this.apiUrl});
+
+  Future<HotelSearchModel> fetchHotelSearchData() async {
+    final response = await http.get(Uri.parse(apiUrl));
+    if (response.statusCode == 200) {
+      final decodedJson = json.decode(utf8.decode(response.bodyBytes));
+      return HotelSearchModel.fromJson(decodedJson);
+    } else {
+      throw Exception("Failed to load hotel search data");
+    }
+  }
+}
+
+class HotelResultDataProvider {
+  // final String apiUrl;
+
+  // HotelResultDataProvider({required this.apiUrl});
+  HotelResultDataProvider();
+
+  Future<List<Hotel>> fetchHotelResults({Map<String, dynamic>? searchInfo, int? offset, int? limit}) async {
+    if (!searchInfo!.containsKey('area') || searchInfo['area'] == null) {
+      throw Exception("Search information is missing the 'area' key.");
+    }
+    final apiUrl = 'http://10.0.2.2:8000/hotels/results?area=${Uri.encodeComponent(searchInfo['area']!)}&offset=$offset&limit=$limit';
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      // Parse the JSON data
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      // final temp = (data['hotels'] as List).map((json) => Hotel.fromJson(json)).toList();
+      // print(offset.toString() + " " + limit.toString() + " " + temp.length.toString());
+      return (data['hotels'] as List).map((json) => Hotel.fromJson(json)).toList();
+    } else {
+      throw Exception("Failed to load hotel data");
+    }
+  }
+}
+
+class RoomResultDataProvider {
+  final String apiUrl;
+
+  RoomResultDataProvider({required this.apiUrl});
+
+  Future<List<Room>> fetchRoomResults({Map<String, dynamic>? searchInfo}) async {
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      // Parse the JSON data
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      return (data['rooms'] as List)
+          .map((json) => Room.fromJson(json))
+          .toList();
+    } else {
+      throw Exception("Failed to load room data");
     }
   }
 }

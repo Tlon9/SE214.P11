@@ -6,6 +6,9 @@ import 'package:user_registration/screens/flight/flight_search_screen.dart';
 import 'package:user_registration/screens/flight/flight_result_screen.dart';
 import 'package:user_registration/screens/flight/flight_payment_screen.dart';
 import 'package:user_registration/models/flight_model.dart';
+import 'package:user_registration/screens/hotel/hotel_search_screen.dart';
+import 'package:user_registration/screens/hotel/hotel_result_screen.dart';
+import 'package:user_registration/screens/hotel/room_result_screen.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -38,6 +41,31 @@ class AppRouter {
             flight: flight,
             passengers: passengers,
           ),
+        );
+      case '/hotel_search':
+        return MaterialPageRoute(builder: (_) => HotelSearchScreen());
+      case '/hotel_result':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (context) {
+            return HotelResultScreen(
+              area: args['area'],
+              checkInDate: args['checkInDate'],
+              checkOutDate: args['checkOutDate'],
+              customers: args['customerCount'],
+            );
+          },
+        );
+      case '/room_result':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (context) {
+            return RoomResultScreen(
+              hotel_id: args['hotel_id'],
+              hotel_name: args['hotel_name'],
+              customers: args['customers'],
+            );
+          },
         );
       default:
         return MaterialPageRoute(builder: (_) => MainScreen());

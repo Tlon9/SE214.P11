@@ -94,7 +94,11 @@ class HomePage extends StatelessWidget {
                             ServiceButton(
                                 icon: Icons.hotel,
                                 backgroundColor: Colors.purple,
-                                label: 'Khách sạn'),
+                                label: 'Khách sạn',
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, '/hotel_search');
+                                }),
                             ServiceButton(
                                 icon: Icons.directions_bus,
                                 backgroundColor: Colors.green,
