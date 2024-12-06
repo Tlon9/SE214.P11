@@ -127,11 +127,14 @@ MOMO_API = {
     "MomoApiUrl": "https://test-payment.momo.vn/gw_payment/transactionProcessor",
     "SecretKey": "K951B6PE1waDMi640xX08PD3vg6EkVlz",
     "AccessKey": "F8BBA842ECF85",
-    "ReturnUrl": "http://localhost:8080/payment/callback/",
-    "NotifyUrl": "http://localhost:8080/payment/notify/",
-    "IpnUrl": "http://localhost:8080/payment/notify/",
+    "ReturnUrl": "http://10.0.2.2:8080/payment/callback/",
+    "NotifyUrl": "http://10.0.2.2:8080/payment/notify/",
+    "IpnUrl": "http://10.0.2.2:8080/payment/notify/",
     "PartnerCode": "MOMO",
     "PartnerName": "Test",
     "StoreId": "MoMoTestStore",
     "RequestType": "captureMoMoWallet", #"payWithATM",
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR.joinpath('media')

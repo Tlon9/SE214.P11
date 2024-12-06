@@ -1,5 +1,6 @@
 # models.py
 from django.db import models
+from db_connection import db
 
 class MomoCreatePaymentResponse(models.Model):
     request_id = models.CharField(max_length=255)
@@ -19,3 +20,5 @@ class MomoExecuteResponse(models.Model):
     amount = models.CharField(max_length=20)
     full_name = models.CharField(max_length=255)
     order_info = models.TextField()
+
+transaction_collection = db["transaction"]
