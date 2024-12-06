@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/auth/registration/RegistrationBloc.dart';
-import 'package:user_registration/bloc/auth/registration/RegistrationState.dart';
-import 'package:user_registration/bloc/auth/registration/RegistrationEvent.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationBloc.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationState.dart';
+import 'package:travelowkey/bloc/auth/registration/RegistrationEvent.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
+
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController fullnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -81,7 +82,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             );
                           } else if (state is RegistrationSuccess) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Registration Successful!")),
+                              SnackBar(
+                                  content: Text("Registration Successful!")),
                             );
                           }
                         },
@@ -92,18 +94,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // Email input
-                                      Text("Email", style: TextStyle(fontSize: 16)),
+                                      Text("Email",
+                                          style: TextStyle(fontSize: 16)),
                                       SizedBox(height: 8),
                                       TextFormField(
                                         controller: emailController,
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                         decoration: InputDecoration(
                                           hintText: "example@example.com",
                                           suffixIcon: isEmailValid
-                                              ? Icon(Icons.check_circle, color: Colors.green)
+                                              ? Icon(Icons.check_circle,
+                                                  color: Colors.green)
                                               : null,
                                           border: OutlineInputBorder(),
                                         ),
@@ -118,7 +124,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       ),
                                       SizedBox(height: 16),
 
-                                      Text("Username", style: TextStyle(fontSize: 16)),
+                                      Text("Username",
+                                          style: TextStyle(fontSize: 16)),
                                       SizedBox(height: 8),
                                       TextFormField(
                                         controller: fullnameController,
@@ -126,22 +133,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                         decoration: InputDecoration(
                                           border: OutlineInputBorder(),
                                           suffixIcon: isUsernameValid
-                                              ? Icon(Icons.check_circle, color: Colors.green)
+                                              ? Icon(Icons.check_circle,
+                                                  color: Colors.green)
                                               : null,
                                         ),
                                         onChanged: (value) {
                                           setState(() {
                                             // Basic email validation
-                                            if (value.length > 0 && value.trim().isNotEmpty)
-                                              {isUsernameValid = true;}
-                                            else {isUsernameValid = false;}
+                                            if (value.length > 0 &&
+                                                value.trim().isNotEmpty) {
+                                              isUsernameValid = true;
+                                            } else {
+                                              isUsernameValid = false;
+                                            }
                                           });
                                         },
                                       ),
                                       SizedBox(height: 16),
 
                                       // Password input
-                                      Text("Mật khẩu", style: TextStyle(fontSize: 16)),
+                                      Text("Mật khẩu",
+                                          style: TextStyle(fontSize: 16)),
                                       SizedBox(height: 8),
                                       TextFormField(
                                         controller: passwordController,
@@ -150,11 +162,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                           border: OutlineInputBorder(),
                                           suffixIcon: IconButton(
                                             icon: Icon(
-                                              isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                              isPasswordVisible
+                                                  ? Icons.visibility
+                                                  : Icons.visibility_off,
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                isPasswordVisible = !isPasswordVisible;
+                                                isPasswordVisible =
+                                                    !isPasswordVisible;
                                               });
                                             },
                                           ),
@@ -162,32 +177,53 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                         onChanged: (value) {
                                           setState(() {
                                             // Basic email validation
-                                            if (value.length > 0 && value.trim().isNotEmpty)
-                                              {isPwValid = true;}
-                                            else {isPwValid = false;}
+                                            if (value.length > 0 &&
+                                                value.trim().isNotEmpty) {
+                                              isPwValid = true;
+                                            } else {
+                                              isPwValid = false;
+                                            }
                                           });
                                         },
                                       ),
                                       SizedBox(height: 16),
-                                      
+
                                       SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
-                                          onPressed: isEmailValid && isUsernameValid && isPwValid ? () {
-                                            BlocProvider.of<RegistrationBloc>(context).add(
-                                              RegisterButtonPressed(
-                                                email: emailController.text,
-                                                fullname: fullnameController.text,
-                                                password: passwordController.text,
-                                              ),
-                                            );
-                                          }: null,
+                                          onPressed: isEmailValid &&
+                                                  isUsernameValid &&
+                                                  isPwValid
+                                              ? () {
+                                                  BlocProvider.of<
+                                                              RegistrationBloc>(
+                                                          context)
+                                                      .add(
+                                                    RegisterButtonPressed(
+                                                      email:
+                                                          emailController.text,
+                                                      fullname:
+                                                          fullnameController
+                                                              .text,
+                                                      password:
+                                                          passwordController
+                                                              .text,
+                                                    ),
+                                                  );
+                                                }
+                                              : null,
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: isEmailValid && isUsernameValid && isPwValid? Colors.blue: Colors.grey,
+                                            backgroundColor: isEmailValid &&
+                                                    isUsernameValid &&
+                                                    isPwValid
+                                                ? Colors.blue
+                                                : Colors.grey,
                                             foregroundColor: Colors.white,
-                                            minimumSize: Size(double.infinity, 50),
+                                            minimumSize:
+                                                Size(double.infinity, 50),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                           ),
                                           child: Text("Đăng ký"),
@@ -197,13 +233,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
-                                          onPressed: () => context.read<RegistrationBloc>().add(SignInWithGoogle()),
+                                          onPressed: () => context
+                                              .read<RegistrationBloc>()
+                                              .add(SignInWithGoogle()),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Color(0xFFDB4437),
                                             foregroundColor: Colors.white,
-                                            minimumSize: Size(double.infinity, 50),
+                                            minimumSize:
+                                                Size(double.infinity, 50),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                           ),
                                           child: Row(

@@ -1,8 +1,8 @@
 // flight_result_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/flight/flight_results/FlightResultEvent.dart';
-import 'package:user_registration/bloc/flight/flight_results/FlightResultState.dart';
-import 'package:user_registration/repositories/flightResult_repository.dart';
+import 'package:travelowkey/bloc/flight/flight_results/FlightResultEvent.dart';
+import 'package:travelowkey/bloc/flight/flight_results/FlightResultState.dart';
+import 'package:travelowkey/repositories/flightResult_repository.dart';
 
 class FlightResultBloc extends Bloc<FlightResultEvent, FlightResultState> {
   final FlightResultRepository repository;
@@ -20,7 +20,7 @@ class FlightResultBloc extends Bloc<FlightResultEvent, FlightResultState> {
       final flights = await repository.fetchFlights(
         searchInfo: event.searchInfo,
       );
-      print(flights);
+      // print(flights);
       emit(FlightResultLoaded(flights: flights));
     } catch (e) {
       emit(FlightResultError(e.toString()));

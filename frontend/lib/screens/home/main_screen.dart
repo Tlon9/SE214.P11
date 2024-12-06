@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_registration/screens/home/home_screens.dart';
+import 'package:travelowkey/screens/home/home_screens.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
