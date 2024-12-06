@@ -3,6 +3,9 @@ import 'package:user_registration/models/flight_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:user_registration/widgets/submit_button.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class PaymentScreen extends StatelessWidget {
   final Flight flight;
@@ -177,8 +180,31 @@ class PaymentScreen extends StatelessWidget {
           SizedBox(height: 10),
           SubmitButton(
               label: 'Thanh toán',
-              onTap: () {
-                // Add payment logic here
+              onTap: () async {
+                final response = await http.post(
+                  Uri.parse('http://10.0.2.2:8080/payment/create/'),
+                  body: json.encode({
+                    'type': 'atm',
+                    'amount': '900000',
+                    'info': 'TEST',
+                    'extraData': ''
+                  }),
+                  headers: {'Content-Type': 'application/json'},
+                );
+                final data = json.decode(utf8.decode(response.bodyBytes));
+                if (data['url'] != null) {
+                  final url = Uri.parse(
+                      data['url']); // Convert string URL to a Uri object
+                  if (!await launchUrl(
+                    url,
+                    mode: LaunchMode
+                        .externalApplication, // Use external browser for better compatibility
+                  )) {
+                    throw Exception('Could not launch $url');
+                  }
+                } else {
+                  throw Exception('URL is null');
+                }
               }),
           // Add more payment details and form fields as needed
         ],

@@ -87,3 +87,21 @@ class FlightResultDataProvider {
     }
   }
 }
+
+class FlightPaymentDataProvider {
+  final String apiUrl;
+
+  FlightPaymentDataProvider({required this.apiUrl});
+
+  Future<void> makePayment({required Map<String, dynamic> paymentInfo}) async {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: json.encode(paymentInfo),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Failed to make payment");
+    }
+  }
+}
