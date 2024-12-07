@@ -62,9 +62,24 @@ class GoogleLogin(APIView):
             user.set_unusable_password()
             user.save()
         print(user.email)
-        return Response({"message": "Login successful", "user_id": user.id, "email": user.email}, status=status.HTTP_200_OK)
-
-
+        tokens = self.get_tokens_for_user(user)
+        # return Response({"message": "Login successful", "user_id": user.id, "email": user.email}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "Login successful",
+            "user_id": user.id,
+            "email": user.email,
+            "access": tokens['access'],
+            "refresh": tokens['refresh']
+        }, status=status.HTTP_200_OK)
+    def get_tokens_for_user(self, user):
+        """
+        Generate access and refresh tokens for a user.
+        """
+        refresh = RefreshToken.for_user(user)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
     def verify_google_id_token(self, id_token_string):
         """
         Verify the Google ID Token and return user info if the token is valid.

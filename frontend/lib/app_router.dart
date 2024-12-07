@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:user_registration/models/hotel_model.dart';
+import 'package:user_registration/models/room_model.dart';
 import 'package:user_registration/screens/auth/login_screen.dart';
 import 'package:user_registration/screens/auth/register_screen.dart';
 import 'package:user_registration/screens/home/main_screen.dart';
@@ -6,6 +8,7 @@ import 'package:user_registration/screens/flight/flight_search_screen.dart';
 import 'package:user_registration/screens/flight/flight_result_screen.dart';
 import 'package:user_registration/screens/flight/flight_payment_screen.dart';
 import 'package:user_registration/models/flight_model.dart';
+import 'package:user_registration/screens/hotel/hotel_payment_screen.dart';
 import 'package:user_registration/screens/hotel/hotel_search_screen.dart';
 import 'package:user_registration/screens/hotel/hotel_result_screen.dart';
 import 'package:user_registration/screens/hotel/room_result_screen.dart';
@@ -19,6 +22,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => RegistrationScreen());
       case '/flight_search':
         return MaterialPageRoute(builder: (_) => FlightSearchScreen());
+      case '/main':
+        return MaterialPageRoute(builder: (_) => MainScreen());
       case '/flight_result':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
@@ -42,6 +47,20 @@ class AppRouter {
             passengers: passengers,
           ),
         );
+      case '/hotel_payment':
+        final args = settings.arguments as Map<String, dynamic>;
+        final hotel = args['hotel'] as Hotel;
+        final room = args['room'] as Room;
+        final passengers = args['passengers'] as int;
+        return MaterialPageRoute(
+          builder: (_) => HotelPaymentScreen(
+            hotel: hotel,
+            room: room,
+            passengers: passengers,
+            checkInDate: args['checkInDate'],
+            checkOutDate: args['checkOutDate'],
+          ),
+        );
       case '/hotel_search':
         return MaterialPageRoute(builder: (_) => HotelSearchScreen());
       case '/hotel_result':
@@ -58,12 +77,15 @@ class AppRouter {
         );
       case '/room_result':
         final args = settings.arguments as Map<String, dynamic>;
+        final hotel = args['hotel'] as Hotel;
         return MaterialPageRoute(
           builder: (context) {
             return RoomResultScreen(
-              hotel_id: args['hotel_id'],
+              hotel: hotel,
               hotel_name: args['hotel_name'],
               customers: args['customers'],
+              checkInDate: args['checkInDate'],
+              checkOutDate: args['checkOutDate'],
             );
           },
         );

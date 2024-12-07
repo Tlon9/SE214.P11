@@ -12,9 +12,31 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  // final AuthService _authService = AuthService();
   bool isPasswordVisible = false;
   bool isEmailValid = false;
   bool isPwValid = false;
+
+  Future<void> fetchUserInfoAndNavigate(BuildContext context) async {
+    try {
+      final loginBloc = context.read<LoginBloc>(); // Access the bloc instance
+      final userInfo = await loginBloc.getUserInfo(); // Fetch user info
+      
+      // Debug: Print user info
+      print('User Info: $userInfo');
+
+      // Navigate to the main screen
+      Navigator.pushNamed(
+        context,
+        '/main',
+        arguments: userInfo, // Pass user info to the next screen if needed
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch user info: $error')),
+      );
+    }
+  }
 
   Widget build(BuildContext context) {
     double topContainerHeight = 250.0;
@@ -79,9 +101,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               SnackBar(content: Text(state.error)),
                             );
                           } else if (state is LoginSuccess) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Login Successful!")),
-                            );
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(content: Text("Login Successful!")),
+                            // );
+                            // final loginBloc_ = context.read<LoginBloc>(); // Access the bloc instance
+                            // final userInfo = await loginBloc_.getUserInfo(); // Fetch user info
+                            // Navigator.pushNamed(
+                            //   context,
+                            //   '/main',
+                            // );
+                            fetchUserInfoAndNavigate(context);
                           }
                         },
                         child: BlocBuilder<LoginBloc, LoginState>(

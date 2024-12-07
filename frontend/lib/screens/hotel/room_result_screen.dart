@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:user_registration/bloc/hotel/room_results/RoomResultBloc.dart';
 import 'package:user_registration/bloc/hotel/room_results/RoomResultEvent.dart';
 import 'package:user_registration/bloc/hotel/room_results/RoomResultState.dart';
+import 'package:user_registration/models/hotel_model.dart';
 import 'package:user_registration/repositories/roomResult_repository.dart';
 import 'package:user_registration/services/api_service.dart';
 import 'package:user_registration/models/room_model.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
 class RoomResultScreen extends StatelessWidget {
-  final String hotel_id;
+  final Hotel hotel;
   final String hotel_name;
   final int customers;
+  final DateTime checkInDate;
+  final DateTime checkOutDate;
+
 
   const RoomResultScreen({
-    required this.hotel_id,
+    required this.hotel,
     required this.hotel_name,
     required this.customers,
+    required this. checkInDate,
+    required this.checkOutDate
   });
 
   @override
   Widget build(BuildContext context) {
     final searchInfo = {
-      'hotel_id': hotel_id,
+      'hotel_id': hotel.id_hotel.toString(),
       'hotel_name': hotel_name,
       'customers': customers.toString(),
     };
@@ -55,6 +62,9 @@ class RoomResultScreen extends StatelessWidget {
               title: Text(
                 '$hotel_name',
                 maxLines: 2,
+                style: TextStyle(
+                  fontSize: 18,
+                ),
               ),
               actions: [
                 IconButton(
@@ -157,7 +167,7 @@ class RoomResultScreen extends StatelessWidget {
                                   itemBuilder: (context, index) {
                                     final room = state.rooms[index];
                                     return RoomCard(
-                                        room: room, customers: customers);
+                                        hotel: hotel, room: room, customers: customers, checkInDate: checkInDate, checkOutDate: checkOutDate);
                                   },
                                 ),
                               );
@@ -317,11 +327,15 @@ Future<String?> showSortDialog(BuildContext context) async {
   );
 }
 
+final formatter = NumberFormat.simpleCurrency(locale: 'vi');
 class RoomCard extends StatelessWidget {
+  final Hotel hotel;
   final Room room;
   final int customers;
+  final DateTime checkInDate;
+  final DateTime checkOutDate;
 
-  const RoomCard({required this.room, required this.customers});
+  const RoomCard({required this.hotel, required this.room, required this.customers, required this.checkInDate, required this.checkOutDate});
 
   @override
   Widget build(BuildContext context) {
@@ -363,26 +377,6 @@ class RoomCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Room Name and Customers
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //     Text(
-                //       room.name.toString(),
-                //       style: const TextStyle(
-                //         fontSize: 18,
-                //         fontWeight: FontWeight.bold,
-                //       ),
-                //     ),
-                //     Text(
-                //       '${room.customers} khách/ phòng',
-                //       style: const TextStyle(
-                //         fontSize: 14,
-                //         color: Colors.grey,
-                //       ),
-                //     ),
-                //   ],
-                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -408,12 +402,12 @@ class RoomCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
-                      width: 200,
+                      width: 180,
                       child: Text(
                         room.service.toString(),
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.grey,
+                          color: Colors.green,
                         ),
                         maxLines: null, // Allow unlimited lines
                         overflow: TextOverflow.visible, // Ensure text overflows are visible
@@ -422,32 +416,16 @@ class RoomCard extends StatelessWidget {
                     // Room Services
                     // const SizedBox(height: 12),
                     const Spacer(),
+                    Icon(Icons.person, color: Colors.blue),
                     Text(
                       '${room.customers} khách/ phòng',
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: Colors.grey,
                       ),
                     ),
                   ],
                 ),
-                // Text(
-                //   '${room.customers} khách/ phòng',
-                //   style: const TextStyle(
-                //     fontSize: 14,
-                //     color: Colors.grey,
-                //   ),
-                // ),
-
-                // const SizedBox(height: 8),
-                // // Room Services
-                // Text(
-                //   room.service.toString(),
-                //   style: const TextStyle(
-                //     fontSize: 14,
-                //     color: Colors.grey,
-                //   ),
-                // ),
                 const SizedBox(height: 8),
                 // Price Section
                 Row(
@@ -455,9 +433,9 @@ class RoomCard extends StatelessWidget {
                   children: [
                     const SizedBox(), // Empty space to align price on the right
                     Text(
-                      'VND ${room.price?.toStringAsFixed(0)}/phòng/đêm',
+                      '${formatter.format(room.price)}/phòng/đêm',
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
                       ),
@@ -471,6 +449,17 @@ class RoomCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       // Handle button press
+                      Navigator.pushNamed(
+                        context,
+                        '/hotel_payment',
+                        arguments: {
+                          'room': room,
+                          "hotel": hotel,
+                          'passengers': customers,
+                          'checkInDate':checkInDate,
+                          'checkOutDate':checkOutDate
+                        },
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -495,127 +484,3 @@ class RoomCard extends StatelessWidget {
     );
   }
 }
-
-
-
-// class RoomCard extends StatelessWidget {
-//   final Room room;
-//   final int customers;
-
-//   const RoomCard({required this.room, required this.customers});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Card(
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(12.0),
-//       ),
-//       elevation: 5,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           // Image carousel at the top
-//           SizedBox(
-//             height: 150,
-//             child: PageView.builder(
-//               itemCount: room.img!.length,
-//               itemBuilder: (context, index) {
-//                 return ClipRRect(
-//                   borderRadius: const BorderRadius.only(
-//                     topLeft: Radius.circular(12),
-//                     topRight: Radius.circular(12),
-//                   ),
-//                   child: Image.network(
-//                     room.img![index],
-//                     fit: BoxFit.cover,
-//                     width: double.infinity,
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-
-//           // Content below the image
-//           Padding(
-//             padding: const EdgeInsets.all(12.0),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 // Room name
-//                 Text(
-//                   room.name.toString(),
-//                   style: const TextStyle(
-//                     fontWeight: FontWeight.bold,
-//                     fontSize: 16,
-//                   ),
-//                 ),
-//                 const SizedBox(height: 8),
-
-//                 // Amenities
-//                 Row(
-//                   children: [
-//                     Text(
-//                       room.service.toString(),
-//                       style: TextStyle(
-//                         color: Colors.black,
-//                         fontSize: 14,
-//                         fontFamily: 'Inter',
-//                         fontWeight: FontWeight.w400,
-//                         height: 0,
-//                       ),
-//                     ),
-//                     Column(
-//                       crossAxisAlignment: CrossAxisAlignment.end,
-//                       children: [
-//                         Text(
-//                           "${room.customers.toString()} khách/ phòng",
-//                           style: const TextStyle(fontSize: 14),
-//                         ),
-//                         const SizedBox(height: 8),
-//                         Text(
-//                           "VND ${room.price.toString()}",
-//                           style: const TextStyle(
-//                             fontSize: 16,
-//                             fontWeight: FontWeight.bold,
-//                             color: Colors.red,
-//                           ),
-//                         ),
-//                         const SizedBox(height: 4),
-//                         const Text(
-//                           "/phòng/đêm",
-//                           style: TextStyle(fontSize: 12),
-//                         ),
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-
-//                 const SizedBox(height: 12),
-
-//                 // Action button
-//                 Align(
-//                   alignment: Alignment.centerRight,
-//                   child: ElevatedButton(
-//                     onPressed: () {
-//                       // Handle selection logic here
-//                     },
-//                     style: ElevatedButton.styleFrom(
-//                       backgroundColor: Colors.orange,
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(8),
-//                       ),
-//                     ),
-//                     child: const Text(
-//                       "Chọn",
-//                       style: TextStyle(color: Colors.white),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
