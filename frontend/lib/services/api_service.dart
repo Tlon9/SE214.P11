@@ -1,8 +1,8 @@
 // flight_search_data_provider.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:user_registration/models/flightSearch_model.dart';
-import 'package:user_registration/models/flight_model.dart';
+import 'package:travelowkey/models/flightSearch_model.dart';
+import 'package:travelowkey/models/flight_model.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;
@@ -84,6 +84,24 @@ class FlightResultDataProvider {
           .toList();
     } else {
       throw Exception("Failed to load flight data");
+    }
+  }
+}
+
+class FlightPaymentDataProvider {
+  final String apiUrl;
+
+  FlightPaymentDataProvider({required this.apiUrl});
+
+  Future<void> makePayment({required Map<String, dynamic> paymentInfo}) async {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: json.encode(paymentInfo),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Failed to make payment");
     }
   }
 }

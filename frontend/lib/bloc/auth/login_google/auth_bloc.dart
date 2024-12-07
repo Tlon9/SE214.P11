@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 // import 'package:http/http.dart' as http;
-import 'package:user_registration/bloc/auth/login_google/auth_event.dart';
-import 'package:user_registration/bloc/auth/login_google/auth_state.dart';
+import 'package:travelowkey/bloc/auth/login_google/auth_event.dart';
+import 'package:travelowkey/bloc/auth/login_google/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   // final GoogleSignIn _googleSignIn = GoogleSignIn();
