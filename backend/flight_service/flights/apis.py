@@ -92,3 +92,29 @@ class getFlightId(APIView):
         except Exception as e:
             print(f"Error: {e}")
             return Response({"message": "Failed to get flight."}, status=status.HTTP_400_BAD_REQUEST)
+        
+class updateDB(APIView):
+    def put(self, request):
+        try:
+            # flight_collection.update_many(
+            #         {"Date": {"$regex": r"-11-"}},  # Match documents where "Date" has '-11-' (November)
+            #         {
+            #             "$set": {
+            #                 "Date": {
+            #                     "$function": {
+            #                         "body": """
+            #                         function(date) {
+            #                             return date.replace("-11-", "-12-");
+            #                         }
+            #                         """,
+            #                         "args": ["$Date"],
+            #                         "lang": "js"
+            #                     }
+            #                 }
+            #             }
+            #         }
+            #     )
+            flight_collection.delete_many({})
+            return Response({"message": "Flight updated successfully."}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Failed to update flight."}, status=status.HTTP_400_BAD_REQUEST)

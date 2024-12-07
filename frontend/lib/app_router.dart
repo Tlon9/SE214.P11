@@ -6,6 +6,9 @@ import 'package:travelowkey/screens/flight/flight_search_screen.dart';
 import 'package:travelowkey/screens/flight/flight_result_screen.dart';
 import 'package:travelowkey/screens/flight/flight_payment_screen.dart';
 import 'package:travelowkey/models/flight_model.dart';
+import 'package:travelowkey/screens/hotel/hotel_search_screen.dart';
+import 'package:travelowkey/screens/hotel/hotel_result_screen.dart';
+import 'package:travelowkey/screens/hotel/room_result_screen.dart';
 import 'package:travelowkey/screens/payment/invoice_screen.dart';
 
 class AppRouter {
@@ -54,7 +57,31 @@ class AppRouter {
         final args = settings.arguments as Map<String, dynamic>;
         final transactionId = args['transactionId'] as String;
         return MaterialPageRoute(
-          builder: (_) => InvoiceScreen(transactionId: transactionId),
+            builder: (_) => InvoiceScreen(transactionId: transactionId));
+      case '/hotel_search':
+        return MaterialPageRoute(builder: (_) => HotelSearchScreen());
+      case '/hotel_result':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (context) {
+            return HotelResultScreen(
+              area: args['area'],
+              checkInDate: args['checkInDate'],
+              checkOutDate: args['checkOutDate'],
+              customers: args['customerCount'],
+            );
+          },
+        );
+      case '/room_result':
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (context) {
+            return RoomResultScreen(
+              hotel_id: args['hotel_id'],
+              hotel_name: args['hotel_name'],
+              customers: args['customers'],
+            );
+          },
         );
       default:
         return MaterialPageRoute(builder: (_) => MainScreen());
