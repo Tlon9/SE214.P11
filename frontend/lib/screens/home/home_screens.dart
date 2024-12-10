@@ -3,10 +3,16 @@ import 'package:user_registration/widgets/destination_card.dart';
 import 'package:user_registration/widgets/destination_tab.dart';
 import 'package:user_registration/widgets/badge.dart';
 import 'package:user_registration/widgets/service_button.dart';
+import 'package:user_registration/services/api_service.dart';
+import 'package:user_registration/models/user_model.dart';
+import 'package:provider/provider.dart';
+
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // final user = context.watch<UserProvider>().user;
+    // print(user?.email.toString());
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

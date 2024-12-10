@@ -90,7 +90,7 @@ class AppRouter {
           },
         );
       default:
-        return MaterialPageRoute(builder: (_) => MainScreen());
+        return MaterialPageRoute(builder: (_) => LoginScreen());
     }
   }
 }

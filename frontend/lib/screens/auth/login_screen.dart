@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_registration/bloc/auth/login/LoginBloc.dart';
 import 'package:user_registration/bloc/auth/login/LoginEvent.dart';
 import 'package:user_registration/bloc/auth/login/LoginState.dart';
-
+import 'package:user_registration/services/api_service.dart';
+import 'package:user_registration/models/user_model.dart';
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -23,8 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
       final userInfo = await loginBloc.getUserInfo(); // Fetch user info
       
       // Debug: Print user info
-      print('User Info: $userInfo');
-
+      // print('User Info: $userInfo');
+      final user = User.fromJson(userInfo);
+      await context.read<UserProvider>().saveUser(user);
       // Navigate to the main screen
       Navigator.pushNamed(
         context,

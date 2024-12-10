@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 // import 'package:user_registration/screens/auth/login_screen.dart';
 // import 'register_screen.dart';
 import 'package:user_registration/app_router.dart';
+import 'package:provider/provider.dart';
+import 'package:user_registration/services/api_service.dart';
 void main() {
-  runApp(const MyApp());
+    runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()..loadUserInfo()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

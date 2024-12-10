@@ -6,6 +6,9 @@ import 'package:user_registration/models/flight_model.dart';
 import 'package:user_registration/models/hotelSearch_model.dart';
 import 'package:user_registration/models/hotel_model.dart';
 import 'package:user_registration/models/room_model.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:user_registration/models/user_model.dart';
+import 'package:flutter/material.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;
@@ -157,5 +160,54 @@ class RoomResultDataProvider {
     } else {
       throw Exception("Failed to load room data");
     }
+  }
+}
+
+class AuthService {
+  final _storage = const FlutterSecureStorage();
+
+  // Save user info
+  Future<void> saveUserInfo(User user) async {
+    final userJson = jsonEncode(user.toJson());
+    await _storage.write(key: 'user_info', value: userJson);
+  }
+
+  // Retrieve user info
+  Future<User?> getUserInfo() async {
+    final userJson = await _storage.read(key: 'user_info');
+    if (userJson == null) return null;
+    return User.fromJson(jsonDecode(userJson));
+  }
+
+  // Clear user info (e.g., on logout)
+  Future<void> clearUserInfo() async {
+    await _storage.delete(key: 'user_info');
+  }
+}
+
+class UserProvider with ChangeNotifier {
+  User? _user;
+  final AuthService _authService = AuthService();
+
+  User? get user => _user;
+
+  // Load user info on app start
+  Future<void> loadUserInfo() async {
+    _user = await _authService.getUserInfo();
+    notifyListeners();
+  }
+
+  // Save user info and notify listeners
+  Future<void> saveUser(User user) async {
+    _user = user;
+    await _authService.saveUserInfo(user);
+    notifyListeners();
+  }
+
+  // Clear user info (e.g., on logout)
+  Future<void> logout() async {
+    _user = null;
+    await _authService.clearUserInfo();
+    notifyListeners();
   }
 }
