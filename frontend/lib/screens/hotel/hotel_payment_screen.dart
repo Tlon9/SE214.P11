@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:user_registration/models/hotel_model.dart';
-import 'package:user_registration/models/room_model.dart';
-import 'package:user_registration/widgets/submit_button.dart';
+import 'package:travelowkey/models/hotel_model.dart';
+import 'package:travelowkey/models/room_model.dart';
+import 'package:travelowkey/widgets/submit_button.dart';
 import 'package:intl/intl.dart';
 
 class HotelPaymentScreen extends StatelessWidget {

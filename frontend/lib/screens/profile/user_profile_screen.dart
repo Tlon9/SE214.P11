@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:user_registration/services/api_service.dart';
-// import 'package:user_registration/models/user_model.dart';
+import 'package:travelowkey/services/api_service.dart';
+// import 'package:travelowkey/models/user_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/auth/user_profile/UserBloc.dart';
-import 'package:user_registration/bloc/auth/user_profile/UserState.dart';
-import 'package:user_registration/bloc/auth/user_profile/UserEvent.dart';
-import 'package:user_registration/screens/auth/login_screen.dart';
+import 'package:travelowkey/bloc/auth/user_profile/UserBloc.dart';
+import 'package:travelowkey/bloc/auth/user_profile/UserState.dart';
+import 'package:travelowkey/bloc/auth/user_profile/UserEvent.dart';
+import 'package:travelowkey/screens/auth/login_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:user_registration/repositories/userProfile_repository.dart';
+import 'package:travelowkey/repositories/userProfile_repository.dart';
 
 class UserProfilePage extends StatelessWidget {
   @override

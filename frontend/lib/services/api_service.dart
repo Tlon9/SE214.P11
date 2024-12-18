@@ -1,14 +1,14 @@
 // flight_search_data_provider.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:user_registration/models/flightSearch_model.dart';
-import 'package:user_registration/models/flight_model.dart';
-import 'package:user_registration/models/hotelSearch_model.dart';
-import 'package:user_registration/models/hotel_model.dart';
-import 'package:user_registration/models/room_model.dart';
+import 'package:travelowkey/models/flightSearch_model.dart';
+import 'package:travelowkey/models/flight_model.dart';
+import 'package:travelowkey/models/hotelSearch_model.dart';
+import 'package:travelowkey/models/hotel_model.dart';
+import 'package:travelowkey/models/room_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:user_registration/models/accountLogin_model.dart';
-import 'package:user_registration/models/user_model.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'package:travelowkey/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 
@@ -253,4 +253,22 @@ class UserDataProvider {
     return AccountLogin(email: 'test@example.com', accessToken: 'token', refreshToken: 'refresh_token');
   }
 
+}
+
+class FlightPaymentDataProvider {
+  final String apiUrl;
+
+  FlightPaymentDataProvider({required this.apiUrl});
+
+  Future<void> makePayment({required Map<String, dynamic> paymentInfo}) async {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: json.encode(paymentInfo),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Failed to make payment");
+    }
+  }
 }

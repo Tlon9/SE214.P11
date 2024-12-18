@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/auth/user_profile/UserEvent.dart';
-import 'package:user_registration/bloc/auth/user_profile/UserState.dart';
-import 'package:user_registration/repositories/userProfile_repository.dart';
+import 'package:travelowkey/bloc/auth/user_profile/UserEvent.dart';
+import 'package:travelowkey/bloc/auth/user_profile/UserState.dart';
+import 'package:travelowkey/repositories/userProfile_repository.dart';
 
 class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   final UserResultRepository repository;

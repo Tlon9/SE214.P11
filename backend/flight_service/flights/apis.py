@@ -33,6 +33,20 @@ class addFlight(APIView):
             return Response({"message": "Flight added successfully."}, status=status.HTTP_201_CREATED)
         except:
             return Response({"message": "Failed to add flight."}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class updateFlight(APIView):
+    def put(self, request):
+        try:
+            id = request.query_params.get('id')
+            passenger = int(request.query_params.get('passenger'))
+            flight_collection.update_one(
+                {"Id": id},
+                {"$inc": {'NumSeat': -passenger}}
+            )
+            return Response({"message": "Flight updated successfully."}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Failed to update flight."}, status=status.HTTP_400_BAD_REQUEST)
     
 
 class getFlights(APIView):
@@ -50,13 +64,31 @@ class getFlights(APIView):
                 "To": destination,
                 "SeatClass": seatClass,
                 "Date": date
-            }, {"Id": 0, "Date": 0, "NumSeat": 0, "SeatClass": 0}))
+            }, {"Date": 0, "NumSeat": 0, "SeatClass": 0}))
 
             for flight in flights:
-                flight['_id'] = str(flight['_id'])  # Convert ObjectId to string
+                flight['_id'] = str(flight['_id']) # Convert ObjectId to string
 
             response = {"flights": flights}
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error: {e}")
             return Response({"message": "Failed to get flights."}, status=status.HTTP_400_BAD_REQUEST)
+        
+class getFlightId(APIView):
+    def get(self, request):
+        try:
+            flight_id = request.query_params.get('id')
+            flight = flight_collection.find_one({"Id": flight_id})
+            response = {
+                "From": flight['From'],
+                "To": flight['To'],
+                "Date": flight['Date'],
+                "DepartureTime": flight['DepartureTime'],
+                "ArrivalTime": flight['ArrivalTime'],
+                "SeatClass": flight['SeatClass'],
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error: {e}")
+            return Response({"message": "Failed to get flight."}, status=status.HTTP_400_BAD_REQUEST)

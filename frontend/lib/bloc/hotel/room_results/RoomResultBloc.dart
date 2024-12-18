@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/hotel/room_results/RoomResultEvent.dart';
-import 'package:user_registration/bloc/hotel/room_results/RoomResultState.dart';
-import 'package:user_registration/repositories/roomResult_repository.dart';
+import 'package:travelowkey/bloc/hotel/room_results/RoomResultEvent.dart';
+import 'package:travelowkey/bloc/hotel/room_results/RoomResultState.dart';
+import 'package:travelowkey/repositories/roomResult_repository.dart';
 
 class RoomResultBloc extends Bloc<RoomResultEvent, RoomResultState> {
   final RoomResultRepository repository;

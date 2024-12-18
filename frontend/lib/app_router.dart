@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:user_registration/models/hotel_model.dart';
-import 'package:user_registration/models/room_model.dart';
-import 'package:user_registration/screens/auth/login_screen.dart';
-import 'package:user_registration/screens/auth/register_screen.dart';
-import 'package:user_registration/screens/home/main_screen.dart';
-import 'package:user_registration/screens/flight/flight_search_screen.dart';
-import 'package:user_registration/screens/flight/flight_result_screen.dart';
-import 'package:user_registration/screens/flight/flight_payment_screen.dart';
-import 'package:user_registration/models/flight_model.dart';
-import 'package:user_registration/screens/hotel/hotel_payment_screen.dart';
-import 'package:user_registration/screens/hotel/hotel_search_screen.dart';
-import 'package:user_registration/screens/hotel/hotel_result_screen.dart';
-import 'package:user_registration/screens/hotel/room_result_screen.dart';
-// import 'package:user_registration/screens/profile/user_profile_screen.dart';
+import 'package:travelowkey/models/hotel_model.dart';
+import 'package:travelowkey/models/room_model.dart';
+import 'package:travelowkey/screens/auth/login_screen.dart';
+import 'package:travelowkey/screens/auth/register_screen.dart';
+import 'package:travelowkey/screens/home/main_screen.dart';
+import 'package:travelowkey/screens/flight/flight_search_screen.dart';
+import 'package:travelowkey/screens/flight/flight_result_screen.dart';
+import 'package:travelowkey/screens/flight/flight_payment_screen.dart';
+import 'package:travelowkey/models/flight_model.dart';
+import 'package:travelowkey/screens/hotel/hotel_payment_screen.dart';
+import 'package:travelowkey/screens/hotel/hotel_search_screen.dart';
+import 'package:travelowkey/screens/hotel/hotel_result_screen.dart';
+import 'package:travelowkey/screens/hotel/room_result_screen.dart';
+// import 'package:travelowkey/screens/profile/user_profile_screen.dart';
+import 'package:travelowkey/screens/payment/invoice_screen.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
+    final Uri? uri = Uri.tryParse(settings.name ?? '');
+
+    if (uri != null) {
+      if (uri.host == 'localhost' && uri.path == '/') {
+        return MaterialPageRoute(
+          builder: (_) => MainScreen(),
+        );
+      }
+      // Add more deep link paths as needed
+    }
     switch (settings.name) {
       case '/login':
         return MaterialPageRoute(builder: (_) => LoginScreen());
@@ -89,6 +100,12 @@ class AppRouter {
               checkOutDate: args['checkOutDate'],
             );
           },
+        );
+      case '/invoice':
+        final args = settings.arguments as Map<String, dynamic>;
+        final transactionId = args['transactionId'] as String;
+        return MaterialPageRoute(
+          builder: (_) => InvoiceScreen(transactionId: transactionId),
         );
       default:
         return MaterialPageRoute(builder: (_) => MainScreen());

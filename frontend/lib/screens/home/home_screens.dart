@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:user_registration/widgets/destination_card.dart';
-import 'package:user_registration/widgets/destination_tab.dart';
-import 'package:user_registration/widgets/badge.dart';
-import 'package:user_registration/widgets/service_button.dart';
-import 'package:user_registration/services/api_service.dart';
+import 'package:travelowkey/widgets/destination_card.dart';
+import 'package:travelowkey/widgets/destination_tab.dart';
+import 'package:travelowkey/widgets/badge.dart';
+import 'package:travelowkey/widgets/service_button.dart';
+import 'package:travelowkey/services/api_service.dart';
 // import 'package:user_registration/models/user_model.dart';
 import 'package:provider/provider.dart';
-import 'package:user_registration/screens/profile/user_profile_screen.dart';
+import 'package:travelowkey/screens/profile/user_profile_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:jwt_decoder/jwt_decoder.dart';
-
+import 'package:travelowkey/widgets/destination_card.dart';
+import 'package:travelowkey/widgets/destination_tab.dart';
+import 'package:travelowkey/widgets/badge.dart';
+import 'package:travelowkey/widgets/service_button.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -274,7 +277,6 @@ class ProfilePage extends StatelessWidget {
         else
         {
           bool checkUser = userProvider.user != null;
-          checkUser = false;
           // print(userProvider.user?.email.toString());
           // print(userProvider.user?.accessToken.toString());
           // final user = context.watch<UserProvider>().user;

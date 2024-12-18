@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/hotel/hotel_results/HotelResultEvent.dart';
-import 'package:user_registration/bloc/hotel/hotel_results/HotelResultState.dart';
-import 'package:user_registration/repositories/hotelResult_repository.dart';
-// import 'package:user_registration/models/hotel_model.dart';
+import 'package:travelowkey/bloc/hotel/hotel_results/HotelResultEvent.dart';
+import 'package:travelowkey/bloc/hotel/hotel_results/HotelResultState.dart';
+import 'package:travelowkey/repositories/hotelResult_repository.dart';
+// import 'package:travelowkey/models/hotel_model.dart';
 
 class HotelResultBloc extends Bloc<HotelResultEvent, HotelResultState> {
   final HotelResultRepository repository;

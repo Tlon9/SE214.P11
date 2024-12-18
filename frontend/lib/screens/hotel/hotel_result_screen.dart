@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/hotel/hotel_results/HotelResultBloc.dart';
-import 'package:user_registration/bloc/hotel/hotel_results/HotelResultEvent.dart';
-import 'package:user_registration/bloc/hotel/hotel_results/HotelResultState.dart';
-import 'package:user_registration/repositories/hotelResult_repository.dart';
-import 'package:user_registration/services/api_service.dart';
-import 'package:user_registration/models/hotel_model.dart';
+import 'package:travelowkey/bloc/hotel/hotel_results/HotelResultBloc.dart';
+import 'package:travelowkey/bloc/hotel/hotel_results/HotelResultEvent.dart';
+import 'package:travelowkey/bloc/hotel/hotel_results/HotelResultState.dart';
+import 'package:travelowkey/repositories/hotelResult_repository.dart';
+import 'package:travelowkey/services/api_service.dart';
+import 'package:travelowkey/models/hotel_model.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';

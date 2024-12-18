@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:user_registration/widgets/destination_card.dart';
-import 'package:user_registration/widgets/destination_tab.dart';
-import 'package:user_registration/widgets/datepicker.dart';
-import 'package:user_registration/widgets/submit_button.dart';
+import 'package:travelowkey/widgets/destination_card.dart';
+import 'package:travelowkey/widgets/destination_tab.dart';
+import 'package:travelowkey/widgets/datepicker.dart';
+import 'package:travelowkey/widgets/submit_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/hotel/hotel_search/HotelSearchBloc.dart';
-import 'package:user_registration/bloc/hotel/hotel_search/HotelSearchEvent.dart';
-import 'package:user_registration/bloc/hotel/hotel_search/HotelSearchState.dart';
-import 'package:user_registration/repositories/hotelSearch_repository.dart';
-import 'package:user_registration/services/api_service.dart';
+import 'package:travelowkey/bloc/hotel/hotel_search/HotelSearchBloc.dart';
+import 'package:travelowkey/bloc/hotel/hotel_search/HotelSearchEvent.dart';
+import 'package:travelowkey/bloc/hotel/hotel_search/HotelSearchState.dart';
+import 'package:travelowkey/repositories/hotelSearch_repository.dart';
+import 'package:travelowkey/services/api_service.dart';
 
 class HotelSearchScreen extends StatelessWidget {
   void _onSearchButtonPressed(BuildContext context) {

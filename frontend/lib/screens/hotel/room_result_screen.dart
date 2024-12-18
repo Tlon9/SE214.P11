@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:user_registration/bloc/hotel/room_results/RoomResultBloc.dart';
-import 'package:user_registration/bloc/hotel/room_results/RoomResultEvent.dart';
-import 'package:user_registration/bloc/hotel/room_results/RoomResultState.dart';
-import 'package:user_registration/models/hotel_model.dart';
-import 'package:user_registration/repositories/roomResult_repository.dart';
-import 'package:user_registration/services/api_service.dart';
-import 'package:user_registration/models/room_model.dart';
+import 'package:travelowkey/bloc/hotel/room_results/RoomResultBloc.dart';
+import 'package:travelowkey/bloc/hotel/room_results/RoomResultEvent.dart';
+import 'package:travelowkey/bloc/hotel/room_results/RoomResultState.dart';
+import 'package:travelowkey/models/hotel_model.dart';
+import 'package:travelowkey/repositories/roomResult_repository.dart';
+import 'package:travelowkey/services/api_service.dart';
+import 'package:travelowkey/models/room_model.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
 class RoomResultScreen extends StatelessWidget {

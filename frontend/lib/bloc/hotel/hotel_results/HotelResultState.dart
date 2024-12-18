@@ -1,6 +1,6 @@
 // Hotel_result_state.dart
 import 'package:equatable/equatable.dart';
-import 'package:user_registration/models/hotel_model.dart'; // Model for Hotel result data
+import 'package:travelowkey/models/hotel_model.dart'; // Model for Hotel result data
 
 abstract class HotelResultState extends Equatable {
   @override

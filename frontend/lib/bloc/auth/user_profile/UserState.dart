@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:user_registration/models/user_model.dart';
+import 'package:travelowkey/models/user_model.dart';
 
 abstract class UserProfileState extends Equatable {
   @override

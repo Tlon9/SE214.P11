@@ -1,8 +1,8 @@
 // Hotel_search_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/hotel/hotel_search/HotelSearchEvent.dart';
-import 'package:user_registration/bloc/hotel/hotel_search/HotelSearchState.dart';
-import 'package:user_registration/repositories/hotelSearch_repository.dart';
+import 'package:travelowkey/bloc/hotel/hotel_search/HotelSearchEvent.dart';
+import 'package:travelowkey/bloc/hotel/hotel_search/HotelSearchState.dart';
+import 'package:travelowkey/repositories/hotelSearch_repository.dart';
 
 class HotelSearchBloc extends Bloc<HotelSearchEvent, HotelSearchState> {
   final HotelSearchRepository repository;

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:user_registration/bloc/auth/login/LoginState.dart';
-import 'package:user_registration/bloc/auth/login/LoginEvent.dart';
+import 'package:travelowkey/bloc/auth/login/LoginState.dart';
+import 'package:travelowkey/bloc/auth/login/LoginEvent.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -65,10 +65,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ];
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: scopes,
-    serverClientId: '366589839768-l9sbovdpodu1nm7f3hjkivm4e5eq4qou.apps.googleusercontent.com', // Replace with your Google web client ID
+    serverClientId:
+        '366589839768-l9sbovdpodu1nm7f3hjkivm4e5eq4qou.apps.googleusercontent.com', // Replace with your Google web client ID
   );
 
-  Future<void> _handleGoogleSignIn(SignInWithGoogle event, Emitter<LoginState> emit) async {
+  Future<void> _handleGoogleSignIn(
+      SignInWithGoogle event, Emitter<LoginState> emit) async {
     try {
       // await storage.delete(key: 'user_info');
       final googleSignInAccount = await _googleSignIn.signIn();
@@ -76,14 +78,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         return; // User canceled the sign-in
       }
 
-      final googleSignInAuthentication = await googleSignInAccount.authentication;
+      final googleSignInAuthentication =
+          await googleSignInAccount.authentication;
       final idToken = googleSignInAuthentication.idToken;
       final accessToken = googleSignInAuthentication.accessToken;
       if (idToken != null) {
         // Send the ID token to your Django backend for verification
         final response = await http.post(
           Uri.parse('http://10.0.2.2:8000/auth/login/google'),
-          body: jsonEncode({'id_token': idToken,'access_token':accessToken}),
+          body: jsonEncode({'id_token': idToken, 'access_token': accessToken}),
           headers: {'Content-Type': 'application/json'},
         );
         if (response.statusCode == 200) {

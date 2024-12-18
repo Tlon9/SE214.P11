@@ -1,5 +1,5 @@
-import 'package:user_registration/services/api_service.dart';
-import 'package:user_registration/models/hotel_model.dart';
+import 'package:travelowkey/services/api_service.dart';
+import 'package:travelowkey/models/hotel_model.dart';
 
 class HotelResultRepository {
   final HotelResultDataProvider dataProvider;

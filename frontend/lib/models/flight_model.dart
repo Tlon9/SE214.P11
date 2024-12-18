@@ -2,7 +2,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class Flight {
   ObjectId? id;
-  // String? flightId;
+  String? flightId;
   String? from;
   String? to;
   // String? date;
@@ -17,7 +17,7 @@ class Flight {
 
   Flight({
     this.id,
-    // this.flightId,
+    this.flightId,
     this.from,
     this.to,
     // this.date,
@@ -35,8 +35,8 @@ class Flight {
   factory Flight.fromJson(Map<String, dynamic> json) {
     return Flight(
       id: json['_id'] != null ? ObjectId.parse(json['_id']) : null,
-      // flightId: json['Id']
-      //     as String?, // Assuming flightId may be missing in mock data
+      flightId: json['Id']
+          as String?, // Assuming flightId may be missing in mock data
       from: json['From'] as String?,
       to: json['To'] as String?,
       // date: json['Date'] as String?, // Date is missing in mock data
@@ -57,7 +57,7 @@ class Flight {
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
-      // 'Id': flightId,
+      'Id': flightId,
       'From': from,
       'To': to,
       // 'Date': date,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_registration/bloc/auth/login/LoginBloc.dart';
-import 'package:user_registration/bloc/auth/login/LoginEvent.dart';
-import 'package:user_registration/bloc/auth/login/LoginState.dart';
-import 'package:user_registration/services/api_service.dart';
-import 'package:user_registration/models/accountLogin_model.dart';
+import 'package:travelowkey/bloc/auth/login/LoginBloc.dart';
+import 'package:travelowkey/bloc/auth/login/LoginEvent.dart';
+import 'package:travelowkey/bloc/auth/login/LoginState.dart';
+import 'package:travelowkey/services/api_service.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -122,18 +122,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // Email input
-                                      Text("Email", style: TextStyle(fontSize: 16)),
+                                      Text("Email",
+                                          style: TextStyle(fontSize: 16)),
                                       SizedBox(height: 8),
                                       TextFormField(
                                         controller: emailController,
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                         decoration: InputDecoration(
                                           hintText: "example@example.com",
                                           suffixIcon: isEmailValid
-                                              ? Icon(Icons.check_circle, color: Colors.green)
+                                              ? Icon(Icons.check_circle,
+                                                  color: Colors.green)
                                               : null,
                                           border: OutlineInputBorder(),
                                         ),
@@ -148,7 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       SizedBox(height: 16),
                                       // Password input
-                                      Text("Mật khẩu", style: TextStyle(fontSize: 16)),
+                                      Text("Mật khẩu",
+                                          style: TextStyle(fontSize: 16)),
                                       SizedBox(height: 8),
                                       TextFormField(
                                         controller: passwordController,
@@ -157,11 +162,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           border: OutlineInputBorder(),
                                           suffixIcon: IconButton(
                                             icon: Icon(
-                                              isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                              isPasswordVisible
+                                                  ? Icons.visibility
+                                                  : Icons.visibility_off,
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                isPasswordVisible = !isPasswordVisible;
+                                                isPasswordVisible =
+                                                    !isPasswordVisible;
                                               });
                                             },
                                           ),
@@ -169,9 +177,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                         onChanged: (value) {
                                           setState(() {
                                             // Basic email validation
-                                            if (value.length > 0 && value.trim().isNotEmpty)
-                                              {isPwValid = true;}
-                                            else {isPwValid = false;}
+                                            if (value.length > 0 &&
+                                                value.trim().isNotEmpty) {
+                                              isPwValid = true;
+                                            } else {
+                                              isPwValid = false;
+                                            }
                                           });
                                         },
                                       ),
@@ -182,27 +193,40 @@ class _LoginScreenState extends State<LoginScreen> {
                                           onPressed: () {},
                                           child: Text(
                                             "Quên mật khẩu?",
-                                            style: TextStyle(color: Colors.blue),
+                                            style:
+                                                TextStyle(color: Colors.blue),
                                           ),
                                         ),
                                       ),
                                       SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
-                                          onPressed: isEmailValid && isPwValid ? () {
-                                            BlocProvider.of<LoginBloc>(context).add(
-                                              LoginButtonPressed(
-                                                email: emailController.text,
-                                                password: passwordController.text,
-                                              ),
-                                            );
-                                          }: null,
+                                          onPressed: isEmailValid && isPwValid
+                                              ? () {
+                                                  BlocProvider.of<LoginBloc>(
+                                                          context)
+                                                      .add(
+                                                    LoginButtonPressed(
+                                                      email:
+                                                          emailController.text,
+                                                      password:
+                                                          passwordController
+                                                              .text,
+                                                    ),
+                                                  );
+                                                }
+                                              : null,
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: isEmailValid && isPwValid? Colors.blue: Colors.grey,
+                                            backgroundColor:
+                                                isEmailValid && isPwValid
+                                                    ? Colors.blue
+                                                    : Colors.grey,
                                             foregroundColor: Colors.white,
-                                            minimumSize: Size(double.infinity, 50),
+                                            minimumSize:
+                                                Size(double.infinity, 50),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                           ),
                                           child: Text("Đăng nhập"),
@@ -212,13 +236,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                       SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
-                                          onPressed: () => context.read<LoginBloc>().add(SignInWithGoogle()),
+                                          onPressed: () => context
+                                              .read<LoginBloc>()
+                                              .add(SignInWithGoogle()),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Color(0xFFDB4437),
                                             foregroundColor: Colors.white,
-                                            minimumSize: Size(double.infinity, 50),
+                                            minimumSize:
+                                                Size(double.infinity, 50),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                           ),
                                           child: Row(

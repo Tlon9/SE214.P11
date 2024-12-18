@@ -1,6 +1,6 @@
 // Room_result_state.dart
 import 'package:equatable/equatable.dart';
-import 'package:user_registration/models/room_model.dart'; // Model for Room result data
+import 'package:travelowkey/models/room_model.dart'; // Model for Room result data
 
 abstract class RoomResultState extends Equatable {
   @override
