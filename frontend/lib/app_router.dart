@@ -12,6 +12,7 @@ import 'package:user_registration/screens/hotel/hotel_payment_screen.dart';
 import 'package:user_registration/screens/hotel/hotel_search_screen.dart';
 import 'package:user_registration/screens/hotel/hotel_result_screen.dart';
 import 'package:user_registration/screens/hotel/room_result_screen.dart';
+// import 'package:user_registration/screens/profile/user_profile_screen.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -90,7 +91,7 @@ class AppRouter {
           },
         );
       default:
-        return MaterialPageRoute(builder: (_) => LoginScreen());
+        return MaterialPageRoute(builder: (_) => MainScreen());
     }
   }
 }

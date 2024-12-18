@@ -17,6 +17,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(LoginLoading());
 
     try {
+      // await storage.delete(key: 'user_info');
       final response = await http.post(
         Uri.parse('http://10.0.2.2:8000/api/token/'),
         body: {
@@ -27,10 +28,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        await storage.write(key: 'email', value: event.email);
+        // bool hasToken = await storage.containsKey(key: 'email');
+        // if (hasToken) {
+        //   await storage.deleteAll();
+        // }
+        await storage.write(key: 'email', value: event.email.toString());
         // Save access and refresh tokens
         await storage.write(key: 'access_token', value: data['access']);
         await storage.write(key: 'refresh_token', value: data['refresh']);
+        String? value = await storage.read(key: "email");
+        print(value.toString());
         emit(LoginSuccess());
       } else {
         emit(LoginFailure(error: 'Invalid credentials'));
@@ -63,6 +70,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Future<void> _handleGoogleSignIn(SignInWithGoogle event, Emitter<LoginState> emit) async {
     try {
+      // await storage.delete(key: 'user_info');
       final googleSignInAccount = await _googleSignIn.signIn();
       if (googleSignInAccount == null) {
         return; // User canceled the sign-in
@@ -80,11 +88,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
         if (response.statusCode == 200) {
           // Successfully authenticated; navigate to the home page
+          // bool hasToken = await storage.containsKey(key: 'email');
+          // if (hasToken) {
+          //   await storage.deleteAll();
+          // }
           final data = json.decode(response.body);
-          await storage.write(key: 'email', value: data["email"]);
+          await storage.write(key: 'email', value: data["email"].toString());
           await storage.write(key: 'access_token', value: data['access']);
           await storage.write(key: 'refresh_token', value: data['refresh']);
-          print("Login");
+          String? value = await storage.read(key: "email");
+          print(value.toString());
           emit(LoginSuccess());
         } else {
           // Handle authentication failure

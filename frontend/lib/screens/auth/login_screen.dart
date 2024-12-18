@@ -4,7 +4,7 @@ import 'package:user_registration/bloc/auth/login/LoginBloc.dart';
 import 'package:user_registration/bloc/auth/login/LoginEvent.dart';
 import 'package:user_registration/bloc/auth/login/LoginState.dart';
 import 'package:user_registration/services/api_service.dart';
-import 'package:user_registration/models/user_model.dart';
+import 'package:user_registration/models/accountLogin_model.dart';
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       
       // Debug: Print user info
       // print('User Info: $userInfo');
-      final user = User.fromJson(userInfo);
+      final user = AccountLogin.fromJson(userInfo);
       await context.read<UserProvider>().saveUser(user);
       // Navigate to the main screen
       Navigator.pushNamed(

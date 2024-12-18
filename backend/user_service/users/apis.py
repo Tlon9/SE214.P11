@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import User, Passport
-from .serializers import UserRegistrationSerializer, LoginSerializer
+from .serializers import UserRegistrationSerializer, LoginSerializer, UserSerializer
 from django.contrib.auth import authenticate, login
 from rest_framework.permissions import IsAuthenticated 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -26,15 +26,20 @@ class RegisterUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
-class HelloView(APIView):
-    permission_classes = [IsAuthenticated]
+class UserInfoView(APIView):
 
-    def get(self, request, format=None):
-        content = {
-            'user': str(request.user),
-            'auth': str(request.auth),
-        }
-        return Response(content)
+    def get(self, request, *args, **kwargs):
+        email = request.query_params.get('email')  # Get email from query parameters
+        if not email:
+            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)  # Retrieve the user based on the email
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
     
 class GoogleLogin(APIView):
     def post(self, request):
@@ -94,4 +99,3 @@ class GoogleLogin(APIView):
         
         except ValueError:
             return None
-    import requests

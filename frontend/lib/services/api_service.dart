@@ -7,8 +7,10 @@ import 'package:user_registration/models/hotelSearch_model.dart';
 import 'package:user_registration/models/hotel_model.dart';
 import 'package:user_registration/models/room_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:user_registration/models/accountLogin_model.dart';
 import 'package:user_registration/models/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;
@@ -167,16 +169,16 @@ class AuthService {
   final _storage = const FlutterSecureStorage();
 
   // Save user info
-  Future<void> saveUserInfo(User user) async {
+  Future<void> saveUserInfo(AccountLogin user) async {
     final userJson = jsonEncode(user.toJson());
     await _storage.write(key: 'user_info', value: userJson);
   }
 
   // Retrieve user info
-  Future<User?> getUserInfo() async {
+  Future<AccountLogin?> getUserInfo() async {
     final userJson = await _storage.read(key: 'user_info');
     if (userJson == null) return null;
-    return User.fromJson(jsonDecode(userJson));
+    return AccountLogin.fromJson(jsonDecode(userJson));
   }
 
   // Clear user info (e.g., on logout)
@@ -186,10 +188,10 @@ class AuthService {
 }
 
 class UserProvider with ChangeNotifier {
-  User? _user;
+  AccountLogin? _user;
   final AuthService _authService = AuthService();
 
-  User? get user => _user;
+  AccountLogin? get user => _user;
 
   // Load user info on app start
   Future<void> loadUserInfo() async {
@@ -197,8 +199,13 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<AccountLogin?> getUserInfo() async {
+    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+    return AccountLogin(email: 'test@example.com', accessToken: 'token', refreshToken: 'refresh_token');
+  }
+
   // Save user info and notify listeners
-  Future<void> saveUser(User user) async {
+  Future<void> saveUser(AccountLogin user) async {
     _user = user;
     await _authService.saveUserInfo(user);
     notifyListeners();
@@ -210,4 +217,40 @@ class UserProvider with ChangeNotifier {
     await _authService.clearUserInfo();
     notifyListeners();
   }
+
+  // Check if user is logged in
+  bool isLoggedIn() {
+    return _user != null && !isTokenExpired();
+  }
+
+  // Check if token is expired
+  bool isTokenExpired() {
+    if (_user == null || _user!.accessToken.isEmpty) return true;
+    try {
+      return Jwt.isExpired(_user!.accessToken);
+    } catch (e) {
+      return true; // Treat invalid tokens as expired
+    }
+  }
+}
+
+class UserDataProvider {
+  final String apiUrl;
+  UserDataProvider({required this.apiUrl});
+  Future<User> fetchUser() async {
+    // final apiUrl = 'http://10.0.2.2:8000/user/?email=${email}';
+    final response = await http.get(Uri.parse(apiUrl));
+    if (response.statusCode == 200) {
+      final decodedJson = json.decode(utf8.decode(response.bodyBytes));
+      return User.fromJson(decodedJson);
+    } else {
+      throw Exception("Failed to load user");
+    }
+  }
+
+  Future<AccountLogin?> getUserInfo() async {
+    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+    return AccountLogin(email: 'test@example.com', accessToken: 'token', refreshToken: 'refresh_token');
+  }
+
 }
