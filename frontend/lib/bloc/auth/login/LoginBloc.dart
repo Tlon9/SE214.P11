@@ -5,18 +5,19 @@ import 'dart:convert';
 import 'package:travelowkey/bloc/auth/login/LoginState.dart';
 import 'package:travelowkey/bloc/auth/login/LoginEvent.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<SignInWithGoogle>(_handleGoogleSignIn);
   }
-
-  Future<void> _onLoginButtonPressed(
-      LoginButtonPressed event, Emitter<LoginState> emit) async {
+  final storage = FlutterSecureStorage();
+  Future<void> _onLoginButtonPressed(LoginButtonPressed event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
 
     try {
+      // await storage.delete(key: 'user_info');
       final response = await http.post(
         Uri.parse('http://10.0.2.2:8000/api/token/'),
         body: {
@@ -26,6 +27,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
 
       if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // bool hasToken = await storage.containsKey(key: 'email');
+        // if (hasToken) {
+        //   await storage.deleteAll();
+        // }
+        await storage.write(key: 'email', value: event.email.toString());
+        // Save access and refresh tokens
+        await storage.write(key: 'access_token', value: data['access']);
+        await storage.write(key: 'refresh_token', value: data['refresh']);
+        String? value = await storage.read(key: "email");
+        print(value.toString());
         emit(LoginSuccess());
       } else {
         emit(LoginFailure(error: 'Invalid credentials'));
@@ -34,6 +46,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(LoginFailure(error: error.toString()));
     }
   }
+
+  Future<Map<String, String?>> getUserInfo() async {
+    final email = await storage.read(key: 'email');
+    final accessToken = await storage.read(key: 'access_token');
+    final refreshToken = await storage.read(key: 'refresh_token');
+    return {'email': email, 'access': accessToken, 'refresh': refreshToken};
+  }
+
+  Future<void> logout() async {
+    await storage.deleteAll(); // Clear stored data
+  }
+
 
   static const List<String> scopes = <String>[
     'email',
@@ -48,6 +72,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<void> _handleGoogleSignIn(
       SignInWithGoogle event, Emitter<LoginState> emit) async {
     try {
+      // await storage.delete(key: 'user_info');
       final googleSignInAccount = await _googleSignIn.signIn();
       if (googleSignInAccount == null) {
         return; // User canceled the sign-in
@@ -66,7 +91,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
         if (response.statusCode == 200) {
           // Successfully authenticated; navigate to the home page
-          print("Login");
+          // bool hasToken = await storage.containsKey(key: 'email');
+          // if (hasToken) {
+          //   await storage.deleteAll();
+          // }
+          final data = json.decode(response.body);
+          await storage.write(key: 'email', value: data["email"].toString());
+          await storage.write(key: 'access_token', value: data['access']);
+          await storage.write(key: 'refresh_token', value: data['refresh']);
+          String? value = await storage.read(key: "email");
+          print(value.toString());
           emit(LoginSuccess());
         } else {
           // Handle authentication failure

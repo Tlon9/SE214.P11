@@ -33,3 +33,8 @@ class LoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Invalid login credentials")
+    
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'gender', 'birthdate', 'phone_number', 'nationality', 'passport_id', 'is_active', 'is_staff', 'is_superuser']
