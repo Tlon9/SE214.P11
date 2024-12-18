@@ -193,6 +193,8 @@ class HotelResultScreen extends StatelessWidget {
                                         child: HotelCard(
                                           hotel: hotel,
                                           customers: customers,
+                                          checkinDate: checkInDate,
+                                          checkoutDate: checkOutDate,
                                         ),
                                       );
                                     },
@@ -425,8 +427,10 @@ String formatPrice(String price) {
 class HotelCard extends StatelessWidget {
   final Hotel hotel;
   final int customers;
+  final DateTime checkinDate;
+  final DateTime checkoutDate;
 
-  const HotelCard({required this.hotel, required this.customers});
+  const HotelCard({required this.hotel, required this.customers, required this.checkinDate, required this.checkoutDate});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -435,9 +439,11 @@ class HotelCard extends StatelessWidget {
           context,
           '/room_result',
           arguments: {
-            'hotel_id': hotel.id_hotel.toString(),
+            'hotel': hotel as Hotel,
             'hotel_name': hotel.name,
             'customers': customers,
+            'checkInDate': checkinDate,
+            'checkOutDate': checkoutDate,
           },
         );
       },

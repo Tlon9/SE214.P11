@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import User, Passport
-from .serializers import UserRegistrationSerializer, LoginSerializer
+from .serializers import UserRegistrationSerializer, LoginSerializer, UserSerializer
 from django.contrib.auth import authenticate, login
 from rest_framework.permissions import IsAuthenticated 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -26,15 +26,20 @@ class RegisterUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
-class HelloView(APIView):
-    permission_classes = [IsAuthenticated]
+class UserInfoView(APIView):
 
-    def get(self, request, format=None):
-        content = {
-            'user': str(request.user),
-            'auth': str(request.auth),
-        }
-        return Response(content)
+    def get(self, request, *args, **kwargs):
+        email = request.query_params.get('email')  # Get email from query parameters
+        if not email:
+            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)  # Retrieve the user based on the email
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
     
 class GoogleLogin(APIView):
     def post(self, request):
@@ -62,9 +67,24 @@ class GoogleLogin(APIView):
             user.set_unusable_password()
             user.save()
         print(user.email)
-        return Response({"message": "Login successful", "user_id": user.id, "email": user.email}, status=status.HTTP_200_OK)
-
-
+        tokens = self.get_tokens_for_user(user)
+        # return Response({"message": "Login successful", "user_id": user.id, "email": user.email}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "Login successful",
+            "user_id": user.id,
+            "email": user.email,
+            "access": tokens['access'],
+            "refresh": tokens['refresh']
+        }, status=status.HTTP_200_OK)
+    def get_tokens_for_user(self, user):
+        """
+        Generate access and refresh tokens for a user.
+        """
+        refresh = RefreshToken.for_user(user)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
     def verify_google_id_token(self, id_token_string):
         """
         Verify the Google ID Token and return user info if the token is valid.
@@ -79,4 +99,3 @@ class GoogleLogin(APIView):
         
         except ValueError:
             return None
-    import requests

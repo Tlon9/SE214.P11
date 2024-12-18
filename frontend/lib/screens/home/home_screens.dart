@@ -3,6 +3,16 @@ import 'package:travelowkey/widgets/destination_card.dart';
 import 'package:travelowkey/widgets/destination_tab.dart';
 import 'package:travelowkey/widgets/badge.dart';
 import 'package:travelowkey/widgets/service_button.dart';
+import 'package:travelowkey/services/api_service.dart';
+// import 'package:user_registration/models/user_model.dart';
+import 'package:provider/provider.dart';
+import 'package:travelowkey/screens/profile/user_profile_screen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:travelowkey/widgets/destination_card.dart';
+import 'package:travelowkey/widgets/destination_tab.dart';
+import 'package:travelowkey/widgets/badge.dart';
+import 'package:travelowkey/widgets/service_button.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -248,9 +258,174 @@ class HistoryPage extends StatelessWidget {
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Profile Page'),
+    final userProvider = Provider.of<UserProvider>(context);
+    return FutureBuilder(future: userProvider.getUserInfo(), builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show a loading indicator while waiting
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          // Handle errors
+          return const Center(
+            child: Text(
+              'Đã xảy ra lỗi khi tải thông tin người dùng.',
+              style: TextStyle(fontSize: 16, color: Colors.red),
+            ),
+          );
+        }
+        else
+        {
+          bool checkUser = userProvider.user != null;
+          // print(userProvider.user?.email.toString());
+          // print(userProvider.user?.accessToken.toString());
+          // final user = context.watch<UserProvider>().user;
+          // Map<String, dynamic> decodedToken = JwtDecoder.decode(userProvider.user!.accessToken);
+
+          // Extract email
+          // String? email = decodedToken['email'];
+          return Scaffold(
+            backgroundColor: Colors.grey[200],
+            body: SingleChildScrollView(  // Allow scrolling
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blue, Colors.lightBlueAccent],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 40),
+                    child: Column(
+                      children: [
+                        const CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          checkUser ? userProvider.user?.email ?? 'User':'Guest',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Transform.translate(
+                    offset: Offset(0, -40.0),
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 8.0,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ListView(
+                        padding: const EdgeInsets.all(16.0),
+                        shrinkWrap: true, // Ensure ListView does not overflow
+                        children: [
+                          buildOptionTile(
+                            icon: Icons.credit_card,
+                            title: 'Thẻ của tôi',
+                            subtitle: 'Quản lý thẻ thanh toán',
+                            onTap: () {
+                              // Navigate to settings or perform any action here
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => UserProfilePage()), // Example navigation
+                              // );
+                            },
+                          ),
+                          buildOptionTile(
+                            icon: Icons.percent,
+                            title: 'Mã giảm giá',
+                            subtitle: 'Xem danh sách mã giảm giá',
+                            onTap: () {
+                              // Navigate to settings or perform any action here
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => UserProfilePage()), // Example navigation
+                              // );
+                            },
+                          ),
+                          buildOptionTile(
+                            icon: Icons.settings,
+                            title: 'Cài đặt',
+                            subtitle: 'Tuỳ chỉnh cài đặt cho tài khoản',
+                            onTap: () {
+                              // Navigate to settings or perform any action here
+                              // Navigator.pushNamed(
+                              //     context,
+                              //     '/user_profile',
+                              //     arguments: {
+                              //       'hotel': hotel as Hotel,
+                              //     },
+                              //   );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => UserProfilePage()), // Example navigation
+                              );
+                            },
+                          ),
+                          buildOptionTile(
+                            icon: Icons.help,
+                            title: 'Trung tâm hỗ trợ',
+                            subtitle: 'Giải đáp thắc mắc',
+                            onTap: () {
+                              // Navigate to settings or perform any action here
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => UserProfilePage()), // Example navigation
+                              // );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      }
+    );
+  }
+  Widget buildOptionTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12.0),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.grey[700]),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(subtitle),
+        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        onTap: onTap, // Add your action here
       ),
     );
   }
