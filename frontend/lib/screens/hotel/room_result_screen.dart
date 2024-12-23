@@ -32,7 +32,7 @@ class RoomResultScreen extends StatelessWidget {
       'customers': customers.toString(),
     };
     final apiUrl =
-        'http://10.0.2.2:8008/hotels/results_room?Hotel_id=${Uri.encodeComponent(searchInfo['hotel_id']!)}';
+        'http://10.0.2.2:8008/hotels/results_room?Hotel_id=${Uri.encodeComponent(searchInfo['hotel_id']!)}&checkInDate=${Uri.encodeComponent(checkInDate.toString().substring(0, 10))}&checkOutDate=${Uri.encodeComponent(checkOutDate.toString().substring(0, 10))}';
 
     return BlocProvider(
         create: (context) => RoomResultBloc(

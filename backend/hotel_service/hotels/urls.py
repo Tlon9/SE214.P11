@@ -6,4 +6,7 @@ urlpatterns = [
     # path('addHotel', addFlight.as_view(), name='addFlight'),
     path('results', getHotels.as_view(), name='getHotels'),
     path('results_room', getRooms.as_view(), name='getRooms'),
+    path('initializeState', initializeState.as_view(), name='initializeState'),
+    path('updateRoom', updateRoom.as_view(), name='updateRoom'),
+    path('getRoom', getRoom.as_view(), name='getRoom'),
 ]

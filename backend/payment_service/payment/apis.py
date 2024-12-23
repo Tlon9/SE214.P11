@@ -29,6 +29,7 @@ def create_payment(request):
             # Save the transaction with PENDING status
             transaction = {
                 '_id': transaction_id,
+                'service': data['service'],
                 'info': data['info'],
                 'amount': data['amount'],
                 'type': data['type'],
@@ -37,7 +38,7 @@ def create_payment(request):
             }
             transaction_collection.insert_one(transaction)
 
-            # Set a timeout to auto-update after 15 seconds
+            # Set a timeout to auto-update after 50 seconds
             Timer(5, auto_update, args=(transaction_id,)).start()
 
             return JsonResponse({'url': response['payUrl'], 'transaction_id': transaction_id})
@@ -50,9 +51,16 @@ def get_transaction(request,transaction_id):
     transaction = transaction_collection.find_one({'_id': transaction_id}, {'_id': 0,'type': 0,'status': 0})
     return JsonResponse(transaction)
    
-def get_qr_code(request, transaction_id):
+def get_qr_code(request):
+    transaction_id = request.GET.get('transactionId')
+    service = request.GET.get('service')
+    # print('transaction_id:',transaction_id)
+    # print('service:',service)
+    if service == 'flight':
     # Construct the file path
-    file_name = f"flight_{transaction_id}.png"  # Assuming QR codes are saved as PNG
+        file_name = f"flight_{transaction_id}.png"  # Assuming QR codes are saved as PNG
+    else:
+        file_name = f"hotel_{transaction_id}.png"
     file_path = os.path.join(settings.MEDIA_ROOT, file_name)  # Adjust subdirectory as needed
 
     # Check if the file exists
@@ -69,7 +77,7 @@ def auto_update(transaction_id):
     transaction = transaction_collection.find_one({'_id': transaction_id})
     if transaction['status'] == 'PENDING':
         # Call the payment_callback endpoint
-        callback_url = f"http://127.0.0.1:8080/payment/callback/?orderId={transaction_id}&message=Successful.&orderInfo={transaction['info']}"
+        callback_url = f"http://127.0.0.1:8080/payment/callback/?service={transaction['service']}&orderId={transaction_id}&message=Successful.&orderInfo={transaction['info']}"
         try:
             requests.get(callback_url)
         except Exception as e:

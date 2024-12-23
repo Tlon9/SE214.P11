@@ -38,9 +38,10 @@ class PaymentScreen extends StatelessWidget {
       ]
     };
     final Map<String, dynamic> paymentInfo = {
+      'service': 'flight',
       'type': 'atm',
       'amount': (flight.price ?? 0) * (passengers ?? 0),
-      'info': 'flight-${flight.flightId}-${passengers}',
+      'info': '${flight.flightId}-${passengers}',
       'extraData': '',
     };
     return BlocProvider(
@@ -272,12 +273,14 @@ class PaymentScreen extends StatelessWidget {
                         json.decode(utf8.decode(statusResponse.bodyBytes));
                     final status = statusData['status'];
 
-                    if (status != 'PENDING' || trial_count > 7) {
+                    if (status != 'PENDING' || trial_count > 2) {
                       timer.cancel();
                       if (status == 'SUCCESS') {
                         // Navigate to the next screen
-                        Navigator.pushNamed(context, '/invoice',
-                            arguments: {'transactionId': transactionId});
+                        Navigator.pushNamed(context, '/invoice', arguments: {
+                          'transactionId': transactionId,
+                          'service': 'flight'
+                        });
                       } else {
                         // Handle failure
                         ScaffoldMessenger.of(context).showSnackBar(
