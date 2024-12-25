@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:travelowkey/models/hotel_model.dart';
 import 'package:travelowkey/models/room_model.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
 import 'package:travelowkey/widgets/submit_button.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +13,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travelowkey/bloc/hotel/hotel_payment/HotelPaymentEvent.dart';
 import 'package:travelowkey/bloc/hotel/hotel_payment/HotelPaymentState.dart';
 import 'package:travelowkey/bloc/hotel/hotel_payment/HotelPaymentBloc.dart';
+import 'package:provider/provider.dart';
+
+Future<http.Response> fetchQRCode(String transactionId, String service) async {
+  final url = Uri.parse(
+      'http://10.0.2.2:8080/payment/qr_code?transactionId=${transactionId}&service=${service}');
+  final response = await http.get(url);
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to load QR code: ${response.statusCode}');
+  }
+}
 
 class HotelPaymentScreen extends StatelessWidget {
   final Hotel hotel;
@@ -37,6 +51,7 @@ class HotelPaymentScreen extends StatelessWidget {
           '${hotel.id_hotel}_${room.room_id}_${checkInDate.toIso8601String().substring(0, 10)}_${checkOutDate.toIso8601String().substring(0, 10)}',
       'extraData': '',
     };
+    final _storage = const FlutterSecureStorage();
     return BlocProvider(
       create: (_) => PaymentBloc()..add(LoadPaymentMethods()),
       child: Scaffold(
@@ -244,53 +259,110 @@ class HotelPaymentScreen extends StatelessWidget {
             SubmitButton(
               label: 'Thanh toán',
               onTap: () async {
-                final response = await http.post(
-                  Uri.parse('http://10.0.2.2:8080/payment/create/'),
-                  body: json.encode(paymentInfo),
-                  headers: {'Content-Type': 'application/json'},
-                );
-                final data = json.decode(utf8.decode(response.bodyBytes));
-                final transactionId = data['transaction_id'];
-                if (data['url'] != null) {
-                  final url = Uri.parse(data['url']);
-                  if (!await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  )) {
-                    throw Exception('Could not launch $url');
-                  }
-                  int trial_count = 0;
-                  // Polling for status updates
-                  Timer.periodic(Duration(seconds: 5), (timer) async {
-                    trial_count++;
-                    final statusResponse = await http.get(
-                      Uri.parse(
-                          'http://10.0.2.2:8080/payment/status/$transactionId/'),
-                    );
-                    final statusData =
-                        json.decode(utf8.decode(statusResponse.bodyBytes));
-                    final status = statusData['status'];
+                final userJson = await _storage.read(key: 'user_info');
+                if (userJson != null) {
+                  final accessToken =
+                      AccountLogin.fromJson(jsonDecode(userJson!)).accessToken;
 
-                    if (status != 'PENDING' || trial_count > 2) {
-                      timer.cancel();
-                      if (status == 'SUCCESS') {
-                        // Navigate to the next screen
-                        Navigator.pushNamed(context, '/invoice', arguments: {
-                          'transactionId': transactionId,
-                          'service': 'hotel'
-                        });
+                  final response = await http.post(
+                    Uri.parse('http://10.0.2.2:8080/payment/create/'),
+                    body: json.encode(paymentInfo),
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': "Bearer ${accessToken}",
+                    },
+                  );
+
+                  if (response.statusCode == 200) {
+                    final data = json.decode(utf8.decode(response.bodyBytes));
+                    final transactionId = data['transaction_id'];
+                    if (data['url'] != null) {
+                      if (data['url'] != 'QR_code') {
+                        final url = Uri.parse(data['url']);
+                        if (!await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        )) {
+                          throw Exception('Could not launch $url');
+                        }
                       } else {
-                        // Handle failure
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Payment failed'),
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text("Quét QR thanh toán"),
+                            content: FutureBuilder<http.Response>(
+                              future: fetchQRCode(transactionId, 'qr'),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                } else if (snapshot.hasData) {
+                                  // Decode the image and display it
+                                  return SizedBox(
+                                    width: 200,
+                                    height: 200,
+                                    child:
+                                        Image.memory(snapshot.data!.bodyBytes),
+                                  );
+                                } else {
+                                  return Center(
+                                      child:
+                                          Text('Unexpected error occurred.'));
+                                }
+                              },
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("Hoàn tất"),
+                              ),
+                            ],
                           ),
                         );
                       }
+                      int trial_count = 0;
+                      // Polling for status updates
+                      Timer.periodic(Duration(seconds: 5), (timer) async {
+                        trial_count++;
+                        final statusResponse = await http.get(
+                          Uri.parse(
+                              'http://10.0.2.2:8080/payment/status/$transactionId/'),
+                        );
+                        final statusData =
+                            json.decode(utf8.decode(statusResponse.bodyBytes));
+                        final status = statusData['status'];
+
+                        if (status != 'PENDING' || trial_count > 3) {
+                          timer.cancel();
+                          if (status == 'SUCCESS') {
+                            // Navigate to the next screen
+                            Navigator.pushNamed(context, '/invoice',
+                                arguments: {
+                                  'transactionId': transactionId,
+                                  'service': 'hotel'
+                                });
+                          } else {
+                            // Handle failure
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Payment failed'),
+                              ),
+                            );
+                          }
+                        }
+                      });
+                    } else {
+                      throw Exception('Failed to make payment');
                     }
-                  });
+                  } else {
+                    throw Exception('Failed to make payment');
+                  }
                 } else {
-                  throw Exception('URL is null');
+                  Navigator.pushNamed(context, '/login');
                 }
               },
             ),

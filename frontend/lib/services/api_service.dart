@@ -11,6 +11,7 @@ import 'package:travelowkey/models/accountLogin_model.dart';
 import 'package:travelowkey/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:travelowkey/models/paymentHistory_model.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;
@@ -257,6 +258,32 @@ class UserDataProvider {
         email: 'test@example.com',
         accessToken: 'token',
         refreshToken: 'refresh_token');
+  }
+}
+
+class PaymentDataProvider {
+  final apiUrl = 'http://10.0.2.2:8080/payment/history';
+  final _storage = const FlutterSecureStorage();
+  PaymentDataProvider();
+
+  Future<List<PaymentHistory>> fetchPaymentHistory() async {
+    final userJson = await _storage.read(key: 'user_info');
+    final accessToken =
+        AccountLogin.fromJson(jsonDecode(userJson!)).accessToken;
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        "Authorization": "Bearer $accessToken",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> decodedJson =
+          json.decode(utf8.decode(response.bodyBytes));
+      return decodedJson.map((json) => PaymentHistory.fromJson(json)).toList();
+    } else {
+      throw Exception("Failed to load payment history");
+    }
   }
 }
 

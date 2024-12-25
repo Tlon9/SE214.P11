@@ -1,10 +1,12 @@
 # services.py
 import hmac
 import hashlib
-import json
+import qrcode
+from io import BytesIO
 import requests
 import uuid
 from django.conf import settings
+from django.http import JsonResponse
 
 class MomoService:
     @staticmethod
@@ -16,36 +18,57 @@ class MomoService:
         ).hexdigest()
 
     def create_qr_payment(self, order_info):
-        momo_api = settings.MOMO_API
         order_id = str(uuid.uuid4())
         request_id = str(uuid.uuid4())
-        
-        raw_data = (
-            f"partnerCode={momo_api['PartnerCode']}&accessKey={momo_api['AccessKey']}"
-            f"&requestId={request_id}&amount={order_info['amount']}&orderId={order_id}"
-            f"&orderInfo={order_info['info']}&returnUrl={momo_api['ReturnUrl']}"
-            f"&notifyUrl={momo_api['NotifyUrl']}&extraData="
+        save_path = settings.MEDIA_ROOT
+        qr_content = f'requestId={request_id}&orderId={order_id}&amount={order_info['amount']}'
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
         )
-        print("raw_data:",raw_data)
-        signature = self.compute_hmac_sha256(raw_data, momo_api['SecretKey'])
+        qr.add_data(qr_content)
+        qr.make(fit=True)
+        img = qr.make_image(fill='black', back_color='white')
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        file_name = f"qr_{order_id}.png"
+        # Save the QR code image to the server
+        with open(f"{save_path}/{file_name}", "wb") as f:
+            f.write(buffer.getvalue())
+        return {'orderId': order_id}
+        # momo_api = settings.MOMO_API
+        # order_id = str(uuid.uuid4())
+        # request_id = str(uuid.uuid4())
+        
+        # raw_data = (
+        #     f"partnerCode={momo_api['PartnerCode']}&accessKey={momo_api['AccessKey']}"
+        #     f"&requestId={request_id}&amount={order_info['amount']}&orderId={order_id}"
+        #     f"&orderInfo={order_info['info']}&returnUrl={momo_api['ReturnUrl']}"
+        #     f"&notifyUrl={momo_api['NotifyUrl']}&extraData="
+        # )
+        # print("raw_data:",raw_data)
+        # signature = self.compute_hmac_sha256(raw_data, momo_api['SecretKey'])
 
-        payload = {
-            "partnerCode": momo_api['PartnerCode'],
-            "accessKey": momo_api['AccessKey'],
-            "requestType": momo_api['RequestType'],
-            "notifyUrl": momo_api['NotifyUrl'],
-            "returnUrl": momo_api['ReturnUrl'],
-            "orderId": order_id,
-            "amount": order_info['amount'],
-            "orderInfo": order_info['info'],
-            "requestId": request_id,
-            "extraData": "",
-            "signature": signature
-        }
-
-        response = requests.post(momo_api['MomoApiUrl'], json=payload)
-        print(response.json())
-        return response.json()
+        # payload = {
+        #     "partnerCode": momo_api['PartnerCode'],
+        #     "accessKey": momo_api['AccessKey'],
+        #     "requestType": momo_api['RequestType'],
+        #     "notifyUrl": momo_api['NotifyUrl'],
+        #     "returnUrl": momo_api['ReturnUrl'],
+        #     "orderId": order_id,
+        #     "amount": order_info['amount'],
+        #     "orderInfo": order_info['info'],
+        #     "requestId": request_id,
+        #     "extraData": order_info['extraData'],
+        #     "signature": signature
+        # }
+        # print("payload:",payload)
+        # return payload
+        # # response = requests.post(momo_api['MomoApiUrl'], json=payload)
+        # # print(response.json())
+        # return response.json()
     
     def create_atm_payment(self, order_info):
         momo_api = settings.MOMO_API
@@ -77,5 +100,5 @@ class MomoService:
         }
         # Make API Request
         response = requests.post("https://test-payment.momo.vn/v2/gateway/api/create", json=payload)
-        print(response.json())
+        # print(response.json())
         return response.json()

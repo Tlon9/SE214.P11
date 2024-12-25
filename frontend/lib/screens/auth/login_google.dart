@@ -23,7 +23,8 @@ class _GoogleSignInScreenState extends State<LoginScreen_Google> {
   ];
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: scopes,
-    serverClientId: '366589839768-l9sbovdpodu1nm7f3hjkivm4e5eq4qou.apps.googleusercontent.com', // Replace with your Google web client ID
+    serverClientId:
+        '366589839768-l9sbovdpodu1nm7f3hjkivm4e5eq4qou.apps.googleusercontent.com', // Replace with your Google web client ID
   );
   // final String redirectUri = 'com.example.user_registration:/oauth2redirect';
   // final String clientId = '366589839768-u3472o7paifiiot4dsjra7m1pdeddo5c.apps.googleusercontent.com';
@@ -34,15 +35,16 @@ class _GoogleSignInScreenState extends State<LoginScreen_Google> {
         return; // User canceled the sign-in
       }
 
-      final googleSignInAuthentication = await googleSignInAccount.authentication;
+      final googleSignInAuthentication =
+          await googleSignInAccount.authentication;
       final idToken = googleSignInAuthentication.idToken;
       final accessToken = googleSignInAuthentication.accessToken;
       print(idToken);
       if (idToken != null) {
         // Send the ID token to your Django backend for verification
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/auth/login/google'),
-          body: jsonEncode({'id_token': idToken,'access_token':accessToken}),
+          Uri.parse('http://10.0.2.2:8800/auth/login/google'),
+          body: jsonEncode({'id_token': idToken, 'access_token': accessToken}),
           headers: {'Content-Type': 'application/json'},
         );
         if (response.statusCode == 200) {

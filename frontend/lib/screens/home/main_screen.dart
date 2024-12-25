@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:travelowkey/screens/home/home_screens.dart';
+import 'package:travelowkey/bloc/payment/payment_history/PaymentHistoryBloc.dart';
+import 'package:travelowkey/repositories/paymentHistory_repository.dart';
+import 'package:travelowkey/services/api_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -37,7 +41,14 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           HomePage(),
           ExplorePage(),
-          HistoryPage(),
+          BlocProvider(
+            create: (context) => PaymentHistoryBloc(
+              repository: PaymentHistoryRepository(
+                dataProvider: PaymentDataProvider(),
+              ),
+            ),
+            child: HistoryPage(),
+          ),
           ProfilePage(),
         ],
       ),
