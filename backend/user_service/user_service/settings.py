@@ -65,10 +65,12 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication', 
+        'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication'
     ],
     'NON_FIELD_ERRORS_KEY': 'global_errors',
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        # 'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 AUTHENTICATION_BACKENDS = (
@@ -78,7 +80,7 @@ AUTHENTICATION_BACKENDS = (
 AUTH_USER_MODEL = 'users.User'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -150,7 +152,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mydb',
         'USER': 'root',
-        'PASSWORD': '123456789',
+        'PASSWORD': '123456',
         'HOST': 'localhost',  # Or your MySQL server
         'PORT': '3306',       # Default MySQL port
     }
@@ -219,7 +221,7 @@ SOCIAL_AUTH_GOOGLE_CLIENT_ID = '366589839768-l9sbovdpodu1nm7f3hjkivm4e5eq4qou.ap
 SOCIAL_AUTH_GOOGLE_SECRET = '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'
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='366589839768-l9sbovdpodu1nm7f3hjkivm4e5eq4qou.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
-SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://localhost:8000/complete/google-oauth2/'
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://localhost:8800/complete/google-oauth2/'
 
 
 # Static files (CSS, JavaScript, Images)

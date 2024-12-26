@@ -39,8 +39,8 @@ class HotelResultScreen extends StatelessWidget {
     return BlocProvider(
         create: (context) => HotelResultBloc(
             repository: HotelResultRepository(
-                dataProvider: HotelResultDataProvider(
-                    ))) // Pass the apiUrl to the data provider
+                dataProvider:
+                    HotelResultDataProvider())) // Pass the apiUrl to the data provider
           ..add(
             LoadHotelResults(
               searchInfo: searchInfo,
@@ -103,7 +103,8 @@ class HotelResultScreen extends StatelessWidget {
                                 Text("Bộ lọc", style: TextStyle(fontSize: 20)),
                             onPressed: () async {
                               // Open filter options and send event to bloc
-                              final filterOption = await showFilterDialog(context);
+                              final filterOption =
+                                  await showFilterDialog(context);
                               if (filterOption != null) {
                                 // print(filterOption);
                                 BlocProvider.of<HotelResultBloc>(context).add(
@@ -172,20 +173,25 @@ class HotelResultScreen extends StatelessWidget {
                                   onEndOfPage: () async {
                                     await Future.delayed(Duration(seconds: 2));
                                     // Trigger loading more hotels on reaching the end
-                                    BlocProvider.of<HotelResultBloc>(context).add(LoadMoreHotels(
+                                    BlocProvider.of<HotelResultBloc>(context)
+                                        .add(LoadMoreHotels(
                                       searchInfo: searchInfo,
                                       // offset: currentState.offset!,
                                     ));
                                   },
                                   child: ListView.builder(
-                                    padding: EdgeInsets.only(bottom: 10), // Padding at the bottom to avoid content touching the bottom
+                                    padding: EdgeInsets.only(
+                                        bottom:
+                                            10), // Padding at the bottom to avoid content touching the bottom
                                     itemCount: state.hotels.length,
                                     itemBuilder: (context, index) {
                                       final hotel = state.hotels[index];
                                       return Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 8.0), // Padding around each hotel card
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical:
+                                                8.0), // Padding around each hotel card
                                         child: HotelCard(
-                                          hotel: hotel, 
+                                          hotel: hotel,
                                           customers: customers,
                                           checkinDate: checkInDate,
                                           checkoutDate: checkOutDate,
@@ -211,7 +217,6 @@ class HotelResultScreen extends StatelessWidget {
         ));
   }
 }
-
 
 Future<Map<String, dynamic>?> showFilterDialog(BuildContext context) async {
   final TextEditingController minPriceController = TextEditingController();
@@ -292,7 +297,8 @@ Future<Map<String, dynamic>?> showFilterDialog(BuildContext context) async {
                         } else {
                           selectedStars.add(starCount);
                         }
-                        (context as Element).markNeedsBuild(); // Trigger rebuild
+                        (context as Element)
+                            .markNeedsBuild(); // Trigger rebuild
                       },
                       child: Column(
                         children: [
@@ -322,7 +328,8 @@ Future<Map<String, dynamic>?> showFilterDialog(BuildContext context) async {
                           const SizedBox(height: 4),
                           Text(
                             "(${(100 / starCount).toInt()})", // Example count
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -467,7 +474,8 @@ class HotelCard extends StatelessWidget {
                     return Container(
                       width: double.infinity,
                       height: 120,
-                      color: Colors.grey, // Background color for the placeholder
+                      color:
+                          Colors.grey, // Background color for the placeholder
                       child: Icon(
                         Icons.broken_image,
                         color: Colors.white,
@@ -510,7 +518,8 @@ class HotelCard extends StatelessWidget {
                       children: [
                         Icon(Icons.location_on, size: 20, color: Colors.grey),
                         SizedBox(width: 5),
-                        Expanded( // Wrap the Text in an Expanded to constrain it
+                        Expanded(
+                          // Wrap the Text in an Expanded to constrain it
                           child: Text(
                             "${hotel.address.toString()}",
                             style: TextStyle(
@@ -530,7 +539,7 @@ class HotelCard extends StatelessWidget {
 
                     Align(
                       alignment: Alignment.centerRight, // Price
-                      child:Text(
+                      child: Text(
                         "VND ${formatPrice(hotel.price.toString())}",
                         style: TextStyle(
                           fontSize: 16,

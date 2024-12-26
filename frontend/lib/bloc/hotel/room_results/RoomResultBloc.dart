@@ -12,10 +12,13 @@ class RoomResultBloc extends Bloc<RoomResultEvent, RoomResultState> {
     on<ApplySort>(_onApplySort);
   }
 
-  Future<void> _onLoadRoomResults(LoadRoomResults event, Emitter<RoomResultState> emit) async {
+  Future<void> _onLoadRoomResults(
+      LoadRoomResults event, Emitter<RoomResultState> emit) async {
     emit(RoomResultLoading());
     try {
-      final rooms = await repository.fetchRooms(searchInfo: event.searchInfo,);
+      final rooms = await repository.fetchRooms(
+        searchInfo: event.searchInfo,
+      );
       emit(RoomResultLoaded(rooms: rooms));
     } catch (e) {
       print(e.toString());
@@ -23,7 +26,8 @@ class RoomResultBloc extends Bloc<RoomResultEvent, RoomResultState> {
     }
   }
 
-  Future<void> _onApplyFilter( ApplyFilter event, Emitter<RoomResultState> emit) async {
+  Future<void> _onApplyFilter(
+      ApplyFilter event, Emitter<RoomResultState> emit) async {
     if (state is RoomResultLoaded) {
       final currentState = state as RoomResultLoaded;
       emit(RoomResultLoading());
@@ -44,7 +48,8 @@ class RoomResultBloc extends Bloc<RoomResultEvent, RoomResultState> {
     }
   }
 
-  Future<void> _onApplySort(ApplySort event, Emitter<RoomResultState> emit) async {
+  Future<void> _onApplySort(
+      ApplySort event, Emitter<RoomResultState> emit) async {
     if (state is RoomResultLoaded) {
       final currentState = state as RoomResultLoaded;
       emit(RoomResultLoading());

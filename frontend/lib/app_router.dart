@@ -104,8 +104,10 @@ class AppRouter {
       case '/invoice':
         final args = settings.arguments as Map<String, dynamic>;
         final transactionId = args['transactionId'] as String;
+        final service = args['service'] as String;
         return MaterialPageRoute(
-          builder: (_) => InvoiceScreen(transactionId: transactionId),
+          builder: (_) =>
+              InvoiceScreen(transactionId: transactionId, service: service),
         );
       default:
         return MaterialPageRoute(builder: (_) => MainScreen());

@@ -17,7 +17,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/user/signup'),
+        Uri.parse('http://10.0.2.2:8800/user/signup'),
         body: {
           'email': event.email,
           'username': event.fullname,
@@ -62,7 +62,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       if (idToken != null) {
         // Send the ID token to your Django backend for verification
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/auth/login/google'),
+          Uri.parse('http://10.0.2.2:8800/auth/login/google'),
           body: jsonEncode({'id_token': idToken, 'access_token': accessToken}),
           headers: {'Content-Type': 'application/json'},
         );
