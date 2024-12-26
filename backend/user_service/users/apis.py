@@ -17,27 +17,27 @@ from google.auth import jwt
 from google.auth.transport.requests import Request
 from django.contrib.auth import get_user_model
 import requests
+from datetime import datetime
 
 class RegisterUserView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class UserInfoView(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
         if not request.user.is_authenticated:
-            print("1111")
             return Response(
                 {'error': 'User is not authenticated.'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
         user = request.user
-        # print(user.username + "1111")
         # passport = user.passport_id
         user_info = {
             'id': user.id,
@@ -51,6 +51,7 @@ class UserInfoView(APIView):
             # 'nation': passport.nation if passport else None,
             # 'expiration': passport.expiration if passport else None,
         }
+        print(user.password)
         return Response(user_info, status=status.HTTP_200_OK)
     # permission_classes = [AllowAny]
 
@@ -78,8 +79,60 @@ class TokenVerifyView(APIView):
             return Response({"valid": True}, status=200)
         except Exception as e:
             return Response({"valid": False, "error": str(e)}, status=400)
+        
+class UpdateUserInfoView(APIView):
+    permission_classes = [AllowAny]
+
+    def put(self, request):
+        user = request.user
+        data = request.data
+        # print(data)
+
+        # Update fields directly
+        username = data.get('username', user.username)
+        phone_number = data.get('phoneNumber', user.phone_number)
+        email = data.get('email', user.email)
+        gender = data.get('gender', user.gender)
+        # nationality = data.get('nationality', user.nationality)
+        # passport_id = data.get('passport_id', user.passport_id)
+
+        # Convert birthdate from string to date object
+        birthdate = data.get('birthDate', user.birthdate)
+        print(data.get('birthDate'))
+        if birthdate:
+            try:
+                birthdate = datetime.strptime(birthdate, "%Y-%m-%d").date()
+            except ValueError:
+                return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update user fields
+        user.username = username
+        user.phone_number = phone_number
+        user.email = email
+        user.gender = gender
+        # user.nationality = nationality
+        # user.passport_id = passport_id
+        user.birthdate = birthdate
+
+        # Save the user object
+        user.save()
+
+        # Construct response
+        response_data = {
+            "username": user.username,
+            "phone_number": user.phone_number,
+            "email": user.email,
+            # "birthdate": user.birthdate.strftime("%Y-%m-%d") if user.birthdate else None,
+            "birthdate":user.birthdate,
+            "gender": user.gender,
+            "nationality": user.nationality,
+            "passport_id": user.passport_id,
+        }
+
+        return Response({"message": "User info updated successfully", "user": response_data}, status=status.HTTP_200_OK)
     
 class GoogleLogin(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         access_token = request.data.get("access_token")
         id_token = request.data.get("id_token")
@@ -97,6 +150,7 @@ class GoogleLogin(APIView):
         
         google_id = user_info.get("sub")
         email = user_info.get("email")
+        print(email)
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:

@@ -38,7 +38,7 @@ class UserProfilePage extends StatelessWidget {
           }
           // isLoggedIn = false;
           else {print("error isLoggedIn");}
-          final apiUrl = 'http://10.0.2.2:8000/user/';
+          final apiUrl = 'http://10.0.2.2:8800/user/';
           return BlocProvider(
             create: (context) => UserProfileBloc(repository: UserResultRepository(dataProvider: UserDataProvider(apiUrl: apiUrl, accessToken: userProvider.user!.accessToken)))..add(LoadUserProfile()),
             child: Builder(
@@ -72,7 +72,6 @@ class UserProfilePage extends StatelessWidget {
                         } else if (state is UserProfileLoaded) {
                         TextEditingController usernameController = TextEditingController(text: state.user.username);
                         TextEditingController genderController = TextEditingController(text: state.user.gender);
-                        // TextEditingController birthDateController = TextEditingController(text: state.user.birthDate);
                         TextEditingController phoneNumberController = TextEditingController(text: state.user.phoneNumber);
                         TextEditingController emailController = TextEditingController(text: state.user.email);
                         String selectedDate = state.user.birthDate;
@@ -115,8 +114,8 @@ class UserProfilePage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      _buildInfoRow('Tên đầy đủ', usernameController.text),
-                                      _buildInfoRow('Giới tính', genderController.text),
+                                      _buildInfoRow('Tên đầy đủ', usernameController.text, usernameController),
+                                      _buildInfoRow('Giới tính', genderController.text, genderController),
                                       // _buildInfoRow('Ngày Sinh', birthDateController.text),
                                       _buildDatePickerRow(
                                         context,
@@ -129,30 +128,30 @@ class UserProfilePage extends StatelessWidget {
                                                 .add(SelectBirthDate(newDate));
                                         },
                                       ),
-                                      _buildInfoRow('SĐT', phoneNumberController.text),
+                                      _buildInfoRow('SĐT', phoneNumberController.text, phoneNumberController),
                                       // _buildInfoRow('Địa chỉ', state.user.),
-                                      _buildInfoRow('Email', emailController.text),
-                                      // const SizedBox(height: 16),
-                                      // ElevatedButton(
-                                      //   onPressed: () {
-                                      //     // Trigger update user info event
-                                      //     BlocProvider.of<UserProfileBloc>(context).add(
-                                      //       UpdateUserProfile(
-                                      //         username: usernameController.text,
-                                      //         gender: genderController.text,
-                                      //         birthDate: selectedDate,
-                                      //         phoneNumber: phoneNumberController.text,
-                                      //         email: emailController.text,
-                                      //       ),
-                                      //     );
-                                      //     ScaffoldMessenger.of(context).showSnackBar(
-                                      //       const SnackBar(
-                                      //         content: Text('Thông tin đã được cập nhật.'),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      //   child: const Text('CẬP NHẬT'),
-                                      // ),
+                                      _buildInfoRow('Email', emailController.text, emailController),
+                                      const SizedBox(height: 16),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          // Trigger update user info event
+                                          BlocProvider.of<UserProfileBloc>(context).add(
+                                            UpdateUserProfile(
+                                              username: usernameController.text,
+                                              gender: genderController.text,
+                                              birthDate: selectedDate,
+                                              phoneNumber: phoneNumberController.text,
+                                              email: emailController.text,
+                                            ),
+                                          );
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Thông tin đã được cập nhật.'),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text('CẬP NHẬT'),
+                                      ),
                                       const SizedBox(height: 16),
                                       const Text(
                                         'Thay đổi mật khẩu',
@@ -215,7 +214,7 @@ class UserProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -239,7 +238,13 @@ class UserProfilePage extends StatelessWidget {
                 color: Colors.black, // Black text color for the input
                 fontSize: 16,
               ),
-              // onChanged: onChanged,
+              onChanged: (newValue) {
+                // Update the controller value when text changes
+                controller.text = newValue;
+                controller.selection = TextSelection.fromPosition(
+                  TextPosition(offset: controller.text.length),
+                );
+              },
             ),
           ),
           ],

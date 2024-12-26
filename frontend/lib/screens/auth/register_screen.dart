@@ -18,6 +18,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool isUsernameValid = false;
   bool isPwValid = false;
 
+  Future<void> fetchUserInfoAndNavigate(BuildContext context) async {
+    try {
+      // Navigate to the main screen
+      Navigator.pushNamed(
+        context,
+        '/login',
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to register: $error')),
+      );
+    }
+  }
+
   Widget build(BuildContext context) {
     double topContainerHeight = 250.0;
 
@@ -81,10 +95,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               SnackBar(content: Text(state.error)),
                             );
                           } else if (state is RegistrationSuccess) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text("Registration Successful!")),
-                            );
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(
+                            //       content: Text("Registration Successful!")),
+                            // );
+                            fetchUserInfoAndNavigate(context);
                           }
                         },
                         child: BlocBuilder<RegistrationBloc, RegistrationState>(

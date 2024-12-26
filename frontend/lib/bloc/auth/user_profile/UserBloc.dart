@@ -15,27 +15,27 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     });
 
     on<UpdateUserProfile>((event, emit) async {
-  if (state is UserProfileLoaded) {
-        // final currentState = state as UserProfileLoaded;
+      if (state is UserProfileLoaded) {
+            final currentState = state as UserProfileLoaded;
 
-        // // Create updated User instance
-        // final updatedUser = currentState.user.copyWith(
-        //   username: event.username,
-        //   gender: event.gender,
-        //   phoneNumber: event.phoneNumber,
-        //   email: event.email,
-        //   birthDate: event.birthDate,
-        // );
+            // Create updated User instance
+            final updatedUser = currentState.copyWithUser(
+              username: event.username,
+              gender: event.gender,
+              phoneNumber: event.phoneNumber,
+              email: event.email,
+              birthDate: event.birthDate,
+            );
 
-        // try {
-        //   // Call the repository to update user info
-        //   await repository.updateUser(updatedUser);
+            try {
+              // Call the repository to update user info
+              await repository.updateUser(updatedUser);
 
-        //   // Emit the updated state
-        //   emit(UserProfileLoaded(updatedUser));
-        // } catch (e) {
-        //   emit(UserProfileFailure('Failed to update user info: $e'));
-        // }
+              // Emit the updated state
+              emit(UserProfileLoaded(updatedUser));
+            } catch (e) {
+              emit(UserProfileFailure('Failed to update user info: $e'));
+            }
       }
     });
 

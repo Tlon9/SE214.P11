@@ -13,9 +13,7 @@ class HotelSearchBloc extends Bloc<HotelSearchEvent, HotelSearchState> {
       try {
         final data = await repository.getHotelSearchData();
         emit(HotelSearchDataLoaded(
-          areas: data.areas,
-          customerCounts: data.customerCounts
-        ));
+            areas: data.areas, customerCounts: data.customerCounts));
       } catch (e) {
         emit(HotelSearchInitial()); // handle error state if needed
       }

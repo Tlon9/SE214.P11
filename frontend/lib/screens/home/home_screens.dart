@@ -6,13 +6,24 @@ import 'package:travelowkey/widgets/service_button.dart';
 import 'package:travelowkey/services/api_service.dart';
 // import 'package:user_registration/models/user_model.dart';
 import 'package:provider/provider.dart';
+
 import 'package:travelowkey/screens/profile/user_profile_screen.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:travelowkey/widgets/destination_card.dart';
-import 'package:travelowkey/widgets/destination_tab.dart';
-import 'package:travelowkey/widgets/badge.dart';
-import 'package:travelowkey/widgets/service_button.dart';
+// import 'package:travelowkey/widgets/destination_card.dart';
+// import 'package:travelowkey/widgets/destination_tab.dart';
+// import 'package:travelowkey/widgets/badge.dart';
+// import 'package:travelowkey/widgets/service_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travelowkey/bloc/payment/payment_history/PaymentHistoryBloc.dart';
+import 'package:travelowkey/bloc/payment/payment_history/PaymentHistoryEvent.dart';
+import 'package:travelowkey/bloc/payment/payment_history/PaymentHistoryState.dart';
+import 'package:travelowkey/models/paymentHistory_model.dart';
+import 'package:intl/intl.dart';
+// import 'package:travelowkey/widgets/destination_card.dart';
+// import 'package:travelowkey/widgets/destination_tab.dart';
+// import 'package:travelowkey/widgets/badge.dart';
+// import 'package:travelowkey/widgets/service_button.dart';
 import 'package:travelowkey/screens/auth/login_screen.dart';
 
 class HomePage extends StatelessWidget {
@@ -107,8 +118,7 @@ class HomePage extends StatelessWidget {
                                 backgroundColor: Colors.purple,
                                 label: 'Khách sạn',
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                      context, '/hotel_search');
+                                  Navigator.pushNamed(context, '/hotel_search');
                                 }),
                             ServiceButton(
                                 icon: Icons.directions_bus,
@@ -248,9 +258,145 @@ class ExplorePage extends StatelessWidget {
 class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('History Page'),
+    // Access the PaymentHistoryBloc
+    final paymentHistoryBloc = BlocProvider.of<PaymentHistoryBloc>(context);
+
+    // Dispatch the LoadPaymentHistory event
+    paymentHistoryBloc.add(LoadPaymentHistory());
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        titleTextStyle: TextStyle(
+            color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+        title: Text("Lịch sử thanh toán", style: TextStyle(fontSize: 20)),
+      ),
+      body: BlocBuilder<PaymentHistoryBloc, PaymentHistoryState>(
+        builder: (context, state) {
+          if (state is PaymentHistoryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is PaymentHistoryLoaded) {
+            return buildPaymentHistoryList(state.paymentHistory);
+          } else if (state is PaymentHistoryFailure) {
+            return Center(
+              child: Text(
+                "Đã xảy ra lỗi: ${state.error}",
+                style: const TextStyle(fontSize: 16, color: Colors.red),
+              ),
+            );
+          } else {
+            return const Center(
+              child: Text(
+                "Không có lịch sử thanh toán nào.",
+                style: TextStyle(fontSize: 16),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  /// Builds the list of payment history
+  Widget buildPaymentHistoryList(List<PaymentHistory> paymentHistory) {
+    return ListView.builder(
+      itemCount: paymentHistory.length,
+      padding: const EdgeInsets.all(8.0),
+      itemBuilder: (context, index) {
+        final payment = paymentHistory[index];
+        return Card(
+          elevation: 12,
+          margin: const EdgeInsets.only(bottom: 12.0),
+          child: ListTile(
+            leading: payment.service == 'flight'
+                ? const Icon(Icons.flight, color: Colors.blue)
+                : const Icon(Icons.hotel, color: Colors.purple),
+            title: Text(
+              "${payment.service.toString().toUpperCase()} booking",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('Phương thức thanh toán: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("${payment.type.toString().toUpperCase()}"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('Ngày tạo: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                        "${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(payment.date))}"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('Trạng thái: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      "${payment.status.toString().toUpperCase()}",
+                      style: TextStyle(
+                        color: payment.status.toLowerCase() == 'pending'
+                            ? Colors.orange
+                            : payment.status == 'failed'
+                                ? Colors.red
+                                : Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "${payment.amount.toStringAsFixed(0)} VND",
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 16),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            onTap: () {
+              // Handle tap on payment history item if needed
+              Navigator.pushNamed(context, '/invoice', arguments: {
+                'transactionId': payment.id,
+                'service': payment.service,
+              });
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  /// Displays payment details in a dialog
+  void showPaymentDetails(BuildContext context, PaymentHistory payment) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Chi tiết thanh toán #${payment.id}"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Ngày: ${payment.date}"),
+            Text("Số tiền: \$${payment.amount.toStringAsFixed(2)}"),
+            Text("Trạng thái: ${payment.status}"),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Đóng"),
+          ),
+        ],
       ),
     );
   }

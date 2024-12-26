@@ -11,6 +11,7 @@ import 'package:travelowkey/models/accountLogin_model.dart';
 import 'package:travelowkey/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:travelowkey/models/paymentHistory_model.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;
@@ -98,12 +99,7 @@ class FlightResultDataProvider {
 
 class HotelSearchDataProvider {
   final String apiUrl;
-  final List<String> areas = [
-    "TP HCM",
-    "Hà Nội",
-    "Đà Nẵng",
-    "Đà Lạt"
-  ];
+  final List<String> areas = ["TP HCM", "Hà Nội", "Đà Nẵng", "Đà Lạt"];
 
   final List<int> customerCounts = [1, 2, 3, 4, 5];
 
@@ -126,11 +122,13 @@ class HotelResultDataProvider {
   // HotelResultDataProvider({required this.apiUrl});
   HotelResultDataProvider();
 
-  Future<List<Hotel>> fetchHotelResults({Map<String, dynamic>? searchInfo, int? offset, int? limit}) async {
+  Future<List<Hotel>> fetchHotelResults(
+      {Map<String, dynamic>? searchInfo, int? offset, int? limit}) async {
     if (!searchInfo!.containsKey('area') || searchInfo['area'] == null) {
       throw Exception("Search information is missing the 'area' key.");
     }
-    final apiUrl = 'http://10.0.2.2:8000/hotels/results?area=${Uri.encodeComponent(searchInfo['area']!)}&offset=$offset&limit=$limit';
+    final apiUrl =
+        'http://10.0.2.2:8008/hotels/results?area=${Uri.encodeComponent(searchInfo['area']!)}&offset=$offset&limit=$limit';
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
@@ -138,7 +136,9 @@ class HotelResultDataProvider {
       final data = json.decode(utf8.decode(response.bodyBytes));
       // final temp = (data['hotels'] as List).map((json) => Hotel.fromJson(json)).toList();
       // print(offset.toString() + " " + limit.toString() + " " + temp.length.toString());
-      return (data['hotels'] as List).map((json) => Hotel.fromJson(json)).toList();
+      return (data['hotels'] as List)
+          .map((json) => Hotel.fromJson(json))
+          .toList();
     } else {
       throw Exception("Failed to load hotel data");
     }
@@ -150,7 +150,8 @@ class RoomResultDataProvider {
 
   RoomResultDataProvider({required this.apiUrl});
 
-  Future<List<Room>> fetchRoomResults({Map<String, dynamic>? searchInfo}) async {
+  Future<List<Room>> fetchRoomResults(
+      {Map<String, dynamic>? searchInfo}) async {
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
@@ -201,7 +202,10 @@ class UserProvider with ChangeNotifier {
 
   Future<AccountLogin?> getUserInfo() async {
     await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
-    return AccountLogin(email: 'test@example.com', accessToken: 'token', refreshToken: 'refresh_token');
+    return AccountLogin(
+        email: 'test@example.com',
+        accessToken: 'token',
+        refreshToken: 'refresh_token');
   }
 
   // Save user info and notify listeners
@@ -238,7 +242,7 @@ class UserProvider with ChangeNotifier {
     /// Verify token with the backend
   Future<bool> _verifyToken(String token) async {
     try {
-      final url = Uri.parse('http://10.0.2.2:8000/user/token-verify/');
+      final url = Uri.parse('http://10.0.2.2:8800/user/token-verify/');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -280,8 +284,9 @@ class UserDataProvider {
     }
   }
   Future<void> updateUser(User user) async {
+    print(user.birthDate);
     final response = await http.put(
-      Uri.parse('$apiUrl/${user.id}/'), // Ensure the correct endpoint
+      Uri.parse(apiUrl+"updateinfo/"), // Ensure the correct endpoint
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -296,9 +301,37 @@ class UserDataProvider {
 
   Future<AccountLogin?> getUserInfo() async {
     await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
-    return AccountLogin(email: 'test@example.com', accessToken: 'token', refreshToken: 'refresh_token');
+    return AccountLogin(
+        email: 'test@example.com',
+        accessToken: 'token',
+        refreshToken: 'refresh_token');
   }
+}
 
+class PaymentDataProvider {
+  final apiUrl = 'http://10.0.2.2:8080/payment/history';
+  final _storage = const FlutterSecureStorage();
+  PaymentDataProvider();
+
+  Future<List<PaymentHistory>> fetchPaymentHistory() async {
+    final userJson = await _storage.read(key: 'user_info');
+    final accessToken =
+        AccountLogin.fromJson(jsonDecode(userJson!)).accessToken;
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        "Authorization": "Bearer $accessToken",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> decodedJson =
+          json.decode(utf8.decode(response.bodyBytes));
+      return decodedJson.map((json) => PaymentHistory.fromJson(json)).toList();
+    } else {
+      throw Exception("Failed to load payment history");
+    }
+  }
 }
 
 class FlightPaymentDataProvider {

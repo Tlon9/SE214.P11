@@ -6,5 +6,6 @@ urlpatterns = [
     path('user/signup', RegisterUserView.as_view(), name='register'),
     path('auth/login/google',GoogleLogin.as_view(), name='google-login'),
     path('user/', UserInfoView.as_view(), name='user-info'),
+    path('user/updateinfo/', UpdateUserInfoView.as_view(), name='user-update'),
     path('user/token-verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]

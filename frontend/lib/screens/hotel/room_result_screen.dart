@@ -17,14 +17,12 @@ class RoomResultScreen extends StatelessWidget {
   final DateTime checkInDate;
   final DateTime checkOutDate;
 
-
-  const RoomResultScreen({
-    required this.hotel,
-    required this.hotel_name,
-    required this.customers,
-    required this. checkInDate,
-    required this.checkOutDate
-  });
+  const RoomResultScreen(
+      {required this.hotel,
+      required this.hotel_name,
+      required this.customers,
+      required this.checkInDate,
+      required this.checkOutDate});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +31,8 @@ class RoomResultScreen extends StatelessWidget {
       'hotel_name': hotel_name,
       'customers': customers.toString(),
     };
-    final apiUrl = 'http://10.0.2.2:8000/hotels/results_room?Hotel_id=${Uri.encodeComponent(searchInfo['hotel_id']!)}';
+    final apiUrl =
+        'http://10.0.2.2:8008/hotels/results_room?Hotel_id=${Uri.encodeComponent(searchInfo['hotel_id']!)}&checkInDate=${Uri.encodeComponent(checkInDate.toString().substring(0, 10))}&checkOutDate=${Uri.encodeComponent(checkOutDate.toString().substring(0, 10))}';
 
     return BlocProvider(
         create: (context) => RoomResultBloc(
@@ -105,7 +104,8 @@ class RoomResultScreen extends StatelessWidget {
                                 Text("Bộ lọc", style: TextStyle(fontSize: 20)),
                             onPressed: () async {
                               // Open filter options and send event to bloc
-                              final filterOption = await showFilterDialog(context);
+                              final filterOption =
+                                  await showFilterDialog(context);
                               if (filterOption != null) {
                                 // print(filterOption);
                                 BlocProvider.of<RoomResultBloc>(context).add(
@@ -167,12 +167,15 @@ class RoomResultScreen extends StatelessWidget {
                                   itemBuilder: (context, index) {
                                     final room = state.rooms[index];
                                     return RoomCard(
-                                        hotel: hotel, room: room, customers: customers, checkInDate: checkInDate, checkOutDate: checkOutDate);
+                                        hotel: hotel,
+                                        room: room,
+                                        customers: customers,
+                                        checkInDate: checkInDate,
+                                        checkOutDate: checkOutDate);
                                   },
                                 ),
                               );
-                            } 
-                            else if (state is RoomResultError) {
+                            } else if (state is RoomResultError) {
                               // return Center(child: Text(state.message));
                               return Center(child: Text(state.message));
                             }
@@ -189,6 +192,7 @@ class RoomResultScreen extends StatelessWidget {
         ));
   }
 }
+
 Future<Map<String, dynamic>?> showFilterDialog(BuildContext context) async {
   final TextEditingController minPriceController = TextEditingController();
   final TextEditingController maxPriceController = TextEditingController();
@@ -303,7 +307,6 @@ Future<Map<String, dynamic>?> showFilterDialog(BuildContext context) async {
   );
 }
 
-
 Future<String?> showSortDialog(BuildContext context) async {
   final sortOptions = [
     'price_asc',
@@ -328,6 +331,7 @@ Future<String?> showSortDialog(BuildContext context) async {
 }
 
 final formatter = NumberFormat.simpleCurrency(locale: 'vi');
+
 class RoomCard extends StatelessWidget {
   final Hotel hotel;
   final Room room;
@@ -335,7 +339,12 @@ class RoomCard extends StatelessWidget {
   final DateTime checkInDate;
   final DateTime checkOutDate;
 
-  const RoomCard({required this.hotel, required this.room, required this.customers, required this.checkInDate, required this.checkOutDate});
+  const RoomCard(
+      {required this.hotel,
+      required this.room,
+      required this.customers,
+      required this.checkInDate,
+      required this.checkOutDate});
 
   @override
   Widget build(BuildContext context) {
@@ -380,7 +389,8 @@ class RoomCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Expanded( // Wrap the Text in an Expanded to constrain it
+                    Expanded(
+                      // Wrap the Text in an Expanded to constrain it
                       child: Text(
                         "${room.name.toString()}",
                         style: TextStyle(
@@ -410,7 +420,8 @@ class RoomCard extends StatelessWidget {
                           color: Colors.green,
                         ),
                         maxLines: null, // Allow unlimited lines
-                        overflow: TextOverflow.visible, // Ensure text overflows are visible
+                        overflow: TextOverflow
+                            .visible, // Ensure text overflows are visible
                       ),
                     ),
                     // Room Services
@@ -456,8 +467,8 @@ class RoomCard extends StatelessWidget {
                           'room': room,
                           "hotel": hotel,
                           'passengers': customers,
-                          'checkInDate':checkInDate,
-                          'checkOutDate':checkOutDate
+                          'checkInDate': checkInDate,
+                          'checkOutDate': checkOutDate
                         },
                       );
                     },

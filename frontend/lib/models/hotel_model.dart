@@ -36,7 +36,7 @@ class Hotel {
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
-      'Id':id_hotel,
+      'Id': id_hotel,
       'Name': name,
       'Address': address,
       'Rating': rating,

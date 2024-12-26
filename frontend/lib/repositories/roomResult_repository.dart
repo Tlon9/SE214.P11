@@ -13,15 +13,20 @@ class RoomResultRepository {
   }) async {
     // Get all Rooms from the data provider
     List<Room> rooms = await dataProvider.fetchRoomResults();
-    rooms = rooms.where((room) => room.customers! == int.parse(searchInfo!["customers"])).toList();
+    rooms = rooms
+        .where((room) => room.customers! == int.parse(searchInfo!["customers"]))
+        .toList();
     if (rooms.isEmpty) {
       throw Exception("No Rooms found");
     }
     // Filter by airline if a filter option is provided
     if (filterOption != null && filterOption.isNotEmpty) {
-      rooms = rooms.where((room) => room.price! >= int.parse(filterOption['minPrice']!) && room.price! <= int.parse(filterOption['maxPrice']!)).toList();
+      rooms = rooms
+          .where((room) =>
+              room.price! >= int.parse(filterOption['minPrice']!) &&
+              room.price! <= int.parse(filterOption['maxPrice']!))
+          .toList();
     }
-
 
     // Sort by price or departure time if a sort option is provided
     if (sortOption != null) {
