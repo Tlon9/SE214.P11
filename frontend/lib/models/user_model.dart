@@ -35,15 +35,16 @@ class User {
 
   // Convert User instance to JSON
   Map<String, dynamic> toJson() {
+    // print(this.birthDate);
     return {
-      id: id,
-      email: email,
-      username: username,
-      gender: gender,
-      birthDate: birthDate,
-      phoneNumber: phoneNumber,
-      nationality: nationality,
-      passport_id: passport_id,
+      "id": this.id,
+      "email": this.email == 'Unknown Email' ? null : this.email,
+      "username": this.username == 'Unknown Username' ? null : this.username,
+      "gender": this.gender == 'Unknown Gender' ? null : this.gender,
+      "birthDate": this.birthDate == 'Unknown Birthdate' ? null : this.birthDate,
+      "phoneNumber": this.phoneNumber == 'Unknown Phone number' ? null : this.phoneNumber,
+      "nationality": this.nationality == 'Unknown Nationality' ? null : this.nationality,
+      "passport_id": this.passport_id == 'Unknown Passport id' ? null : this.passport_id,
     };
   }
 }

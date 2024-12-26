@@ -69,7 +69,7 @@ REST_FRAMEWORK = {
     ],
     'NON_FIELD_ERRORS_KEY': 'global_errors',
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.AllowAny',
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
@@ -123,6 +123,10 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://10.0.2.2:8800',
+    'http://127.0.0.1:8800',
+]
 ROOT_URLCONF = "user_service.urls"
 
 TEMPLATES = [
@@ -152,7 +156,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mydb',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': '123456789',
         'HOST': 'localhost',  # Or your MySQL server
         'PORT': '3306',       # Default MySQL port
     }

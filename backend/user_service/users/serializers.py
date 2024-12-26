@@ -1,17 +1,23 @@
 from rest_framework import serializers
-from users.models import User
+from users.models import User, Passport
 from django.contrib.auth import authenticate, login
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        # passport_model = Passport
         fields = ['email', 'username', 'password']
 
     def create(self, validated_data):
+        checkEmail = User.objects.filter(email=validated_data['email'])
+        if checkEmail.exists() == True:
+            raise serializers.ValidationError({"email": "Email is already in use."})
+        passport = Passport.objects.create(nation=None, expiration=None)
         user = User.objects.create(
-            email=validated_data['email'],
-            username=validated_data['username'],
+            email = validated_data['email'],
+            username = validated_data['username'],
             password = validated_data['password'],
+            passport_id = passport
         )
         user.set_password(validated_data['password'])
         user.save()

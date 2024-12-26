@@ -103,6 +103,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           print(value.toString());
           emit(LoginSuccess());
         } else {
+          final data = json.decode(response.body);
+          print( data["email"].toString());
           // Handle authentication failure
           emit(LoginFailure(error: 'Invalid credentials'));
         }

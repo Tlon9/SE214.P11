@@ -262,7 +262,8 @@ class HotelPaymentScreen extends StatelessWidget {
                 final userJson = await _storage.read(key: 'user_info');
                 if (userJson != null) {
                   final accessToken =
-                      AccountLogin.fromJson(jsonDecode(userJson!)).accessToken;
+                      // AccountLogin.fromJson(jsonDecode(userJson!)).accessToken;
+                      AccountLogin.fromJson(jsonDecode(userJson)).accessToken;
 
                   final response = await http.post(
                     Uri.parse('http://10.0.2.2:8080/payment/create/'),

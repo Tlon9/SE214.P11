@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin

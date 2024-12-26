@@ -223,9 +223,11 @@ class UserProvider with ChangeNotifier {
   }
 
   // Check if user is logged in
-  bool isLoggedIn() {
-    return _user != null && !isTokenExpired();
+  Future<bool> isLoggedIn() async {
+    if (_user == null || _user!.accessToken.isEmpty) return false;
+    return await _verifyToken(_user!.accessToken);
   }
+
 
   // Check if token is expired
   bool isTokenExpired() {
@@ -236,19 +238,64 @@ class UserProvider with ChangeNotifier {
       return true; // Treat invalid tokens as expired
     }
   }
+
+    /// Verify token with the backend
+  Future<bool> _verifyToken(String token) async {
+    try {
+      final url = Uri.parse('http://10.0.2.2:8800/user/token-verify/');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'token': token}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['valid'] ?? false; // Assume `valid` is returned from the server
+      } else {
+        print('Error verifying token: ${response.statusCode}, ${response.body}, ${token}');
+        return false;
+      }
+    } catch (e) {
+      print('Error during token verification: $e');
+      return false;
+    }
+  }
 }
 
 class UserDataProvider {
   final String apiUrl;
-  UserDataProvider({required this.apiUrl});
+  final String accessToken;
+  UserDataProvider({required this.apiUrl,required this.accessToken});
   Future<User> fetchUser() async {
     // final apiUrl = 'http://10.0.2.2:8000/user/?email=${email}';
-    final response = await http.get(Uri.parse(apiUrl));
+    // final response = await http.get(Uri.parse(apiUrl));
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer ${this.accessToken}',
+      },
+    );
     if (response.statusCode == 200) {
       final decodedJson = json.decode(utf8.decode(response.bodyBytes));
       return User.fromJson(decodedJson);
     } else {
       throw Exception("Failed to load user");
+    }
+  }
+  Future<void> updateUser(User user) async {
+    print(user.birthDate);
+    final response = await http.put(
+      Uri.parse(apiUrl+"updateinfo/"), // Ensure the correct endpoint
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(user.toJson()),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update user');
     }
   }
 
