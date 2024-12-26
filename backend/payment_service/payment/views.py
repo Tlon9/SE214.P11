@@ -12,6 +12,7 @@ def payment_callback(request):
     if request.method == 'GET':
         message = request.GET.get('message', '')
         transaction_id = request.GET.get('orderId')
+        service = request.GET.get('service')    
 
         # Update transaction status in the database
         if transaction_id:
@@ -20,17 +21,33 @@ def payment_callback(request):
                 {'_id': transaction_id},
                 {'$set': {'status': status}}
             )
-            order_info = request.GET.get('orderInfo').split('-')
-            id = order_info[1]
-            passenger = order_info[2]
-            update_url = f"http://127.0.0.1:8000/flights/updateFlight?id={id}&passenger={passenger}"
-            try:
-                requests.put(update_url)
-            except Exception as e:
-                print(f"Error updating flight {order_info[0]}: {e}")
+            if service == 'flight':
+                # Update the flight status  
+                order_info = request.GET.get('orderInfo').split('-')
+                id = order_info[0]
+                passenger = order_info[1]
+                update_url = f"http://127.0.0.1:8000/flights/updateFlight?id={id}&passenger={passenger}"
+                try:
+                    requests.put(update_url)
+                except Exception as e:
+                    print(f"Error updating flight {order_info[0]}: {e}")
 
-            # Generate a QR code for the transaction
-            create_qr(transaction_id,id,passenger)
+                # Generate a QR code for the transaction
+                create_flight_qr(transaction_id,id,passenger)
+            elif service == 'hotel':
+                # Update the hotel status
+                order_info = request.GET.get('orderInfo').split('_')
+                hotel_id = order_info[0]
+                room_id = order_info[1]
+                check_in = order_info[2]
+                check_out = order_info[3]
+                update_url = f"http://127.0.0.1:8008/hotels/updateRoom?room_id={room_id}&hotel_id={hotel_id}&check_in={check_in}&check_out={check_out}"
+                print('update_url:',update_url)
+                try:
+                    requests.put(update_url)
+                except Exception as e:
+                    print(f"Error updating hotel {hotel_id}: {e}")
+                create_hotel_qr(transaction_id,room_id,check_in,check_out)
         # HTML response with countdown animation
         html_response = f"""
         <html>
@@ -88,7 +105,7 @@ def payment_callback(request):
 
 
 
-def create_qr(transaction_id,id,pasenger):
+def create_flight_qr(transaction_id,id,pasenger):
     save_path = settings.MEDIA_ROOT
     flight = requests.get(f"http://127.0.0.1:8000/flights/getFlight?id={id}").json()
     qr_content = f"Transaction ID:{transaction_id}\n Flight ID: {id}\nFrom: {flight['From']}\nTo: {flight['To']}\nDate: {flight['Date']}\nPassenger: {pasenger}\nSeat Class: {flight['SeatClass']}"
@@ -104,6 +121,26 @@ def create_qr(transaction_id,id,pasenger):
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     file_name = f"flight_{transaction_id}.png"
+    # Save the QR code image to the server
+    with open(f"{save_path}/{file_name}", "wb") as f:
+        f.write(buffer.getvalue())
+
+def create_hotel_qr(transaction_id,room_id,check_in,check_out):
+    save_path = settings.MEDIA_ROOT
+    room = requests.get(f"http://127.0.0.1:8008/hotels/getRoom?room_id={room_id}").json()
+    qr_content = f"Transaction ID:{transaction_id}\n Room ID: {room_id}\nRoom Name: {room['Name']}\nCheck-in: {check_in}\nCheck-out: {check_out}"
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(qr_content)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color='white')
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    file_name = f"hotel_{transaction_id}.png"
     # Save the QR code image to the server
     with open(f"{save_path}/{file_name}", "wb") as f:
         f.write(buffer.getvalue())

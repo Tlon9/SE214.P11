@@ -13,13 +13,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<SignInWithGoogle>(_handleGoogleSignIn);
   }
   final storage = FlutterSecureStorage();
-  Future<void> _onLoginButtonPressed(LoginButtonPressed event, Emitter<LoginState> emit) async {
+  Future<void> _onLoginButtonPressed(
+      LoginButtonPressed event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
 
     try {
       // await storage.delete(key: 'user_info');
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/token/'),
+        Uri.parse('http://10.0.2.2:8800/api/token/'),
         body: {
           'email': event.email,
           'password': event.password,
@@ -58,7 +59,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     await storage.deleteAll(); // Clear stored data
   }
 
-
   static const List<String> scopes = <String>[
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
@@ -85,7 +85,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (idToken != null) {
         // Send the ID token to your Django backend for verification
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/auth/login/google'),
+          Uri.parse('http://10.0.2.2:8800/auth/login/google'),
           body: jsonEncode({'id_token': idToken, 'access_token': accessToken}),
           headers: {'Content-Type': 'application/json'},
         );

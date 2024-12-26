@@ -22,7 +22,10 @@ class HotelSearchScreen extends StatelessWidget {
       final customerCount = state.selectedCustomerCount;
       final checkInDate = state.selectedCheckInDate;
       final checkOutDate = state.selectedCheckOutDate;
-      if (area == null || customerCount == null || checkInDate == null || checkOutDate == null) {
+      if (area == null ||
+          customerCount == null ||
+          checkInDate == null ||
+          checkOutDate == null) {
         // Show a dialog if any field is missing
         showDialog(
           context: context,
@@ -57,7 +60,7 @@ class HotelSearchScreen extends StatelessWidget {
             );
           },
         );
-      }else {
+      } else {
         // Navigate to the Hotel results screen if all fields are filled
         Navigator.pushNamed(
             context, '/hotel_result', // replace with your actual route
@@ -74,8 +77,11 @@ class HotelSearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HotelSearchBloc(repository: HotelSearchRepository(dataProvider: HotelSearchDataProvider(apiUrl: 'http://10.0.2.2:8000/hotels/searchInfo/')))
-      ..add(LoadHotelSearchData()),
+      create: (context) => HotelSearchBloc(
+          repository: HotelSearchRepository(
+              dataProvider: HotelSearchDataProvider(
+                  apiUrl: 'http://10.0.2.2:8008/hotels/searchInfo/')))
+        ..add(LoadHotelSearchData()),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue,
@@ -147,8 +153,7 @@ class HotelSearchScreen extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(Icons.place,
-                                        color: Colors.blue),
+                                    Icon(Icons.place, color: Colors.blue),
                                     Container(
                                       width: MediaQuery.sizeOf(context).width *
                                           0.7,
@@ -157,8 +162,7 @@ class HotelSearchScreen extends StatelessWidget {
                                         isExpanded: true,
                                         value: state.selectedArea,
                                         hint: Text("Chọn nơi đi"),
-                                        items: state.areas
-                                            .map((String area) {
+                                        items: state.areas.map((String area) {
                                           return DropdownMenuItem<String>(
                                             value: area,
                                             child: Text(area),
@@ -243,8 +247,8 @@ class HotelSearchScreen extends StatelessWidget {
                                               child: DropdownButton<int>(
                                                 underline: Container(),
                                                 isExpanded: true,
-                                                value: state
-                                                    .selectedCustomerCount,
+                                                value:
+                                                    state.selectedCustomerCount,
                                                 hint: Center(
                                                   child: Text("Chọn số lượng",
                                                       style: TextStyle(
@@ -291,7 +295,9 @@ class HotelSearchScreen extends StatelessWidget {
                       } else if (state is HotelSearchLoading) {
                         return Center(child: CircularProgressIndicator());
                       } else {
-                        return Center(child: Text('Error loading data.' + state.toString()));
+                        return Center(
+                            child:
+                                Text('Error loading data.' + state.toString()));
                       }
                     },
                   ),

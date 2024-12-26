@@ -2,6 +2,7 @@
 *.class
 *.log
 *.pyc
+*.pyo
 *.swp
 .DS_Store
 .atom/
@@ -21,6 +22,22 @@ migrate_working_dir/
 # is commented out by default.
 #.vscode/
 
+# Python related
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.env
+venv/
+.venv/
+.cache/
+
+# Django specific
+media/
+static/
+db.sqlite3
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
@@ -29,7 +46,7 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
+build/
 
 # Symbolication related
 app.*.symbols
@@ -46,4 +63,4 @@ app.*.map.json
 .gradle
 
 # Ignore Gradle build output directory
-build
+build/

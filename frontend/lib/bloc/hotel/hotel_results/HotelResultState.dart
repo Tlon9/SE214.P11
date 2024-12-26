@@ -15,14 +15,10 @@ class HotelResultLoaded extends HotelResultState {
   final List<Hotel> hotels;
   final Map<String, dynamic>? filterOption; // Current filter
   final String? sortOption; // Current sort
-  final int?offset;
+  final int? offset;
 
-  HotelResultLoaded({
-    required this.hotels,
-    this.filterOption,
-    this.sortOption,
-    this.offset
-  });
+  HotelResultLoaded(
+      {required this.hotels, this.filterOption, this.sortOption, this.offset});
 
   @override
   List<Object?> get props => [hotels, filterOption, sortOption, offset];
