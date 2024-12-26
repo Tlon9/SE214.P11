@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import status
 from .models import User, Passport
 from .serializers import UserRegistrationSerializer, LoginSerializer, UserSerializer
@@ -27,19 +28,56 @@ class RegisterUserView(APIView):
         
 
 class UserInfoView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request):
+        if not request.user.is_authenticated:
+            print("1111")
+            return Response(
+                {'error': 'User is not authenticated.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        user = request.user
+        # print(user.username + "1111")
+        # passport = user.passport_id
+        user_info = {
+            'id': user.id,
+            'email': user.email,
+            'phone_number': user.phone_number,
+            'username': user.username,
+            'gender': user.gender,
+            'birthdate': user.birthdate,
+            'nationality': user.nationality,
+            'passport_id': user.passport_id,
+            # 'nation': passport.nation if passport else None,
+            # 'expiration': passport.expiration if passport else None,
+        }
+        return Response(user_info, status=status.HTTP_200_OK)
+    # permission_classes = [AllowAny]
 
-    def get(self, request, *args, **kwargs):
-        email = request.query_params.get('email')  # Get email from query parameters
-        if not email:
-            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+    # def get(self, request, *args, **kwargs):
+    #     email = request.query_params.get('email')  # Get email from query parameters
+    #     if not email:
+    #         return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
         
-        try:
-            user = User.objects.get(email=email)  # Retrieve the user based on the email
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    #     try:
+    #         user = User.objects.get(email=email)  # Retrieve the user based on the email
+    #     except User.DoesNotExist:
+    #         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+    #     serializer = UserSerializer(user)
+    #     return Response(serializer.data)
+    
+class TokenVerifyView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        token = request.data.get('token')
+        try:
+            # Decode and verify token
+            AccessToken(token)
+            return Response({"valid": True}, status=200)
+        except Exception as e:
+            return Response({"valid": False, "error": str(e)}, status=400)
     
 class GoogleLogin(APIView):
     def post(self, request):

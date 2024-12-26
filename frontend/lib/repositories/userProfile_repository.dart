@@ -20,4 +20,8 @@ class UserResultRepository {
       throw Exception("Error: $e");
     }
   }
+
+  Future<void> updateUser(User user) async {
+    await dataProvider.updateUser(user);
+  }
 }

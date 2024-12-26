@@ -26,6 +26,27 @@ class UserProfileLoaded extends UserProfileState {
 
   UserProfileLoaded(this.user);
 
+  UserProfileLoaded copyWith({
+    String? username,
+    String? gender,
+    String? phoneNumber,
+    String? email,
+    String? birthDate,
+  }) {
+    return UserProfileLoaded(
+      User(
+        id: user.id,
+        username: username ?? user.username,
+        gender: gender ?? user.gender,
+        phoneNumber: phoneNumber ?? user.phoneNumber,
+        email: email ?? user.email,
+        birthDate: birthDate ?? user.birthDate,
+        nationality: user.nationality,
+        passport_id: user.passport_id,
+      )
+    );
+  }
+
   @override
   List<Object> get props => [user];
 }
