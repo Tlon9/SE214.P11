@@ -110,7 +110,7 @@ class AppRouter {
               InvoiceScreen(transactionId: transactionId, service: service),
         );
       default:
-        return MaterialPageRoute(builder: (_) => RegistrationScreen());
+        return MaterialPageRoute(builder: (_) => MainScreen());
     }
   }
 }
