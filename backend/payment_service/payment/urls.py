@@ -11,4 +11,5 @@ urlpatterns = [
     path('status/<str:transaction_id>/', apis.payment_status, name='payment_status'),
     path('transaction/<str:transaction_id>/', apis.get_transaction, name='get_transaction'),
     path('qr_code', apis.get_qr_code, name='get_qr_code'),
+    path('notification/', apis.Notification.as_view(), name='get_notification'),
 ]

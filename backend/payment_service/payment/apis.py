@@ -2,17 +2,20 @@ import os
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .services import MomoService
-from .models import transaction_collection
+from .models import transaction_collection, notification_collection
 from db_connection import redis_client
 import json
 import requests
 from django.utils.timezone import now
+from bson import ObjectId
 from threading import Timer
 from django.conf import settings
 from django.http import FileResponse, HttpResponseNotFound
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class CreatePayment(APIView):
     permission_classes = [IsAuthenticated]
@@ -22,7 +25,8 @@ class CreatePayment(APIView):
         momo_service = MomoService()
         response = None
         user = request.user
-
+        access_token = request.headers.get('Authorization').split(' ')[1]
+        print('access_token:',access_token)
         # Call MoMo API
         if data.get('type') == 'qr':
             response = momo_service.create_qr_payment(data)
@@ -45,7 +49,7 @@ class CreatePayment(APIView):
             transaction_collection.insert_one(transaction)
 
             # Set a timeout to auto-update after 50 seconds
-            Timer(10, auto_update, args=(transaction_id,)).start()
+            Timer(2, auto_update, args=(transaction_id, access_token)).start()
             if data.get('type') == 'atm':
                 return JsonResponse({'url': response['payUrl'], 'transaction_id': transaction_id})
             else:
@@ -105,14 +109,15 @@ def get_qr_code(request):
         return HttpResponseNotFound(f"QR code for transaction {transaction_id} not found.")
 
    
-def auto_update(transaction_id):
+def auto_update(transaction_id, access_token):
     # Check the transaction status in your database
     transaction = transaction_collection.find_one({'_id': transaction_id})
     if transaction['status'] == 'PENDING':
         # Call the payment_callback endpoint
         callback_url = f"http://127.0.0.1:8080/payment/callback/?service={transaction['service']}&orderId={transaction_id}&message=Successful.&orderInfo={transaction['info']}"
+        headers = {'Authorization': f'Bearer {access_token}'}
         try:
-            requests.get(callback_url)
+            requests.get(callback_url, headers=headers)
         except Exception as e:
             print(f"Error triggering auto-update for transaction {transaction_id}: {e}")
 
@@ -128,3 +133,66 @@ def payment_notify(request):
         data = json.loads(request.body)
         # Process the notification data
         return JsonResponse({'status': 'Notification received', 'data': data})
+    
+class Notification(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        response_type = request.query_params.get('type', 'list')  # Default to 'list'
+
+        if response_type == 'count':  # Return unread count
+            unread_count = notification_collection.count_documents({'user_id': user_id, 'status': 'UNREAD'})
+            return JsonResponse({'unread_count': unread_count})
+
+        # Default: Return the notification list
+        notifications = notification_collection.find({'user_id': user_id}).sort([('status', -1), ('created_at', -1)])
+        notifications_list = list(notifications)
+        for notification in notifications_list:
+            notification['_id'] = str(notification['_id'])
+        for notification in notifications_list:
+            notification['created_at'] = notification['created_at'].isoformat()
+        return JsonResponse(notifications_list, safe=False)
+
+    def put(self, request):
+        user_id = request.user.id
+        notification_id = request.query_params.get('notification_id')
+        print('notification_id:',notification_id)
+        notification_collection.update_one(
+            {'_id': ObjectId(notification_id), 'user_id': user_id},
+            {'$set': {'status': 'READ'}}
+        )
+        return JsonResponse({'message': 'Notification updated successfully'})
+
+    def delete(self, request):
+        user_id = request.user.id
+        notification_id = request.data.get('notification_id')
+        notification_collection.delete_one({'_id': notification_id, 'user_id': user_id})
+        return JsonResponse({'message': 'Notification deleted successfully'})
+
+    def post(self, request):
+        user_id = request.user.id
+        transaction_id = request.GET.get('transaction_id')
+        transaction = transaction_collection.find_one({'_id': transaction_id})
+        notification = {
+            'user_id': user_id,
+            'transaction_id': transaction_id,
+            'service': transaction['service'],
+            'info': f'Thanh toán thành công cho dịch vụ {transaction['service']} với số tiền ${transaction['amount']}',
+            'created_at': transaction['created_at'],
+            'status': 'UNREAD'
+        }
+        notification_collection.insert_one(notification)
+
+        # Send notification via WebSocket
+        # channel_layer = get_channel_layer()
+        # print(channel_layer.group_send)
+        # async_to_sync(channel_layer.group_send)(
+        #     f"user_{transaction['user_id']}",
+        #     {
+        #         "type": "send_notification",
+        #         "data": notification,
+        #     }
+        # )
+
+        return JsonResponse({"message": "Notification sent successfully"})

@@ -14,6 +14,11 @@ import 'package:travelowkey/bloc/hotel/hotel_payment/HotelPaymentEvent.dart';
 import 'package:travelowkey/bloc/hotel/hotel_payment/HotelPaymentState.dart';
 import 'package:travelowkey/bloc/hotel/hotel_payment/HotelPaymentBloc.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'dart:convert';
 
 Future<http.Response> fetchQRCode(String transactionId, String service) async {
   final url = Uri.parse(
@@ -46,7 +51,7 @@ class HotelPaymentScreen extends StatelessWidget {
       'service': 'hotel',
       'type': 'atm',
       'amount':
-          (hotel.price as int) * (checkOutDate.difference(checkInDate)).inDays,
+          (room.price as int) * (checkOutDate.difference(checkInDate)).inDays,
       'info':
           '${hotel.id_hotel}_${room.room_id}_${checkInDate.toIso8601String().substring(0, 10)}_${checkOutDate.toIso8601String().substring(0, 10)}',
       'extraData': '',
@@ -75,10 +80,21 @@ class HotelPaymentScreen extends StatelessWidget {
             ],
           ),
           actions: [
-            IconButton(
-              icon: Icon(Icons.notifications, color: Colors.white, size: 30),
-              onPressed: () {
-                // Navigate to notification screen
+            NotificationIconButton(
+              onLoggedIn: () async {
+                final _storage = FlutterSecureStorage();
+                final userJson = await _storage.read(key: 'user_info');
+                final accessToken = userJson != null
+                    ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+                    : null;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(
+                      accessToken: accessToken!, // Pass actual token
+                    ),
+                  ),
+                );
               },
             ),
           ],

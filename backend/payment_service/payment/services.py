@@ -82,7 +82,7 @@ class MomoService:
             f"&partnerCode={momo_api['PartnerCode']}&redirectUrl={momo_api['ReturnUrl']}"
             f"&requestId={request_id}&requestType=payWithATM"
         )        
-        print("raw_data:",raw_data)
+        # print("raw_data:",raw_data)
         signature = self.compute_hmac_sha256(raw_data, momo_api['SecretKey'])
         # Payload
         payload = {

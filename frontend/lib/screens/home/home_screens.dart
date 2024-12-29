@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:travelowkey/widgets/destination_card.dart';
 import 'package:travelowkey/widgets/destination_tab.dart';
 import 'package:travelowkey/widgets/badge.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
 import 'package:travelowkey/widgets/service_button.dart';
 import 'package:travelowkey/services/api_service.dart';
 // import 'package:user_registration/models/user_model.dart';
@@ -25,6 +26,10 @@ import 'package:intl/intl.dart';
 // import 'package:travelowkey/widgets/badge.dart';
 // import 'package:travelowkey/widgets/service_button.dart';
 import 'package:travelowkey/screens/auth/login_screen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
+import 'dart:convert';
 
 class HomePage extends StatelessWidget {
   @override
@@ -69,7 +74,25 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Icon(Icons.notifications, color: Colors.white, size: 30),
+                    // Icon(Icons.notifications, color: Colors.white, size: 30),
+                    NotificationIconButton(
+                      onLoggedIn: () async {
+                        final _storage = FlutterSecureStorage();
+                        final userJson = await _storage.read(key: 'user_info');
+                        final accessToken = userJson != null
+                            ? AccountLogin.fromJson(jsonDecode(userJson))
+                                .accessToken
+                            : null;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NotificationScreen(
+                              accessToken: accessToken!, // Pass actual token
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -247,9 +270,12 @@ class HomePage extends StatelessWidget {
 class ExplorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Khám phá'),
+      ),
       body: Center(
-        child: Text('Explore Page'),
+        child: Text('Khám phá các điểm đến mới!'),
       ),
     );
   }
@@ -443,7 +469,8 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(UserProvider userProvider, bool isLoggedIn, BuildContext context) {
+  Widget _buildHeader(
+      UserProvider userProvider, bool isLoggedIn, BuildContext context) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -489,7 +516,8 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 10),
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 30),
                     side: const BorderSide(color: Colors.white, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
@@ -555,7 +583,8 @@ class ProfilePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UserProfilePage()), // Example navigation
+                    builder: (context) =>
+                        UserProfilePage()), // Example navigation
               );
             },
           ),

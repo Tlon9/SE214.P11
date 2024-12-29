@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:travelowkey/app_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travelowkey/services/api_service.dart';
+import 'package:travelowkey/bloc/payment/payment_notification/PaymentNotificationEvent.dart';
+
 void main() {
-    runApp(
+  runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()..loadUserInfo()),
