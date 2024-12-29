@@ -1,7 +1,7 @@
 # views.py
 from django.http import  HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import transaction_collection
+from .models import transaction_collection, notification_collection
 import requests
 import qrcode
 from io import BytesIO
@@ -21,6 +21,24 @@ def payment_callback(request):
                 {'_id': transaction_id},
                 {'$set': {'status': status}}
             )
+            if status == 'SUCCESS':
+                # user_id = transaction_collection.find_one({'_id': transaction_id})['user_id']
+                update_url = f"http://127.0.0.1:8080/payment/notification/?transaction_id={transaction_id}"
+                access_token = request.headers.get('Authorization').split(' ')[1]
+                headers = {'Authorization': f'Bearer {access_token}'}
+                try:
+                    requests.post(update_url, headers=headers)
+                except Exception as e:
+                    print(f"Error updating notification for transaction {transaction_id}: {e}")
+                # transaction = transaction_collection.find_one({'_id': transaction_id})
+                # notification = {
+                #     'user_id': transaction['user_id'],
+                #     'service': transaction['service'],
+                #     'info': f'Thanh toán thành công cho dịch vụ  ${transaction['service']} với số tiền ${transaction['amount']}',
+                #     'created_at': transaction['created_at'],
+                #     'status': 'UNREAD'    
+                # }
+                # notification_collection.insert_one(notification)
             if service == 'flight':
                 # Update the flight status  
                 order_info = request.GET.get('orderInfo').split('-')

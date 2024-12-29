@@ -9,6 +9,11 @@ import 'package:travelowkey/models/hotel_model.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'dart:convert';
 
 class HotelResultScreen extends StatelessWidget {
   final String area;
@@ -65,11 +70,22 @@ class HotelResultScreen extends StatelessWidget {
                 // maxLines: 2,
               ),
               actions: [
-                IconButton(
-                  icon:
-                      Icon(Icons.notifications, color: Colors.white, size: 30),
-                  onPressed: () {
-                    // Navigate to notification screen
+                NotificationIconButton(
+                  onLoggedIn: () async {
+                    final _storage = FlutterSecureStorage();
+                    final userJson = await _storage.read(key: 'user_info');
+                    final accessToken = userJson != null
+                        ? AccountLogin.fromJson(jsonDecode(userJson))
+                            .accessToken
+                        : null;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationScreen(
+                          accessToken: accessToken!, // Pass actual token
+                        ),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -430,7 +446,11 @@ class HotelCard extends StatelessWidget {
   final DateTime checkinDate;
   final DateTime checkoutDate;
 
-  const HotelCard({required this.hotel, required this.customers, required this.checkinDate, required this.checkoutDate});
+  const HotelCard(
+      {required this.hotel,
+      required this.customers,
+      required this.checkinDate,
+      required this.checkoutDate});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

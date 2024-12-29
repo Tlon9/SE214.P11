@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:travelowkey/widgets/submit_button.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'dart:convert';
 
 Future<http.Response> getTransaction(String transactionId) async {
   final response = await http.get(
@@ -69,10 +74,21 @@ class InvoiceScreen extends StatelessWidget {
         ),
         title: Text("Thông tin hóa đơn", style: TextStyle(fontSize: 20)),
         actions: [
-          IconButton(
-            icon: Icon(Icons.notifications, color: Colors.white, size: 30),
-            onPressed: () {
-              // Navigate to notification screen
+          NotificationIconButton(
+            onLoggedIn: () async {
+              final _storage = FlutterSecureStorage();
+              final userJson = await _storage.read(key: 'user_info');
+              final accessToken = userJson != null
+                  ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+                  : null;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationScreen(
+                    accessToken: accessToken!, // Pass actual token
+                  ),
+                ),
+              );
             },
           ),
         ],

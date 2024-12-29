@@ -8,7 +8,11 @@ import 'package:travelowkey/models/hotel_model.dart';
 import 'package:travelowkey/repositories/roomResult_repository.dart';
 import 'package:travelowkey/services/api_service.dart';
 import 'package:travelowkey/models/room_model.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'dart:convert';
 
 class RoomResultScreen extends StatelessWidget {
   final Hotel hotel;
@@ -66,11 +70,22 @@ class RoomResultScreen extends StatelessWidget {
                 ),
               ),
               actions: [
-                IconButton(
-                  icon:
-                      Icon(Icons.notifications, color: Colors.white, size: 30),
-                  onPressed: () {
-                    // Navigate to notification screen
+                NotificationIconButton(
+                  onLoggedIn: () async {
+                    final _storage = FlutterSecureStorage();
+                    final userJson = await _storage.read(key: 'user_info');
+                    final accessToken = userJson != null
+                        ? AccountLogin.fromJson(jsonDecode(userJson))
+                            .accessToken
+                        : null;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationScreen(
+                          accessToken: accessToken!, // Pass actual token
+                        ),
+                      ),
+                    );
                   },
                 ),
               ],

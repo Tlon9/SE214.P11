@@ -9,6 +9,11 @@ import 'package:travelowkey/bloc/flight/flight_search/FlightSearchEvent.dart';
 import 'package:travelowkey/bloc/flight/flight_search/FlightSearchState.dart';
 import 'package:travelowkey/repositories/flightSearch_repository.dart';
 import 'package:travelowkey/services/api_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'dart:convert';
 
 class FlightSearchScreen extends StatelessWidget {
   void _onSearchButtonPressed(BuildContext context) {
@@ -99,10 +104,21 @@ class FlightSearchScreen extends StatelessWidget {
           ),
           title: Text('Tìm chuyến bay'),
           actions: [
-            IconButton(
-              icon: Icon(Icons.notifications, color: Colors.white, size: 30),
-              onPressed: () {
-                // Navigate to notification screen
+            NotificationIconButton(
+              onLoggedIn: () async {
+                final _storage = FlutterSecureStorage();
+                final userJson = await _storage.read(key: 'user_info');
+                final accessToken = userJson != null
+                    ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+                    : null;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(
+                      accessToken: accessToken!, // Pass actual token
+                    ),
+                  ),
+                );
               },
             ),
           ],

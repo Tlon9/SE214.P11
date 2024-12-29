@@ -22,3 +22,4 @@ class MomoExecuteResponse(models.Model):
     order_info = models.TextField()
 
 transaction_collection = db["transaction"]
+notification_collection = db["notification"]

@@ -52,6 +52,7 @@ dependencies:
   jwt_decode: ^0.3.1
   jwt_decoder: ^2.0.1
   url_launcher: ^6.3.1
+  badges: ^3.1.2
 
 dev_dependencies:
   flutter_test:
