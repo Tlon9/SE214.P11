@@ -66,17 +66,21 @@ class _NotificationIconButtonState extends State<NotificationIconButton> {
   Future<void> _updateUnreadCount() async {
     final accessToken = await _storage.read(key: 'access_token');
     if (accessToken != null) {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:8080/payment/notification/?type=count'),
-        headers: {'Authorization': 'Bearer $accessToken'},
-      );
-      final jsonResponse = jsonDecode(response.body);
-      final updatedCount = jsonResponse['unread_count'];
-      print('Updated count: $updatedCount');
-      await NotificationManager().setUnreadCount(updatedCount);
-      setState(() {
-        unreadCount = updatedCount;
-      });
+      try {
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8080/payment/notification/?type=count'),
+          headers: {'Authorization': 'Bearer $accessToken'},
+        );
+        final jsonResponse = jsonDecode(response.body);
+        final updatedCount = jsonResponse['unread_count'];
+        print('Updated count: $updatedCount');
+        await NotificationManager().setUnreadCount(updatedCount);
+        setState(() {
+          unreadCount = updatedCount;
+        });
+      } catch (e) {
+        print('Failed to update unread count: $e');
+      }
     }
   }
 

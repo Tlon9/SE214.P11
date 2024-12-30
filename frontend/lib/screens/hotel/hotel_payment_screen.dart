@@ -376,7 +376,22 @@ class HotelPaymentScreen extends StatelessWidget {
                       throw Exception('Failed to make payment');
                     }
                   } else {
-                    throw Exception('Failed to make payment');
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Thông báo"),
+                        content: Text("Bạn cần đăng nhập để thanh toán."),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: const Text("Đóng"),
+                          ),
+                        ],
+                      ),
+                    );
                   }
                 } else {
                   Navigator.pushNamed(context, '/login');
