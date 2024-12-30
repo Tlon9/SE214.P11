@@ -14,6 +14,8 @@ import 'package:travelowkey/widgets/notification_button.dart';
 import 'package:travelowkey/screens/home/notification_screen.dart';
 import 'package:travelowkey/models/accountLogin_model.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HotelSearchScreen extends StatelessWidget {
   void _onSearchButtonPressed(BuildContext context) {
@@ -76,6 +78,51 @@ class HotelSearchScreen extends StatelessWidget {
               'customerCount': customerCount,
             });
       }
+    }
+  }
+
+  Future<void> saveRecommendations(
+      String type, List<dynamic> recommendations) async {
+    final box = Hive.box('recommendationBox');
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+
+    box.put('${type}_recommendations', recommendations);
+    box.put('${type}_timestamp', currentTime);
+  }
+
+  Future<List> recommended_hotels() async {
+    final _storage = FlutterSecureStorage();
+    final userJson = await _storage.read(key: 'user_info');
+    final accessToken = userJson != null
+        ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+        : null;
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8800/user/verify/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${accessToken}",
+        },
+      );
+      final user_id = jsonDecode(response.body)['user_id'];
+      String url;
+      if (user_id != null) {
+        url = 'http://10.0.2.2:8008/hotels/recommendation?user_id=${user_id}';
+      } else {
+        url = 'http://10.0.2.2:8008/hotels/recommendation';
+      }
+      final response2 = await http.get(
+        Uri.parse(url),
+      );
+
+      final recommend_hotels = jsonDecode(response2.body);
+      return recommend_hotels['recommendations'];
+    } catch (e) {
+      final response2 = await http.get(
+        Uri.parse('http://10.0.2.2:8000/hotels/recommendation'),
+      );
+      final recommend_hotels = jsonDecode(response2.body);
+      return recommend_hotels['recommendations'];
     }
   }
 
@@ -348,16 +395,34 @@ class HotelSearchScreen extends StatelessWidget {
                       SizedBox(height: 10),
                       // Horizontal List of Destination Cards
                       SizedBox(
-                        height: 200,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            DestinationCard(),
-                            DestinationCard(),
-                            DestinationCard(),
-                          ],
-                        ),
-                      ),
+                          height: 200, // Adjust height as needed
+                          child: FutureBuilder(
+                            future: recommended_hotels(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text(
+                                        'Đã xảy ra lỗi: ${snapshot.error}'));
+                              } else {
+                                final recommendHotels = snapshot.data ?? [];
+                                return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: recommendHotels.length,
+                                  itemBuilder: (context, index) {
+                                    final hotel = recommendHotels[index];
+                                    return DestinationCard(data: {
+                                      'type': 'hotel',
+                                      'hotel': hotel,
+                                    });
+                                  },
+                                );
+                              }
+                            },
+                          )),
                     ],
                   ),
                 ],

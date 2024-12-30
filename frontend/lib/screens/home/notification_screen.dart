@@ -55,7 +55,9 @@ class NotificationScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+                child: Text('Đăng nhập để xem thông báo',
+                    style: TextStyle(color: Colors.red)));
           } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
             final notifications = snapshot.data!;
             return ListView.builder(
