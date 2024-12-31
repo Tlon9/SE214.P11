@@ -6,7 +6,9 @@ class User {
   final String birthDate;
   final String phoneNumber;
   final String nationality;
-  final String passport_id;
+  final String passport_nation;
+  final String passport_expiration;
+  final int score;
 
   User({
     required this.id,
@@ -16,7 +18,9 @@ class User {
     required this.birthDate,
     required this.phoneNumber,
     required this.nationality,
-    required this.passport_id,
+    required this.passport_nation,
+    required this.passport_expiration,
+    required this.score,
   });
 
   // Convert JSON to User instance
@@ -29,7 +33,9 @@ class User {
       birthDate: json['birthdate'] != null ? json['birthdate'].toString() : 'Unknown Birthdate',
       phoneNumber: json['phone_number'] ?? 'Unknown Phone number',
       nationality: json['nationality'] ?? 'Unknown Nationality',
-      passport_id: json['passport_id'] ?? 'Unknown Passport id',
+      passport_nation: json['passport_nation'] ?? 'Unknown nation',
+      passport_expiration: json['passport_expiration'] ?? 'Unknown expiration',
+      score: json['score'] ?? 0,
     );
   }
 
@@ -44,7 +50,10 @@ class User {
       "birthDate": this.birthDate == 'Unknown Birthdate' ? null : this.birthDate,
       "phoneNumber": this.phoneNumber == 'Unknown Phone number' ? null : this.phoneNumber,
       "nationality": this.nationality == 'Unknown Nationality' ? null : this.nationality,
-      "passport_id": this.passport_id == 'Unknown Passport id' ? null : this.passport_id,
+      // "passport_id": this.passport_id == 'Unknown Passport id' ? null : this.passport_id,
+      "passport_nation": this.passport_nation == 'Unknown nation' ? null : this.passport_nation,
+      "passport_expiration": this.passport_expiration == 'Unknown expiration' ? null : this.passport_expiration,
+      "score": this.score,
     };
   }
 }

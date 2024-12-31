@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travelowkey/screens/profile/password_change_screen.dart';
 import 'package:travelowkey/services/api_service.dart';
 // import 'package:travelowkey/models/user_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,11 +34,6 @@ class UserProfilePage extends StatelessWidget {
         else
         {
           bool isLoggedIn = userProvider.user != null;
-          if(isLoggedIn) {
-            print( userProvider.user?.email);
-          }
-          // isLoggedIn = false;
-          else {print("error isLoggedIn");}
           final apiUrl = 'http://10.0.2.2:8800/user/';
           return BlocProvider(
             create: (context) => UserProfileBloc(repository: UserResultRepository(dataProvider: UserDataProvider(apiUrl: apiUrl, accessToken: userProvider.user!.accessToken)))..add(LoadUserProfile()),
@@ -64,148 +60,158 @@ class UserProfilePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                body:isLoggedIn
-                  ? BlocBuilder<UserProfileBloc, UserProfileState>(
-                      builder: (context, state) {
-                        if (state is UserProfileLoading) {
-                          return const Center(child: CircularProgressIndicator());
-                        } else if (state is UserProfileLoaded) {
-                        TextEditingController usernameController = TextEditingController(text: state.user.username);
-                        TextEditingController genderController = TextEditingController(text: state.user.gender);
-                        TextEditingController phoneNumberController = TextEditingController(text: state.user.phoneNumber);
-                        TextEditingController emailController = TextEditingController(text: state.user.email);
-                        String selectedDate = state.user.birthDate;
-                          // print(state.user.email.toString());
-                          return Column(
-                            children: [
-                              // User Header Section
-                              Container(
-                                width: double.infinity,
-                                color: Colors.white,
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  children: [
-                                    const CircleAvatar(
-                                      radius: 50,
-                                      backgroundColor: Colors.white,
-                                      child: Icon(
-                                        Icons.person,
-                                        size: 50,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    const Text(
-                                      'Test3',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // Personal Data Section
-                              Expanded(
-                                child: Container(
-                                  color: Colors.white,
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      _buildInfoRow('Tên đầy đủ', usernameController.text, usernameController),
-                                      _buildInfoRow('Giới tính', genderController.text, genderController),
-                                      // _buildInfoRow('Ngày Sinh', birthDateController.text),
-                                      _buildDatePickerRow(
-                                        context,
-                                        'Ngày Sinh',
-                                        selectedDate,
-                                        (newDate) {
-                                            // selectedDate = newDate; // Update state
-                                            BlocProvider.of<UserProfileBloc>(
-                                                    context)
-                                                .add(SelectBirthDate(newDate));
-                                        },
-                                      ),
-                                      _buildInfoRow('SĐT', phoneNumberController.text, phoneNumberController),
-                                      // _buildInfoRow('Địa chỉ', state.user.),
-                                      _buildInfoRow('Email', emailController.text, emailController),
-                                      const SizedBox(height: 16),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // Trigger update user info event
-                                          BlocProvider.of<UserProfileBloc>(context).add(
-                                            UpdateUserProfile(
-                                              username: usernameController.text,
-                                              gender: genderController.text,
-                                              birthDate: selectedDate,
-                                              phoneNumber: phoneNumberController.text,
-                                              email: emailController.text,
-                                            ),
-                                          );
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Thông tin đã được cập nhật.'),
-                                            ),
-                                          );
-                                        },
-                                        child: const Text('CẬP NHẬT'),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      const Text(
-                                        'Thay đổi mật khẩu',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
+                body: isLoggedIn
+                    ? BlocBuilder<UserProfileBloc, UserProfileState>(
+                        builder: (context, state) {
+                          if (state is UserProfileLoading) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (state is UserProfileLoaded) {
+                            TextEditingController usernameController = TextEditingController(text: state.user.username);
+                            TextEditingController genderController = TextEditingController(text: state.user.gender);
+                            TextEditingController phoneNumberController = TextEditingController(text: state.user.phoneNumber);
+                            TextEditingController emailController = TextEditingController(text: state.user.email);
+                            TextEditingController nationalityController = TextEditingController(text: state.user.nationality);
+                            TextEditingController passportNationController = TextEditingController(text: state.user.passport_nation);
+                            String selectedExpirationDate = state.user.passport_expiration;
+                            String selectedDate = state.user.birthDate;
+
+                            return SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  // User Header Section
+                                  Container(
+                                    width: double.infinity,
+                                    color: Colors.white,
+                                    child: Column(
+                                      children: [
+                                        const CircleAvatar(
+                                          radius: 50,
+                                          backgroundColor: Colors.white,
+                                          child: Icon(
+                                            Icons.person,
+                                            size: 30,
+                                            color: Colors.grey,
+                                          ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Personal Data Section
+                                  Container(
+                                    color: Colors.white,
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _buildInfoRow('Tên đầy đủ', usernameController.text, usernameController),
+                                        _buildInfoRow('Giới tính', genderController.text, genderController),
+                                        _buildDatePickerRow(
+                                          context,
+                                          'Ngày Sinh',
+                                          selectedDate,
+                                          (newDate) {
+                                            BlocProvider.of<UserProfileBloc>(context).add(SelectBirthDate(newDate));
+                                          },
+                                        ),
+                                        _buildInfoRow('SĐT', phoneNumberController.text, phoneNumberController),
+                                        _buildInfoRow('Email', emailController.text, emailController),
+                                        _buildInfoRow('Quốc tịch', nationalityController.text, nationalityController),
+                                        _buildInfoRow('Quốc gia cấp', passportNationController.text, passportNationController),
+                                        _buildDatePickerRow(
+                                          context,
+                                          'Ngày cấp',
+                                          selectedExpirationDate,
+                                          (newDate) {
+                                            BlocProvider.of<UserProfileBloc>(context).add(SelectExpirationDate(newDate));
+                                          },
+                                        ),
+                                        const SizedBox(height: 16),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Trigger update user info event
+                                            BlocProvider.of<UserProfileBloc>(context).add(
+                                              UpdateUserProfile(
+                                                username: usernameController.text,
+                                                gender: genderController.text,
+                                                birthDate: selectedDate,
+                                                phoneNumber: phoneNumberController.text,
+                                                email: emailController.text,
+                                                nationality: nationalityController.text,
+                                                passport_nation: passportNationController.text,
+                                                passport_expiration: selectedExpirationDate
+                                              ),
+                                            );
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Thông tin đã được cập nhật.'),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('CẬP NHẬT'),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        GestureDetector(
+                                          onTap: () {
+                                            // Add your logic here
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => PassWordChangePage(), // Replace with your change password screen
+                                              ),
+                                            );
+                                          },
+                                          child: const Text(
+                                            'Thay đổi mật khẩu',
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              decoration: TextDecoration.underline,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Logout Button
+                                  Container(
+                                    width: double.infinity,
+                                    color: Colors.blue,
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        // Handle logout action
+                                        await userProvider.logout();
+
+                                        // Navigate to the login screen after logging out
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                                        );
+                                      },
+                                      child: const Text(
+                                        'ĐĂNG XUẤT',
+                                        style: TextStyle(color: Colors.white),
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                              // Logout Button
-                              Container(
-                                width: double.infinity,
-                                color: Colors.blue,
-                                child: TextButton(
-                                  onPressed: () async {
-                                    // Handle logout action
-                                    // Clear the user info
-                                    await userProvider.logout();
-                                    
-                                    // Navigate to the login screen after logging out
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => LoginScreen()),  // Replace with your login page
-                                    );
-                                  },
-                                  child: const Text(
-                                    'ĐĂNG XUẤT',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                        else if (state is UserProfileFailure) {
-                          return Center(child: Text(state.error));
-                        } else {
-                          return const Center(child: Text('Không tải được frofile'));
-                        }
-                      },
-                    )
-                  : Center(
-                      child: const Text(
-                        'Bạn chưa đăng nhập.',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
+                            );
+                          } else if (state is UserProfileFailure) {
+                            return Center(child: Text(state.error));
+                          } else {
+                            return const Center(child: Text('Không tải được profile'));
+                          }
+                        },
+                      )
+                    : Center(
+                        child: const Text(
+                          'Bạn chưa đăng nhập.',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
               )
             )
           );
@@ -220,13 +226,18 @@ class UserProfilePage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black, // Black text color for labels
-              fontSize: 16,
+          SizedBox(
+            width: 80, // Adjust the width as needed
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.black, // Black text color for labels
+                fontSize: 16,
+              ),
+              overflow: TextOverflow.ellipsis, // Handle long labels gracefully
             ),
           ),
+          const SizedBox(width: 8.0),
           Expanded(
             child: TextField(
               controller: TextEditingController(text: value), // Set the initial value
@@ -262,13 +273,18 @@ class UserProfilePage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 16,
+          SizedBox(
+            width: 80, // Adjust the width as needed
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.black, // Black text color for labels
+                fontSize: 16,
+              ),
+              overflow: TextOverflow.ellipsis, // Handle long labels gracefully
             ),
           ),
+          const SizedBox(width: 8.0),
           Expanded(
             child: GestureDetector(
               onTap: () async {
@@ -293,7 +309,6 @@ class UserProfilePage extends StatelessWidget {
                 if (pickedDate != null) {
                   // Format the picked date and call the callback
                   String formattedDate = pickedDate.toIso8601String().split('T')[0];
-                  // print(formattedDate);
                   onDateChanged(formattedDate);
                 }
               },

@@ -32,6 +32,10 @@ class UserProfileLoaded extends UserProfileState {
     String? phoneNumber,
     String? email,
     String? birthDate,
+    String? nationality,
+    String? passport_nation,
+    String? passport_expiration,
+    int? score
   }) {
     return UserProfileLoaded(
       User(
@@ -41,8 +45,10 @@ class UserProfileLoaded extends UserProfileState {
         phoneNumber: phoneNumber ?? user.phoneNumber,
         email: email ?? user.email,
         birthDate: birthDate ?? user.birthDate,
-        nationality: user.nationality,
-        passport_id: user.passport_id,
+        nationality: nationality?? user.nationality,
+        passport_nation: passport_nation ?? user.passport_nation,
+        passport_expiration: passport_expiration ?? user.passport_expiration,
+        score: score ?? user.score,
       )
     );
   }
@@ -53,6 +59,10 @@ class UserProfileLoaded extends UserProfileState {
     String? phoneNumber,
     String? email,
     String? birthDate,
+    String? nationality,
+    String? passport_nation,
+    String? passport_expiration,
+    int? score,
   }) {
     return User(
         id: user.id,
@@ -61,8 +71,10 @@ class UserProfileLoaded extends UserProfileState {
         phoneNumber: phoneNumber ?? user.phoneNumber,
         email: email ?? user.email,
         birthDate: birthDate ?? user.birthDate,
-        nationality: user.nationality,
-        passport_id: user.passport_id,
+        nationality: nationality ?? user.nationality,
+        passport_nation: passport_nation ?? user.passport_nation,
+        passport_expiration: passport_expiration ?? user.passport_expiration,
+        score: score ?? user.score
       );
   }
 

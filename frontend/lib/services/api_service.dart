@@ -12,6 +12,7 @@ import 'package:travelowkey/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:travelowkey/models/paymentHistory_model.dart';
+import 'package:travelowkey/models/user_password_model.dart';
 
 class FlightSearchDataProvider {
   final String apiUrl;
@@ -225,7 +226,7 @@ class UserProvider with ChangeNotifier {
   // Check if user is logged in
   Future<bool> isLoggedIn() async {
     if (_user == null || _user!.accessToken.isEmpty) return false;
-    return await _verifyToken(_user!.accessToken);
+    return await _verifyToken(_user!.accessToken, _user!.email);
   }
 
 
@@ -240,13 +241,13 @@ class UserProvider with ChangeNotifier {
   }
 
     /// Verify token with the backend
-  Future<bool> _verifyToken(String token) async {
+  Future<bool> _verifyToken(String token, String email) async {
     try {
       final url = Uri.parse('http://10.0.2.2:8800/user/token-verify/');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'token': token}),
+        body: jsonEncode({'token': token, 'email': email}),
       );
 
       if (response.statusCode == 200) {
@@ -268,8 +269,6 @@ class UserDataProvider {
   final String accessToken;
   UserDataProvider({required this.apiUrl,required this.accessToken});
   Future<User> fetchUser() async {
-    // final apiUrl = 'http://10.0.2.2:8000/user/?email=${email}';
-    // final response = await http.get(Uri.parse(apiUrl));
     final response = await http.get(
       Uri.parse(apiUrl),
       headers: {
@@ -283,8 +282,31 @@ class UserDataProvider {
       throw Exception("Failed to load user");
     }
   }
+  Future<void> checkUserPassport() async {
+    final response = await http.get(
+      Uri.parse(apiUrl+"checkpassport/"),
+      headers: {
+        'Authorization': 'Bearer ${this.accessToken}',
+      },
+    );
+    if (response.statusCode == 200) {
+      // Passport info is updated
+      final decodedJson = json.decode(response.body);
+      return decodedJson['message'] ?? "Passport info is updated";
+    } else if (response.statusCode == 204) {
+      // Passport info is not updated
+      final decodedJson = json.decode(response.body);
+      return decodedJson['message'] ?? "Passport info is not updated";
+    } else if (response.statusCode == 401) {
+      // User is not authenticated
+      final decodedJson = json.decode(response.body);
+      throw Exception(decodedJson['error'] ?? "User is not authenticated.");
+    } else {
+      // Other errors
+      throw Exception("Failed to check passport info: ${response.statusCode} - ${response.reasonPhrase}");
+    }
+  }
   Future<void> updateUser(User user) async {
-    print(user.birthDate);
     final response = await http.put(
       Uri.parse(apiUrl+"updateinfo/"), // Ensure the correct endpoint
       headers: {
@@ -305,6 +327,26 @@ class UserDataProvider {
         email: 'test@example.com',
         accessToken: 'token',
         refreshToken: 'refresh_token');
+  }
+}
+
+class PasswordDataProvider {
+  final String apiUrl;
+  final String accessToken;
+  PasswordDataProvider({required this.apiUrl,required this.accessToken});
+  Future<void> updatePassword(Password password) async {
+    final response = await http.put(
+      Uri.parse(apiUrl+"updatepassword/"), // Ensure the correct endpoint
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(password.toJson()),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update password');
+    }
   }
 }
 

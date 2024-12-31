@@ -1,5 +1,6 @@
 import 'package:travelowkey/services/api_service.dart';
 import 'package:travelowkey/models/user_model.dart';
+import 'package:travelowkey/models/user_password_model.dart';
 
 
 class UserResultRepository {
@@ -23,5 +24,15 @@ class UserResultRepository {
 
   Future<void> updateUser(User user) async {
     await dataProvider.updateUser(user);
+  }
+}
+
+class PasswordRepository {
+  final PasswordDataProvider dataProvider;
+
+  PasswordRepository({required this.dataProvider});
+
+  Future<void> updatePassword(Password pw) async {
+    await dataProvider.updatePassword(pw);
   }
 }
