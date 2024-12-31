@@ -379,7 +379,6 @@ class PaymentScreen extends StatelessWidget {
                 if (userJson != null) {
                   final accessToken =
                       AccountLogin.fromJson(jsonDecode(userJson)).accessToken;
-                  print(useScore);
                   final response = await http.post(
                     Uri.parse(
                         'http://10.0.2.2:8080/payment/create/?use_score=${useScore}'),
