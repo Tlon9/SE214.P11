@@ -14,6 +14,8 @@ import 'package:travelowkey/bloc/flight/flight_payment/FlightPaymentState.dart';
 import 'package:travelowkey/bloc/flight/flight_payment/FlightPaymentBloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
 
 Future<http.Response> fetchQRCode(String transactionId, String service) async {
   final url = Uri.parse(
@@ -82,10 +84,21 @@ class PaymentScreen extends StatelessWidget {
             ],
           ),
           actions: [
-            IconButton(
-              icon: Icon(Icons.notifications, color: Colors.white, size: 30),
-              onPressed: () {
-                // Navigate to notification screen
+            NotificationIconButton(
+              onLoggedIn: () async {
+                final _storage = FlutterSecureStorage();
+                final userJson = await _storage.read(key: 'user_info');
+                final accessToken = userJson != null
+                    ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+                    : null;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(
+                      accessToken: accessToken!, // Pass actual token
+                    ),
+                  ),
+                );
               },
             ),
           ],
@@ -361,7 +374,22 @@ class PaymentScreen extends StatelessWidget {
                       throw Exception('Failed to make payment');
                     }
                   } else {
-                    throw Exception('Failed to make payment');
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Thông báo"),
+                        content: Text("Bạn cần đăng nhập để thanh toán."),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: const Text("Đóng"),
+                          ),
+                        ],
+                      ),
+                    );
                   }
                 } else {
                   Navigator.pushNamed(context, '/login');

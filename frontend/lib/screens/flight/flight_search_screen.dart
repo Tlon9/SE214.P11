@@ -9,6 +9,13 @@ import 'package:travelowkey/bloc/flight/flight_search/FlightSearchEvent.dart';
 import 'package:travelowkey/bloc/flight/flight_search/FlightSearchState.dart';
 import 'package:travelowkey/repositories/flightSearch_repository.dart';
 import 'package:travelowkey/services/api_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:travelowkey/widgets/notification_button.dart';
+import 'package:travelowkey/screens/home/notification_screen.dart';
+import 'package:travelowkey/models/accountLogin_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:hive_flutter/hive_flutter.dart';
 
 class FlightSearchScreen extends StatelessWidget {
   void _onSearchButtonPressed(BuildContext context) {
@@ -65,15 +72,76 @@ class FlightSearchScreen extends StatelessWidget {
         );
       } else {
         // Navigate to the flight results screen if all fields are filled
-        Navigator.pushNamed(
-            context, '/flight_result', // replace with your actual route
-            arguments: {
-              'departure': departure,
-              'destination': destination,
-              'date': date,
-              'seatClass': seatClass,
-              'passengerCount': passengerCount,
-            });
+        Navigator.pushNamed(context, '/flight_result', arguments: {
+          'departure': departure,
+          'destination': destination,
+          'date': date,
+          'seatClass': seatClass,
+          'passengerCount': passengerCount,
+        });
+      }
+    }
+  }
+
+  Future<void> saveRecommendations(
+      String type, List<dynamic> recommendations) async {
+    final box = Hive.box('recommendationBox');
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+
+    box.put('${type}_recommendations', recommendations);
+    box.put('${type}_timestamp', currentTime);
+  }
+
+  Future<List> recommended_flights() async {
+    final _storage = FlutterSecureStorage();
+    final userJson = await _storage.read(key: 'user_info');
+    final accessToken = userJson != null
+        ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+        : null;
+
+    // Check cache first
+    final box = await Hive.openBox('recommendationBox');
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    final cachedTime = box.get('flight_timestamp', defaultValue: 0);
+
+    if (currentTime - cachedTime <= 86400000 &&
+        box.get('flight_recommendations') != null) {
+      return box.get('flight_recommendations');
+    } else {
+      try {
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8800/user/verify/'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer ${accessToken}",
+          },
+        );
+        final user_id = jsonDecode(response.body)['user_id'];
+        String url;
+        if (user_id != null) {
+          url =
+              'http://10.0.2.2:8000/flights/recommendation?user_id=${user_id}';
+        } else {
+          url = 'http://10.0.2.2:8000/flights/recommendation';
+        }
+        final response2 = await http.get(
+          Uri.parse(url),
+        );
+
+        final recommend_flights = jsonDecode(response2.body);
+        // Cache the data
+        await saveRecommendations(
+            'flight', recommend_flights['recommendations']);
+        return recommend_flights['recommendations'];
+      } catch (e) {
+        final response2 = await http.get(
+          Uri.parse('http://10.0.2.2:8000/flights/recommendation'),
+        );
+        final recommend_flights = jsonDecode(response2.body);
+        // Cache the data
+        await saveRecommendations(
+            'flight', recommend_flights['recommendations']);
+        return recommend_flights['recommendations'];
       }
     }
   }
@@ -99,10 +167,21 @@ class FlightSearchScreen extends StatelessWidget {
           ),
           title: Text('Tìm chuyến bay'),
           actions: [
-            IconButton(
-              icon: Icon(Icons.notifications, color: Colors.white, size: 30),
-              onPressed: () {
-                // Navigate to notification screen
+            NotificationIconButton(
+              onLoggedIn: () async {
+                final _storage = FlutterSecureStorage();
+                final userJson = await _storage.read(key: 'user_info');
+                final accessToken = userJson != null
+                    ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+                    : null;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(
+                      accessToken: accessToken!, // Pass actual token
+                    ),
+                  ),
+                );
               },
             ),
           ],
@@ -404,16 +483,34 @@ class FlightSearchScreen extends StatelessWidget {
                       SizedBox(height: 10),
                       // Horizontal List of Destination Cards
                       SizedBox(
-                        height: 200,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            DestinationCard(),
-                            DestinationCard(),
-                            DestinationCard(),
-                          ],
-                        ),
-                      ),
+                          height: 200, // Adjust height as needed
+                          child: FutureBuilder(
+                            future: recommended_flights(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text(
+                                        'Đã xảy ra lỗi: ${snapshot.error}'));
+                              } else {
+                                final recommendFlights = snapshot.data ?? [];
+                                return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: recommendFlights.length,
+                                  itemBuilder: (context, index) {
+                                    final flight = recommendFlights[index];
+                                    return DestinationCard(data: {
+                                      'type': 'flight',
+                                      'flight': flight,
+                                    });
+                                  },
+                                );
+                              }
+                            },
+                          )),
                     ],
                   ),
                 ],

@@ -41,6 +41,7 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           HomePage(),
           ExplorePage(),
+          // NotificationScreen(),
           BlocProvider(
             create: (context) => PaymentHistoryBloc(
               repository: PaymentHistoryRepository(

@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:travelowkey/app_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travelowkey/services/api_service.dart';
-void main() {
-    runApp(
+import 'package:hive_flutter/hive_flutter.dart';
+
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox('recommendationBox');
+  runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()..loadUserInfo()),
