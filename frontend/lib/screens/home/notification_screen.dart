@@ -66,7 +66,7 @@ class NotificationScreen extends StatelessWidget {
                 final notification = notifications[index];
                 return Card(
                   color: notification['status'] == 'UNREAD'
-                      ? const Color.fromARGB(255, 230, 230, 230)
+                      ? const Color.fromARGB(255, 246, 234, 234)
                       : Colors.white,
                   margin:
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 8),

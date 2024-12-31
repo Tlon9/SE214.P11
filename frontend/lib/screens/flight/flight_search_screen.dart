@@ -104,7 +104,7 @@ class FlightSearchScreen extends StatelessWidget {
     final currentTime = DateTime.now().millisecondsSinceEpoch;
     final cachedTime = box.get('flight_timestamp', defaultValue: 0);
 
-    if (currentTime - cachedTime <= 86400000 &&
+    if (currentTime - cachedTime <= 300000 &&
         box.get('flight_recommendations') != null) {
       return box.get('flight_recommendations');
     } else {

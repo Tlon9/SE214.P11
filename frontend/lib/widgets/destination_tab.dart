@@ -12,7 +12,7 @@ class DestinationTab extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.blue : Colors.grey.shade300,
+        color: isSelected ? Colors.blue : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

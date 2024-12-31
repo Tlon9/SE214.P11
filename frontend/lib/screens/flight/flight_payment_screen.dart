@@ -38,20 +38,35 @@ class PaymentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, dynamic> services = {
       'VietJet Air': [
-        '7kg hanh ly xach tay',
-        'wifi khong co san',
-        'dich vu an uong',
-        'airbus A350'
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Airbus A350'
       ],
       'Vietnam Airlines': [
-        '7kg hanh ly xach tay',
-        'wifi khong co san',
-        'dich vu an uong',
-        'airbus A350'
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Boeing 787-10'
       ],
       'Bamboo Airways': [
-        '7kg hanh ly xach tay',
-      ]
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Boeing 787-9 Dreamliner'
+      ],
+      'Pacific Airlines': [
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Airbus A320'
+      ],
+      'Vietravel Airlines': [
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Airbus A320'
+      ],
     };
     final Map<String, dynamic> paymentInfo = {
       'service': 'flight',
@@ -132,7 +147,7 @@ class PaymentScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              color: Colors.grey[200],
+              color: const Color.fromARGB(255, 246, 234, 234),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -203,21 +218,31 @@ class PaymentScreen extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold)),
                       Card(
-                        color: Colors.grey[200],
+                        color: const Color.fromARGB(255, 246, 234, 234),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: SizedBox(
                             height: 200,
+                            width: 250,
                             child: services[flight.name] != null
                                 ? Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
-                                    children: services[flight.name]
-                                        .map<Widget>((service) => Text(service,
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 20)))
-                                        .toList(),
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Thông tin chi tiết chuyến bay',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                      ...services[flight.name]
+                                          .map<Widget>((service) => Text(
+                                              ' - ' + service,
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15)))
+                                          .toList()
+                                    ],
                                   )
                                 : Text('Không có dịch vụ',
                                     style: TextStyle(
@@ -266,13 +291,13 @@ class PaymentScreen extends StatelessWidget {
                 } else if (state is PaymentLoaded) {
                   return Container(
                     height: 150,
-                    // Ensure proper constraints are applied
+                    margin: EdgeInsets.only(top: 20, left: 20),
                     child: Column(
                       children: [
                         Text('Phương thức thanh toán:',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                                fontSize: 25, fontWeight: FontWeight.bold)),
                         Expanded(
                           child: ListView(
                             children: state.availableMethods.map((method) {
@@ -331,34 +356,38 @@ class PaymentScreen extends StatelessWidget {
                                   snapshot.data == -1) {
                                 return SizedBox.shrink();
                               } else {
-                                return Row(
-                                  children: [
-                                    Checkbox(
-                                      value: state.useScore,
-                                      onChanged: (bool? value) {
-                                        if (value != null) {
-                                          if (value) {
-                                            paymentInfo['amount'] =
-                                                (flight.price ?? 0) *
-                                                        passengers -
-                                                    snapshot.data! * 100;
-                                            useScore = true;
-                                          } else {
-                                            paymentInfo['amount'] =
-                                                (flight.price ?? 0) *
-                                                    passengers;
-                                            useScore = false;
+                                return Container(
+                                  margin: EdgeInsets.only(left: 30),
+                                  padding: EdgeInsets.only(bottom: 20),
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                        value: state.useScore,
+                                        onChanged: (bool? value) {
+                                          if (value != null) {
+                                            if (value) {
+                                              paymentInfo['amount'] =
+                                                  (flight.price ?? 0) *
+                                                          passengers -
+                                                      snapshot.data! * 100;
+                                              useScore = true;
+                                            } else {
+                                              paymentInfo['amount'] =
+                                                  (flight.price ?? 0) *
+                                                      passengers;
+                                              useScore = false;
+                                            }
+                                            context.read<PaymentBloc>().add(
+                                                ToggleUseScore(
+                                                    value,
+                                                    paymentInfo['amount']
+                                                        as int));
                                           }
-                                          context.read<PaymentBloc>().add(
-                                              ToggleUseScore(
-                                                  value,
-                                                  paymentInfo['amount']
-                                                      as int));
-                                        }
-                                      },
-                                    ),
-                                    Text('Sử dụng điểm để thanh toán'),
-                                  ],
+                                        },
+                                      ),
+                                      Text('Sử dụng điểm để thanh toán'),
+                                    ],
+                                  ),
                                 );
                               }
                             },

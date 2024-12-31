@@ -21,6 +21,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
+String formatPrice(String price) {
+  // Parse the string to an integer
+  int value = int.tryParse(price) ?? 0;
+
+  // Format the integer with a thousand separator
+  return NumberFormat("#,###", "en_US").format(value).replaceAll(",", ".");
+}
+
 class HomePage extends StatelessWidget {
   Future<void> saveRecommendations(
       String type, List<dynamic> recommendations) async {
@@ -43,7 +51,7 @@ class HomePage extends StatelessWidget {
     final currentTime = DateTime.now().millisecondsSinceEpoch;
     final cachedTime = box.get('flight_timestamp', defaultValue: 0);
 
-    if (currentTime - cachedTime <= 86400000 &&
+    if (currentTime - cachedTime <= 300000 &&
         box.get('flight_recommendations') != null) {
       return box.get('flight_recommendations');
     } else {
@@ -94,33 +102,45 @@ class HomePage extends StatelessWidget {
     final accessToken = userJson != null
         ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
         : null;
-    try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:8800/user/verify/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': "Bearer ${accessToken}",
-        },
-      );
-      final user_id = jsonDecode(response.body)['user_id'];
-      String url;
-      if (user_id != null) {
-        url = 'http://10.0.2.2:8008/hotels/recommendation?user_id=${user_id}';
-      } else {
-        url = 'http://10.0.2.2:8008/hotels/recommendation';
-      }
-      final response2 = await http.get(
-        Uri.parse(url),
-      );
+    // Check cache first
+    final box = await Hive.openBox('recommendationBox');
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    final cachedTime = box.get('hotel_timestamp', defaultValue: 0);
 
-      final recommend_hotels = jsonDecode(response2.body);
-      return recommend_hotels['recommendations'];
-    } catch (e) {
-      final response2 = await http.get(
-        Uri.parse('http://10.0.2.2:8000/hotels/recommendation'),
-      );
-      final recommend_hotels = jsonDecode(response2.body);
-      return recommend_hotels['recommendations'];
+    if (currentTime - cachedTime <= 300000 &&
+        box.get('hotel_recommendations') != null) {
+      return box.get('hotel_recommendations');
+    } else {
+      try {
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8800/user/verify/'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer ${accessToken}",
+          },
+        );
+        final user_id = jsonDecode(response.body)['user_id'];
+        String url;
+        if (user_id != null) {
+          url = 'http://10.0.2.2:8008/hotels/recommendation?user_id=${user_id}';
+        } else {
+          url = 'http://10.0.2.2:8008/hotels/recommendation';
+        }
+        final response2 = await http.get(
+          Uri.parse(url),
+        );
+
+        final recommend_hotels = jsonDecode(response2.body);
+        return recommend_hotels['recommendations'];
+      } catch (e) {
+        final response2 = await http.get(
+          Uri.parse('http://10.0.2.2:8000/hotels/recommendation'),
+        );
+        final recommend_hotels = jsonDecode(response2.body);
+        // Cache the data
+        await saveRecommendations('hotel', recommend_hotels['recommendations']);
+        return recommend_hotels['recommendations'];
+      }
     }
   }
 
@@ -456,7 +476,7 @@ class HistoryPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF007AFF),
         titleTextStyle: TextStyle(
             color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
         title: Text("Lịch sử thanh toán", style: TextStyle(fontSize: 20)),
@@ -530,6 +550,7 @@ class HistoryPage extends StatelessWidget {
                     Text(
                       "${payment.status.toString().toUpperCase()}",
                       style: TextStyle(
+                        fontWeight: FontWeight.bold,
                         color: payment.status.toLowerCase() == 'pending'
                             ? Colors.orange
                             : payment.status == 'failed'
@@ -543,7 +564,8 @@ class HistoryPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      "${payment.amount.toStringAsFixed(0)} VND",
+                      formatPrice("${payment.amount.toStringAsFixed(0)}") +
+                          " VND",
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,

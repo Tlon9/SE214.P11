@@ -268,7 +268,7 @@ class HotelPaymentScreen extends StatelessWidget {
                 } else if (state is PaymentLoaded) {
                   return Container(
                     height: 150,
-                    // Ensure proper constraints are applied
+                    margin: EdgeInsets.only(top: 20, left: 20),
                     child: Column(
                       children: [
                         Text('Phương thức thanh toán:',
@@ -331,38 +331,42 @@ class HotelPaymentScreen extends StatelessWidget {
                                   snapshot.data == -1) {
                                 return SizedBox.shrink();
                               } else {
-                                return Row(
-                                  children: [
-                                    Checkbox(
-                                      value: state.useScore,
-                                      onChanged: (bool? value) {
-                                        if (value != null) {
-                                          if (value) {
-                                            paymentInfo['amount'] = (room.price
-                                                        as int) *
-                                                    (checkOutDate.difference(
-                                                            checkInDate))
-                                                        .inDays -
-                                                snapshot.data! * 100;
-                                            useScore = true;
-                                          } else {
-                                            paymentInfo['amount'] =
-                                                (room.price as int) *
-                                                    (checkOutDate.difference(
-                                                            checkInDate))
-                                                        .inDays;
-                                            useScore = false;
+                                return Container(
+                                  margin: EdgeInsets.only(left: 30),
+                                  padding: EdgeInsets.only(bottom: 20),
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                        value: state.useScore,
+                                        onChanged: (bool? value) {
+                                          if (value != null) {
+                                            if (value) {
+                                              paymentInfo['amount'] = (room
+                                                          .price as int) *
+                                                      (checkOutDate.difference(
+                                                              checkInDate))
+                                                          .inDays -
+                                                  snapshot.data! * 100;
+                                              useScore = true;
+                                            } else {
+                                              paymentInfo['amount'] =
+                                                  (room.price as int) *
+                                                      (checkOutDate.difference(
+                                                              checkInDate))
+                                                          .inDays;
+                                              useScore = false;
+                                            }
+                                            context.read<PaymentBloc>().add(
+                                                ToggleUseScore(
+                                                    value,
+                                                    paymentInfo['amount']
+                                                        as int));
                                           }
-                                          context.read<PaymentBloc>().add(
-                                              ToggleUseScore(
-                                                  value,
-                                                  paymentInfo['amount']
-                                                      as int));
-                                        }
-                                      },
-                                    ),
-                                    Text('Sử dụng điểm để thanh toán'),
-                                  ],
+                                        },
+                                      ),
+                                      Text('Sử dụng điểm để thanh toán'),
+                                    ],
+                                  ),
                                 );
                               }
                             },
