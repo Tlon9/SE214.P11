@@ -14,6 +14,7 @@ def payment_callback(request):
         message = request.GET.get('message', '')
         transaction_id = request.GET.get('orderId')
         service = request.GET.get('service')    
+        use_score = request.GET.get('use_score')
 
         # Update transaction status in the database
         if transaction_id:
@@ -24,10 +25,20 @@ def payment_callback(request):
             )
 
             if status == 'SUCCESS':
-                # user_id = transaction_collection.find_one({'_id': transaction_id})['user_id']
+                transaction = transaction_collection.find_one({'_id': transaction_id})
+                new_score = int(transaction['amount'] // 10000)
                 update_url = f"http://127.0.0.1:8080/payment/notification/?transaction_id={transaction_id}"
+                getscore_url = f"http://127.0.0.1:8800/user/score/"
                 access_token = request.headers.get('Authorization').split(' ')[1]
                 headers = {'Authorization': f'Bearer {access_token}'}
+                if use_score == 'true':
+                    old_score = 0
+                else:
+                    old_score = requests.get(getscore_url, headers=headers).json()['score']
+                try:
+                    requests.put(f"http://127.0.0.1:8800/user/score/update/", headers=headers, data={'score': old_score + new_score})
+                except Exception as e:
+                    print(f"Error updating notification for transaction {transaction_id}: {e}")
                 try:
                     requests.post(update_url, headers=headers)
                 except Exception as e:

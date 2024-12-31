@@ -11,4 +11,6 @@ urlpatterns = [
     path('user/token-verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('user/checkpassport/', CheckPassport.as_view(), name='check-passport'),
     path('user/verify/', VerifyUser.as_view(), name='verify'),
+    path('user/score/', getScore.as_view(), name='user-score'),
+    path('user/score/update/', updateScore.as_view(), name='update-score'),
 ]
