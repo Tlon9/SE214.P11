@@ -14,8 +14,8 @@ from django.http import FileResponse, HttpResponseNotFound
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+# from channels.layers import get_channel_layer
+# from asgiref.sync import async_to_sync
 
 class CreatePayment(APIView):
     permission_classes = [IsAuthenticated]
@@ -196,3 +196,8 @@ class Notification(APIView):
         # )
 
         return JsonResponse({"message": "Notification sent successfully"})
+
+def check_new_user(request):
+    user_id = request.GET.get('user_id')
+    is_new_user = transaction_collection.count_documents({'user_id': int(user_id)}) == 0
+    return JsonResponse({'is_new_user': is_new_user})

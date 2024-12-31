@@ -12,4 +12,5 @@ urlpatterns = [
     path('transaction/<str:transaction_id>/', apis.get_transaction, name='get_transaction'),
     path('qr_code', apis.get_qr_code, name='get_qr_code'),
     path('notification/', apis.Notification.as_view(), name='get_notification'),
+    path('new_user', apis.check_new_user, name='new_user'),
 ]

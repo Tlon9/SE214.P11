@@ -191,3 +191,9 @@ class GoogleLogin(APIView):
         
         except ValueError:
             return None
+        
+class VerifyUser(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        return Response({"message": "User is authenticated", "user_id": user.id}, status=status.HTTP_200_OK)

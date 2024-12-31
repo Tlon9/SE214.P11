@@ -6,6 +6,7 @@ import requests
 import qrcode
 from io import BytesIO
 from django.conf import settings
+from db_connection import redis_client
 
 @csrf_exempt
 def payment_callback(request):
@@ -21,6 +22,7 @@ def payment_callback(request):
                 {'_id': transaction_id},
                 {'$set': {'status': status}}
             )
+
             if status == 'SUCCESS':
                 # user_id = transaction_collection.find_one({'_id': transaction_id})['user_id']
                 update_url = f"http://127.0.0.1:8080/payment/notification/?transaction_id={transaction_id}"
@@ -30,6 +32,9 @@ def payment_callback(request):
                     requests.post(update_url, headers=headers)
                 except Exception as e:
                     print(f"Error updating notification for transaction {transaction_id}: {e}")
+                user_id = transaction_collection.find_one({'_id': transaction_id})['user_id']
+                cache_key = f"user_history:{user_id}" 
+                redis_client.delete(cache_key)
                 # transaction = transaction_collection.find_one({'_id': transaction_id})
                 # notification = {
                 #     'user_id': transaction['user_id'],

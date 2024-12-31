@@ -8,4 +8,5 @@ urlpatterns = [
     path('user/', UserInfoView.as_view(), name='user-info'),
     path('user/updateinfo/', UpdateUserInfoView.as_view(), name='user-update'),
     path('user/token-verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('user/verify/', VerifyUser.as_view(), name='verify'),
 ]
