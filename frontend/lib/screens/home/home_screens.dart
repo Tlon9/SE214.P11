@@ -61,6 +61,8 @@ class HomePage extends StatelessWidget {
           url =
               'http://10.0.2.2:8000/flights/recommendation?user_id=${user_id}';
         } else {
+          // Delete accessToken if user verification failed
+          await _storage.delete(key: 'user_info');
           url = 'http://10.0.2.2:8000/flights/recommendation';
         }
         final response2 = await http.get(
@@ -73,6 +75,7 @@ class HomePage extends StatelessWidget {
             'flight', recommend_flights['recommendations']);
         return recommend_flights['recommendations'];
       } catch (e) {
+        await _storage.delete(key: 'user_info');
         final response2 = await http.get(
           Uri.parse('http://10.0.2.2:8000/flights/recommendation'),
         );
@@ -119,6 +122,30 @@ class HomePage extends StatelessWidget {
       final recommend_hotels = jsonDecode(response2.body);
       return recommend_hotels['recommendations'];
     }
+  }
+
+  Future<int> getScore() async {
+    final _storage = FlutterSecureStorage();
+    final userJson = await _storage.read(key: 'user_info');
+    if (userJson != null) {
+      final accessToken =
+          AccountLogin.fromJson(jsonDecode(userJson)).accessToken;
+
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8800/user/score/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${accessToken}",
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        return data['score'];
+      } else {
+        return -1;
+      }
+    }
+    return -1; // Add a default return value
   }
 
   @override
@@ -191,8 +218,22 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     BadgeWidget(icon: Icons.star, label: 'Bronze Priority'),
-                    BadgeWidget(
-                        icon: Icons.attach_money, label: 'Điểm tích lũy'),
+                    FutureBuilder<int>(
+                      future: getScore(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          final score = snapshot.data == -1 ? 0 : snapshot.data;
+                          return BadgeWidget(
+                              icon: Icons.attach_money,
+                              label: 'Điểm tích lũy: $score');
+                        }
+                      },
+                    ),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -728,24 +769,30 @@ class ProfilePage extends StatelessWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
-    bool enabled = true, // Add an `enabled` parameter with a default value of true
+    bool enabled =
+        true, // Add an `enabled` parameter with a default value of true
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12.0),
       child: ListTile(
-        leading: Icon(icon, color: enabled ? Colors.grey[700] : Colors.grey[400]), // Dim icon when disabled
+        leading: Icon(icon,
+            color: enabled
+                ? Colors.grey[700]
+                : Colors.grey[400]), // Dim icon when disabled
         title: Text(
           title,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: enabled ? Colors.black : Colors.grey, // Dim text when disabled
+            color:
+                enabled ? Colors.black : Colors.grey, // Dim text when disabled
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(color: enabled ? Colors.black54 : Colors.grey),
         ),
-        trailing: Icon(Icons.chevron_right, color: enabled ? Colors.grey : Colors.grey[400]),
+        trailing: Icon(Icons.chevron_right,
+            color: enabled ? Colors.grey : Colors.grey[400]),
         onTap: enabled ? onTap : null, // Disable tap action when not enabled
       ),
     );

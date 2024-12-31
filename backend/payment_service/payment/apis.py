@@ -14,8 +14,8 @@ from django.http import FileResponse, HttpResponseNotFound
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+# from channels.layers import get_channel_layer
+# from asgiref.sync import async_to_sync
 
 class CreatePayment(APIView):
     permission_classes = [IsAuthenticated]
@@ -26,7 +26,7 @@ class CreatePayment(APIView):
         response = None
         user = request.user
         access_token = request.headers.get('Authorization').split(' ')[1]
-        print('access_token:',access_token)
+        use_score = request.GET.get('use_score')
         # Call MoMo API
         if data.get('type') == 'qr':
             response = momo_service.create_qr_payment(data)
@@ -49,7 +49,7 @@ class CreatePayment(APIView):
             transaction_collection.insert_one(transaction)
 
             # Set a timeout to auto-update after 50 seconds
-            Timer(2, auto_update, args=(transaction_id, access_token)).start()
+            Timer(2, auto_update, args=(transaction_id, access_token, use_score)).start()
             if data.get('type') == 'atm':
                 return JsonResponse({'url': response['payUrl'], 'transaction_id': transaction_id})
             else:
@@ -109,12 +109,12 @@ def get_qr_code(request):
         return HttpResponseNotFound(f"QR code for transaction {transaction_id} not found.")
 
    
-def auto_update(transaction_id, access_token):
+def auto_update(transaction_id, access_token, use_score):
     # Check the transaction status in your database
     transaction = transaction_collection.find_one({'_id': transaction_id})
     if transaction['status'] == 'PENDING':
         # Call the payment_callback endpoint
-        callback_url = f"http://127.0.0.1:8080/payment/callback/?service={transaction['service']}&orderId={transaction_id}&message=Successful.&orderInfo={transaction['info']}"
+        callback_url = f"http://127.0.0.1:8080/payment/callback/?use_score={use_score}&service={transaction['service']}&orderId={transaction_id}&message=Successful.&orderInfo={transaction['info']}"
         headers = {'Authorization': f'Bearer {access_token}'}
         try:
             requests.get(callback_url, headers=headers)
@@ -196,3 +196,8 @@ class Notification(APIView):
         # )
 
         return JsonResponse({"message": "Notification sent successfully"})
+
+def check_new_user(request):
+    user_id = request.GET.get('user_id')
+    is_new_user = transaction_collection.count_documents({'user_id': int(user_id)}) == 0
+    return JsonResponse({'is_new_user': is_new_user})
