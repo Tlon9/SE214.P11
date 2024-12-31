@@ -433,7 +433,7 @@ class ProfilePage extends StatelessWidget {
                 _buildHeader(userProvider, isLoggedIn, context),
                 Transform.translate(
                   offset: const Offset(0, -40.0),
-                  child: _buildOptions(context),
+                  child: _buildOptions(context, isLoggedIn),
                 ),
               ],
             ),
@@ -516,7 +516,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildOptions(BuildContext context) {
+  Widget _buildOptions(BuildContext context, bool isLoggedIn) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       width: MediaQuery.of(context).size.width,
@@ -551,6 +551,7 @@ class ProfilePage extends StatelessWidget {
             icon: Icons.settings,
             title: 'Cài đặt',
             subtitle: 'Tuỳ chỉnh cài đặt cho tài khoản',
+            enabled: isLoggedIn,
             onTap: () {
               Navigator.push(
                 context,
@@ -575,18 +576,25 @@ class ProfilePage extends StatelessWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    bool enabled = true, // Add an `enabled` parameter with a default value of true
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12.0),
       child: ListTile(
-        leading: Icon(icon, color: Colors.grey[700]),
+        leading: Icon(icon, color: enabled ? Colors.grey[700] : Colors.grey[400]), // Dim icon when disabled
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: enabled ? Colors.black : Colors.grey, // Dim text when disabled
+          ),
         ),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: onTap, // Add your action here
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(color: enabled ? Colors.black54 : Colors.grey),
+        ),
+        trailing: Icon(Icons.chevron_right, color: enabled ? Colors.grey : Colors.grey[400]),
+        onTap: enabled ? onTap : null, // Disable tap action when not enabled
       ),
     );
   }

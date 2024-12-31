@@ -14,6 +14,11 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
       emit(currentState.copyWith(birthDate: event.birthDate));
     });
 
+    on<SelectExpirationDate>((event, emit) {
+      final currentState = state as UserProfileLoaded;
+      emit(currentState.copyWith(passport_expiration: event.passport_expiration));
+    });
+
     on<UpdateUserProfile>((event, emit) async {
       if (state is UserProfileLoaded) {
             final currentState = state as UserProfileLoaded;
@@ -25,6 +30,9 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
               phoneNumber: event.phoneNumber,
               email: event.email,
               birthDate: event.birthDate,
+              nationality: event.nationality,
+              passport_nation: event.passport_nation,
+              passport_expiration: event.passport_expiration
             );
 
             try {
@@ -38,7 +46,6 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
             }
       }
     });
-
   }
 
   Future<void> _onLoadUserProfile(LoadUserProfile event, Emitter<UserProfileState> emit) async {
