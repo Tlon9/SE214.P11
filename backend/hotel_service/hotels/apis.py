@@ -1,9 +1,12 @@
+from itertools import groupby
 from rest_framework import status
 from datetime import datetime
-from .models import hotel_collection, room_collection
+from .models import hotel_collection, room_collection, transaction_collection, flight_collection, area_collection
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from datetime import datetime, timedelta, timezone
+from collections import Counter, defaultdict
 
 class getSearchInfo(APIView):
     def get(self, request):
@@ -63,6 +66,148 @@ class getHotels(APIView):
 
             return Response(response, status=status.HTTP_200_OK)
 
+        except Exception as e:
+            print(f"Error: {e}")
+            return Response({"message": "Failed to get hotels."}, status=status.HTTP_400_BAD_REQUEST)
+        
+class getExploreHotels(APIView):
+    def getFlights(self, result_most_frequent_area):
+        # Placeholder for the result
+        cheapest_flights_per_area = {}
+        for item in result_most_frequent_area:
+            # Query flights where "To" matches the area, NumSeat > 0, and Date is after today
+            area = item[0]
+            if area == "Thành phố Hồ Chí Minh":
+                area = "TP HCM"
+            flights = list(
+                flight_collection.aggregate([
+                    {
+                        "$match": {
+                            "To": {"$regex": f"^{area}"},
+                            "NumSeat": {"$gt": 0}
+                        }
+                    },
+                    {
+                        "$addFields": {
+                            "ParsedDate": {
+                                "$dateFromString": {
+                                    "dateString": "$Date",
+                                    "format": "%d-%m-%Y"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$match": {
+                            "ParsedDate": {"$gt": datetime.now()}
+                        }
+                    },
+                    {
+                        "$sort": {"Price": 1}  # Sort by price (ascending)
+                    },
+                    {
+                        "$limit": 4  # Limit to 4 cheapest flights
+                    },
+                    {
+                        "$project": {"_id": 0, "ParsedDate": 0}  # Exclude ParsedDate from the result
+                    }
+                ])
+            )
+            
+            # Add to the result dictionary
+            cheapest_flights_per_area[area] = flights
+
+        # Output the result
+        # Combine all flights into a single array
+        all_cheapest_flights = [flight for flights in cheapest_flights_per_area.values() for flight in flights]
+        return all_cheapest_flights
+    def getHotels(self, hotels_id, frequency_hotel_id_list, area_filter):
+        # Fetch all hotels from the database that match the area filter
+        hotels_cursor = hotel_collection.find(area_filter, {"_id": 0, "Id": 1, "Name": 1, "Area": 1})
+        # Convert the cursor to a list of dictionaries
+        hotels = list(hotels_cursor)
+        # Create a dictionary for easy hotel lookup by hotel_id
+        hotels_dict = {hotel["Id"]: hotel for hotel in hotels}
+
+        # Filter and enrich frequency list with hotel details
+        filtered_frequency_list = [
+            {**item, **hotels_dict.get(item["hotel_id"], {})} for item in frequency_hotel_id_list if item["hotel_id"] in hotels_dict
+        ]
+        # sorted_frequency_list = sorted(filtered_frequency_list, key=lambda x: x["frequency"], reverse=True)[:5]
+
+        # Group items by area
+        grouped_by_area = groupby(filtered_frequency_list, key=lambda x: x["Area"])
+
+        # Create a new list with a maximum of 4 items per area
+        top_hotels_per_area = []
+
+        area_frequency = defaultdict(int)
+
+        for area, group in grouped_by_area:
+            # Get the top 4 items for each area
+            group_list = list(group) 
+            top_hotels = sorted(group_list, key=lambda x: x["frequency"], reverse=True)[:4]
+            top_hotels_per_area.extend(top_hotels)
+
+            # Convert group iterator to a list
+            # Calculate the total frequency for the area
+            total_frequency = sum(item["frequency"] for item in group_list)
+            area_frequency[area] = total_frequency
+        
+        result_hotels_id = [
+            doc["Id"] for doc in top_hotels_per_area
+        ]
+        hotels = list(hotel_collection.find({"Id": {"$in": result_hotels_id}}))
+        # Convert ObjectId to string for each hotel
+        for hotel in hotels:
+            hotel['_id'] = str(hotel['_id'])
+
+        # Get the top 4 areas by total frequency
+        top_areas = sorted(area_frequency.items(), key=lambda x: x[1], reverse=True)[:5]
+        if len(hotels) == 0:
+            hotels_cursor = hotel_collection.find(area_filter, {"_id": 0}).sort("price", 1).limit(7) 
+            # Convert the cursor to a list of dictionaries
+            hotels = list(hotels_cursor)
+        return hotels, top_areas
+    def get(self, request):
+        try:
+            area = request.query_params.get('area')
+            if area == "TP HCM":
+                area = "Thành phố Hồ Chí Minh"
+            # Find hotels by area, with pagination
+            two_months_ago = datetime.now(timezone.utc) - timedelta(days=60)
+            recent_transactions = transaction_collection.find({"created_at": {"$gte": two_months_ago}, "service": {"$regex": "hotel"}}, {"info": 1, "_id": 0})
+
+            # Extract the first part of the 'info' value before the first underscore
+            hotels_id = [
+                doc["info"].split('_')[0] for doc in recent_transactions if "info" in doc
+            ]
+
+            hotel_frequency = Counter(hotels_id)
+            frequency_hotel_id_list = sorted(
+                [{"hotel_id": hotel_id, "frequency": count} for hotel_id, count in hotel_frequency.items()],
+                key=lambda x: x["frequency"],
+                reverse=True
+            )
+            # Build the query filter for area
+            area_filter = {} if (area is None or area == "") else {"Area": area}
+
+            hotels, top_areas = self.getHotels(hotels_id, frequency_hotel_id_list, area_filter)
+
+            # result_most_frequent_area = self.getAreas(hotels_id)
+
+            all_cheapest_flights = self.getFlights(top_areas)
+
+            list_areas = list(area_collection.find({}, {"_id": 0}))
+            # print(list_areas)
+
+            response = {
+                "hotels": hotels,
+                "flights": all_cheapest_flights,
+                "areas": list_areas,
+            }
+
+            return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error: {e}")
             return Response({"message": "Failed to get hotels."}, status=status.HTTP_400_BAD_REQUEST)

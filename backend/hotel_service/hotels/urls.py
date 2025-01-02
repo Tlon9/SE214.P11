@@ -9,4 +9,5 @@ urlpatterns = [
     path('initializeState', initializeState.as_view(), name='initializeState'),
     path('updateRoom', updateRoom.as_view(), name='updateRoom'),
     path('getRoom', getRoom.as_view(), name='getRoom'),
+    path('getExploreHotel', getExploreHotels.as_view(), name='getExploreHotel'),
 ]

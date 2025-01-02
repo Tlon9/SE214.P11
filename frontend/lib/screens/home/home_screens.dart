@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:travelowkey/bloc/explore/ExploreBloc.dart';
+import 'package:travelowkey/bloc/explore/ExploreEvent.dart';
+import 'package:travelowkey/bloc/explore/ExploreState.dart';
+import 'package:travelowkey/models/area_model.dart';
+import 'package:travelowkey/models/flight_model.dart';
+import 'package:travelowkey/models/hotel_model.dart';
 import 'package:travelowkey/widgets/destination_card.dart';
 import 'package:travelowkey/widgets/destination_tab.dart';
 import 'package:travelowkey/widgets/badge.dart';
@@ -389,21 +396,430 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
+// }
 class ExplorePage extends StatelessWidget {
+  final TextEditingController search_controller = TextEditingController();
+
+  Widget buildAreaList(List<Area> areas, BuildContext context) {
+    final exploreBloc = BlocProvider.of<ExploreBloc>(context);
+    return SizedBox(
+      height: 200, // Set a fixed height for the horizontal list
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: areas.length,
+        itemBuilder: (context, index) {
+          final area = areas[index];
+          return GestureDetector(
+            onTap: () {
+              exploreBloc.add(FetchHotels(queryArea: area.area.toString()));
+            },
+            child: Card(
+              margin: const EdgeInsets.only(right: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              clipBehavior: Clip.antiAlias,
+              elevation: 4,
+              child: SizedBox(
+                width: 150, // Set a fixed width for each card
+                child: Stack(
+                  children: [
+                    // Background Image
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      child: Image.network(
+                        area.img.toString(),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    // Gradient Overlay
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                      ),
+                    ),
+                    // Text Information
+                    Positioned(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            area.area.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            area.country.toString(),
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          );
+        },
+      ),
+    );
+  }
+
+  Widget buildHotelList(List<Hotel> hotels) {
+    return SizedBox(
+      height: 210, // Set a fixed height for the horizontal list
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: hotels.length,
+        itemBuilder: (context, index) {
+          final hotel = hotels[index];
+          return GestureDetector(
+            onTap: () {
+              final now = DateTime.now();
+  
+              // Format the dates (you can use any format you prefer)
+              final checkInDate = now;
+              final checkOutDate = now.add(Duration(days: 1));
+              Navigator.pushNamed(
+                context,
+                '/room_result',
+                arguments: {
+                  'hotel': hotel as Hotel,
+                  'hotel_name': hotel.name,
+                  'customers': 1,
+                  'checkInDate': checkInDate,
+                  'checkOutDate': checkOutDate,
+                },
+              );
+            },
+            child: Card(
+              margin: const EdgeInsets.only(right: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              clipBehavior: Clip.antiAlias,
+              elevation: 4,
+              child: SizedBox(
+                width: 150, // Set a fixed width for each card
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                      child: Image.network(
+                        hotel.img.toString(), // Replace with your image URL
+                        width: double.infinity,
+                        height: 120,
+                        fit: BoxFit.fill,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: double.infinity,
+                            height: 120,
+                            color:
+                                Colors.grey, // Background color for the placeholder
+                            child: Icon(
+                              Icons.broken_image,
+                              color: Colors.white,
+                              size: 50,
+                            ), // Placeholder widget
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        hotel.name.toString(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        hotel.area.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    // Star Rating
+                    Row(
+                      children: List.generate(
+                        hotel.rating!.toInt(),
+                        (index) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          );
+        },
+      ),
+    );
+  }
+
+  Widget buildFlightList(List<Flight> flights) {
+    return SizedBox(
+      height: 200, // Set a fixed height for the horizontal list
+      width: double.infinity, // Set a fixed width for the
+      child: ListView.builder(
+        // scrollDirection: Axis.horizontal,
+        itemCount: flights.length,
+        itemBuilder: (context, index) {
+          final flight = flights[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/flight_payment',
+                arguments: {
+                  'flight': flight,
+                  'passengers': 1,
+                },
+              );
+            },
+            child: Card(
+              color: Colors.white,
+              elevation: 5,
+              shadowColor: Colors.black,
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(flight.name ?? '',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              "${flight.departureTime}",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text(
+                              "${flight.from.toString().substring(flight.from.toString().indexOf('(') + 1, flight.from.toString().length - 1)}",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "${flight.travelTime}",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            SvgPicture.asset(
+                              'assets/icons/Arrow_1.svg',
+                              height: 10,
+                              width: 10,
+                            ),
+                            Text(
+                              "${flight.stopDirect ?? 'Bay thẳng'}",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "${flight.arrivalTime}",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text(
+                              "${flight.to.toString().substring(flight.to.toString().indexOf('(') + 1, flight.to.toString().length - 1)}",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                        Text(
+                          "VND ${flight.price} /khách",
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final exploreBloc = BlocProvider.of<ExploreBloc>(context);
+
+    // Dispatch the initial FetchHotels event
+    exploreBloc.add(FetchHotels());
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Khám phá'),
+        backgroundColor: Colors.blue,
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+        title: Text("Khám phá", style: TextStyle(fontSize: 20)),
       ),
-      body: Center(
-        child: Text('Khám phá các điểm đến mới!'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: search_controller,
+              onSubmitted: (value) {
+                exploreBloc.add(FetchHotels(queryArea: value));
+              },
+              decoration: InputDecoration(
+                prefixIcon: GestureDetector(
+                  onTap: () {
+                    final query = search_controller.text; // Get search input value if needed
+                    exploreBloc.add(FetchHotels(queryArea: query));
+                  },
+                  child: Icon(Icons.search),
+                ),
+                hintText: 'Tìm kiếm...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              keyboardType: TextInputType.text, // For general text input
+              textInputAction: TextInputAction.search, // Improves user experience
+            ),
+            Expanded(
+              child: BlocBuilder<ExploreBloc, ExploreState>(
+                builder: (context, state) {
+                  if (state is ExploreLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is ExploreLoaded) {
+                    bool areHotelsEmpty = state.hotels.isEmpty;
+                    bool areFlightsEmpty = state.flights.isEmpty;
+
+                    return ListView(
+                      children: [
+                        SizedBox(height: 20),
+                        Text(
+                          "Khám phá các địa điểm mới",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        buildAreaList(state.areas, context),
+                        SizedBox(height: 18),
+                        Text(
+                          "Các khách sạn đang phổ biến trong tháng qua",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        if (!areHotelsEmpty)
+                          buildHotelList(state.hotels)
+                        else
+                          SizedBox(
+                            height: 200,
+                            child: Center(
+                              child: Text(
+                                "Không có khách sạn.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                        SizedBox(height: 18),
+                        Text(
+                          "vé máy bay đến các điểm du lịch",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        if (!areFlightsEmpty)
+                          buildFlightList(state.flights)
+                        else
+                          SizedBox(
+                            height: 200,
+                            child: Center(
+                              child: Text(
+                                "Không có chuyến bay.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  } else if (state is ExploreError) {
+                    return Center(
+                      child: Text(
+                        "Gặp lỗi khi tải danh sách khách sạn",
+                        style: const TextStyle(fontSize: 16, color: Colors.red),
+                      ),
+                    );
+                  } else {
+                    return const Center(
+                      child: Text(
+                        "Không có khách sạn nào.",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
 class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

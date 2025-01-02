@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:travelowkey/bloc/explore/ExploreBloc.dart';
+import 'package:travelowkey/repositories/exploreResult_repository.dart';
 import 'package:travelowkey/screens/home/home_screens.dart';
 import 'package:travelowkey/bloc/payment/payment_history/PaymentHistoryBloc.dart';
 import 'package:travelowkey/repositories/paymentHistory_repository.dart';
@@ -40,7 +42,16 @@ class _MainScreenState extends State<MainScreen> {
         },
         children: [
           HomePage(),
-          ExplorePage(),
+          // ExplorePage(),
+          BlocProvider(
+            create: (context) => ExploreBloc(
+              repository: ExploreRepository(
+                dataProvider: ExploreDataProvider(),
+              ),
+              queryArea: ""
+            ),
+            child: ExplorePage(),
+          ),
           // NotificationScreen(),
           BlocProvider(
             create: (context) => PaymentHistoryBloc(

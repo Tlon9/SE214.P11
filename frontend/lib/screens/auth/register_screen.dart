@@ -282,6 +282,29 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                           ),
                                         ),
                                       ),
+                                      SizedBox(height: 16,),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed:() => {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/login',
+                                            )
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:Colors.blue,
+                                            foregroundColor: Colors.white,
+                                            minimumSize:
+                                                Size(double.infinity, 50),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Text("Đăng nhập"),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
