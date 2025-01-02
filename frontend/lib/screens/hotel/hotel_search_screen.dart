@@ -96,33 +96,45 @@ class HotelSearchScreen extends StatelessWidget {
     final accessToken = userJson != null
         ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
         : null;
-    try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:8800/user/verify/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': "Bearer ${accessToken}",
-        },
-      );
-      final user_id = jsonDecode(response.body)['user_id'];
-      String url;
-      if (user_id != null) {
-        url = 'http://10.0.2.2:8008/hotels/recommendation?user_id=${user_id}';
-      } else {
-        url = 'http://10.0.2.2:8008/hotels/recommendation';
-      }
-      final response2 = await http.get(
-        Uri.parse(url),
-      );
+    // Check cache first
+    final box = await Hive.openBox('recommendationBox');
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    final cachedTime = box.get('hotel_timestamp', defaultValue: 0);
 
-      final recommend_hotels = jsonDecode(response2.body);
-      return recommend_hotels['recommendations'];
-    } catch (e) {
-      final response2 = await http.get(
-        Uri.parse('http://10.0.2.2:8000/hotels/recommendation'),
-      );
-      final recommend_hotels = jsonDecode(response2.body);
-      return recommend_hotels['recommendations'];
+    if (currentTime - cachedTime <= 300000 &&
+        box.get('hotel_recommendations') != null) {
+      return box.get('hotel_recommendations');
+    } else {
+      try {
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8800/user/verify/'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer ${accessToken}",
+          },
+        );
+        final user_id = jsonDecode(response.body)['user_id'];
+        String url;
+        if (user_id != null) {
+          url = 'http://10.0.2.2:8008/hotels/recommendation?user_id=${user_id}';
+        } else {
+          url = 'http://10.0.2.2:8008/hotels/recommendation';
+        }
+        final response2 = await http.get(
+          Uri.parse(url),
+        );
+
+        final recommend_hotels = jsonDecode(response2.body);
+        return recommend_hotels['recommendations'];
+      } catch (e) {
+        final response2 = await http.get(
+          Uri.parse('http://10.0.2.2:8000/hotels/recommendation'),
+        );
+        final recommend_hotels = jsonDecode(response2.body);
+        // Cache the data
+        await saveRecommendations('hotel', recommend_hotels['recommendations']);
+        return recommend_hotels['recommendations'];
+      }
     }
   }
 
@@ -224,7 +236,7 @@ class HotelSearchScreen extends StatelessWidget {
                                         underline: Container(),
                                         isExpanded: true,
                                         value: state.selectedArea,
-                                        hint: Text("Chọn nơi đi"),
+                                        hint: Text("Chọn nơi ở"),
                                         items: state.areas.map((String area) {
                                           return DropdownMenuItem<String>(
                                             value: area,

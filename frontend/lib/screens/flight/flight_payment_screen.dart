@@ -38,20 +38,35 @@ class PaymentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, dynamic> services = {
       'VietJet Air': [
-        '7kg hanh ly xach tay',
-        'wifi khong co san',
-        'dich vu an uong',
-        'airbus A350'
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Airbus A350'
       ],
       'Vietnam Airlines': [
-        '7kg hanh ly xach tay',
-        'wifi khong co san',
-        'dich vu an uong',
-        'airbus A350'
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Boeing 787-10'
       ],
       'Bamboo Airways': [
-        '7kg hanh ly xach tay',
-      ]
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Boeing 787-9 Dreamliner'
+      ],
+      'Pacific Airlines': [
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Airbus A320'
+      ],
+      'Vietravel Airlines': [
+        '7kg hành lý xách tay',
+        'Wifi không có sẵn',
+        'Dịch vụ ăn uống',
+        'Airbus A320'
+      ],
     };
     final Map<String, dynamic> paymentInfo = {
       'service': 'flight',
@@ -60,7 +75,32 @@ class PaymentScreen extends StatelessWidget {
       'info': '${flight.flightId}-${passengers}',
       'extraData': '',
     };
+    bool useScore = false;
     final _storage = const FlutterSecureStorage();
+
+    Future<int> getScore() async {
+      final userJson = await _storage.read(key: 'user_info');
+      if (userJson != null) {
+        final accessToken =
+            AccountLogin.fromJson(jsonDecode(userJson)).accessToken;
+
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8800/user/score/'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer ${accessToken}",
+          },
+        );
+        if (response.statusCode == 200) {
+          final data = json.decode(utf8.decode(response.bodyBytes));
+          return data['score'];
+        } else {
+          return -1;
+        }
+      }
+      return -1; // Add a default return value
+    }
+
     return BlocProvider(
       create: (_) => PaymentBloc()..add(LoadPaymentMethods()),
       child: Scaffold(
@@ -107,7 +147,7 @@ class PaymentScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              color: Colors.grey[200],
+              color: const Color.fromARGB(255, 246, 234, 234),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -178,21 +218,31 @@ class PaymentScreen extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold)),
                       Card(
-                        color: Colors.grey[200],
+                        color: const Color.fromARGB(255, 246, 234, 234),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: SizedBox(
                             height: 200,
+                            width: 250,
                             child: services[flight.name] != null
                                 ? Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
-                                    children: services[flight.name]
-                                        .map<Widget>((service) => Text(service,
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 20)))
-                                        .toList(),
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Thông tin chi tiết chuyến bay',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                      ...services[flight.name]
+                                          .map<Widget>((service) => Text(
+                                              ' - ' + service,
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15)))
+                                          .toList()
+                                    ],
                                   )
                                 : Text('Không có dịch vụ',
                                     style: TextStyle(
@@ -213,12 +263,26 @@ class PaymentScreen extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            Text(
-                "${formatMoney((flight.price as int) * passengers)} (${passengers} vé)",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red)),
+            // Text(
+            //     "${formatMoney(paymentInfo['amount'] as int)} ($passengers vé)",
+            //     style: const TextStyle(
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.red)),
+            BlocBuilder<PaymentBloc, PaymentState>(
+              builder: (context, state) {
+                if (state is PaymentLoaded) {
+                  return Text(
+                    "${formatMoney(state.amount == 0 ? paymentInfo['amount'] : state.amount)} ($passengers vé)",
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red),
+                  );
+                }
+                return SizedBox.shrink(); // Or a placeholder
+              },
+            ),
             SizedBox(height: 10),
             BlocBuilder<PaymentBloc, PaymentState>(
               builder: (context, state) {
@@ -227,13 +291,13 @@ class PaymentScreen extends StatelessWidget {
                 } else if (state is PaymentLoaded) {
                   return Container(
                     height: 150,
-                    // Ensure proper constraints are applied
+                    margin: EdgeInsets.only(top: 20, left: 20),
                     child: Column(
                       children: [
                         Text('Phương thức thanh toán:',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                                fontSize: 25, fontWeight: FontWeight.bold)),
                         Expanded(
                           child: ListView(
                             children: state.availableMethods.map((method) {
@@ -271,16 +335,82 @@ class PaymentScreen extends StatelessWidget {
               },
             ),
             // SizedBox(height: 10),
+            //Add a checkbox for use score to pay
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                BlocBuilder<PaymentBloc, PaymentState>(
+                  builder: (context, state) {
+                    if (state is PaymentLoaded) {
+                      return Row(
+                        children: [
+                          FutureBuilder<int>(
+                            future:
+                                getScore(), // Replace with actual access token
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              } else if (snapshot.hasError ||
+                                  !snapshot.hasData ||
+                                  snapshot.data == -1) {
+                                return SizedBox.shrink();
+                              } else {
+                                return Container(
+                                  margin: EdgeInsets.only(left: 30),
+                                  padding: EdgeInsets.only(bottom: 20),
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                        value: state.useScore,
+                                        onChanged: (bool? value) {
+                                          if (value != null) {
+                                            if (value) {
+                                              paymentInfo['amount'] =
+                                                  (flight.price ?? 0) *
+                                                          passengers -
+                                                      snapshot.data! * 100;
+                                              useScore = true;
+                                            } else {
+                                              paymentInfo['amount'] =
+                                                  (flight.price ?? 0) *
+                                                      passengers;
+                                              useScore = false;
+                                            }
+                                            context.read<PaymentBloc>().add(
+                                                ToggleUseScore(
+                                                    value,
+                                                    paymentInfo['amount']
+                                                        as int));
+                                          }
+                                        },
+                                      ),
+                                      Text('Sử dụng điểm để thanh toán'),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                    return SizedBox
+                        .shrink(); // Hide if not in PaymentLoaded state
+                  },
+                ),
+              ],
+            ),
             SubmitButton(
               label: 'Thanh toán',
               onTap: () async {
                 final userJson = await _storage.read(key: 'user_info');
                 if (userJson != null) {
                   final accessToken =
-                      AccountLogin.fromJson(jsonDecode(userJson!)).accessToken;
-
+                      AccountLogin.fromJson(jsonDecode(userJson)).accessToken;
                   final response = await http.post(
-                    Uri.parse('http://10.0.2.2:8080/payment/create/'),
+                    Uri.parse(
+                        'http://10.0.2.2:8080/payment/create/?use_score=${useScore}'),
                     body: json.encode(paymentInfo),
                     headers: {
                       'Content-Type': 'application/json',
@@ -392,7 +522,22 @@ class PaymentScreen extends StatelessWidget {
                     );
                   }
                 } else {
-                  Navigator.pushNamed(context, '/login');
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Thông báo"),
+                      content: Text("Bạn cần đăng nhập để thanh toán."),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/login');
+                          },
+                          child: const Text("Đóng"),
+                        ),
+                      ],
+                    ),
+                  );
                 }
               },
             ),

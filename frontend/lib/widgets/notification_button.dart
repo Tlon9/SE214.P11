@@ -24,10 +24,7 @@ class _NotificationIconButtonState extends State<NotificationIconButton> {
   @override
   void initState() {
     super.initState();
-    _cleanUnreadCount();
     _checkLoginStatus();
-    _updateUnreadCount();
-    _loadUnreadCount();
   }
 
   Future<void> _checkLoginStatus() async {
@@ -35,19 +32,32 @@ class _NotificationIconButtonState extends State<NotificationIconButton> {
     final accessToken = userJson != null
         ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
         : null;
-    setState(() {
-      _isLoggedIn = accessToken != null;
-    });
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:8800/user/verify/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer ${accessToken}",
+      },
+    );
+    final user_id = jsonDecode(response.body)['user_id'];
+    print('User ID: $user_id');
+    if (user_id != null) {
+      setState(() {
+        _isLoggedIn = true;
+      });
+    } else {
+      setState(() {
+        _isLoggedIn = false;
+      });
+    }
+    if (_isLoggedIn) {
+      print('User is logged in');
+      _updateUnreadCount();
+      _loadUnreadCount();
+    } else {
+      _cleanUnreadCount();
+    }
   }
-
-  // Future<void> _fetchUnreadCount() async {
-  //    // Extract unread count from JSON response
-  //     // Example unread count from server
-  //     setState(() {
-  //       unreadCount = fetchedUnreadCount;
-  //     });
-  //   }
-  // }
 
   Future<void> _loadUnreadCount() async {
     final count = await NotificationManager().getUnreadCount();
@@ -64,7 +74,11 @@ class _NotificationIconButtonState extends State<NotificationIconButton> {
   }
 
   Future<void> _updateUnreadCount() async {
-    final accessToken = await _storage.read(key: 'access_token');
+    final _storage = FlutterSecureStorage();
+    final userJson = await _storage.read(key: 'user_info');
+    final accessToken = userJson != null
+        ? AccountLogin.fromJson(jsonDecode(userJson)).accessToken
+        : null;
     if (accessToken != null) {
       try {
         final response = await http.get(
@@ -104,7 +118,7 @@ class _NotificationIconButtonState extends State<NotificationIconButton> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                  content: Text('You need to log in to view notifications.')),
+                  content: Text('Bạn cần đăng nhập để xem thông báo')),
             );
           }
         },

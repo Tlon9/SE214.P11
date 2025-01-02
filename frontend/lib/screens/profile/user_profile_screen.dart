@@ -35,7 +35,6 @@ class UserProfilePage extends StatelessWidget {
         {
           bool isLoggedIn = userProvider.user != null;
           String isGoogle = userProvider.user!.isGoogle;
-          print(isGoogle);
           final apiUrl = 'http://10.0.2.2:8800/user/';
           return BlocProvider(
             create: (context) => UserProfileBloc(repository: UserResultRepository(dataProvider: UserDataProvider(apiUrl: apiUrl, accessToken: userProvider.user!.accessToken)))..add(LoadUserProfile()),

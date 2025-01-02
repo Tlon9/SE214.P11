@@ -56,7 +56,32 @@ class HotelPaymentScreen extends StatelessWidget {
           '${hotel.id_hotel}_${room.room_id}_${checkInDate.toIso8601String().substring(0, 10)}_${checkOutDate.toIso8601String().substring(0, 10)}',
       'extraData': '',
     };
+    bool useScore = false;
     final _storage = const FlutterSecureStorage();
+
+    Future<int> getScore() async {
+      final userJson = await _storage.read(key: 'user_info');
+      if (userJson != null) {
+        final accessToken =
+            AccountLogin.fromJson(jsonDecode(userJson)).accessToken;
+
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8800/user/score/'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer ${accessToken}",
+          },
+        );
+        if (response.statusCode == 200) {
+          final data = json.decode(utf8.decode(response.bodyBytes));
+          return data['score'];
+        } else {
+          return -1;
+        }
+      }
+      return -1; // Add a default return value
+    }
+
     return BlocProvider(
       create: (_) => PaymentBloc()..add(LoadPaymentMethods()),
       child: Scaffold(
@@ -215,12 +240,26 @@ class HotelPaymentScreen extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            Text(
-                "${formatMoney((hotel.price as int) * (checkOutDate.difference(checkInDate)).inDays)} (${(checkOutDate.difference(checkInDate)).inDays} ngày)",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red)),
+            // Text(
+            //     "${formatMoney((hotel.price as int) * (checkOutDate.difference(checkInDate)).inDays)} (${(checkOutDate.difference(checkInDate)).inDays} ngày)",
+            //     style: TextStyle(
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.red)),
+            BlocBuilder<PaymentBloc, PaymentState>(
+              builder: (context, state) {
+                if (state is PaymentLoaded) {
+                  return Text(
+                    "${formatMoney(state.amount == 0 ? paymentInfo['amount'] : state.amount)} (${(checkOutDate.difference(checkInDate)).inDays} ngày)",
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red),
+                  );
+                }
+                return SizedBox.shrink(); // Or a placeholder
+              },
+            ),
             SizedBox(height: 10),
             BlocBuilder<PaymentBloc, PaymentState>(
               builder: (context, state) {
@@ -229,7 +268,7 @@ class HotelPaymentScreen extends StatelessWidget {
                 } else if (state is PaymentLoaded) {
                   return Container(
                     height: 150,
-                    // Ensure proper constraints are applied
+                    margin: EdgeInsets.only(top: 20, left: 20),
                     child: Column(
                       children: [
                         Text('Phương thức thanh toán:',
@@ -272,6 +311,75 @@ class HotelPaymentScreen extends StatelessWidget {
                 return Center(child: Text('Select a payment method.'));
               },
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                BlocBuilder<PaymentBloc, PaymentState>(
+                  builder: (context, state) {
+                    if (state is PaymentLoaded) {
+                      return Row(
+                        children: [
+                          FutureBuilder<int>(
+                            future:
+                                getScore(), // Replace with actual access token
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              } else if (snapshot.hasError ||
+                                  !snapshot.hasData ||
+                                  snapshot.data == -1) {
+                                return SizedBox.shrink();
+                              } else {
+                                return Container(
+                                  margin: EdgeInsets.only(left: 30),
+                                  padding: EdgeInsets.only(bottom: 20),
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                        value: state.useScore,
+                                        onChanged: (bool? value) {
+                                          if (value != null) {
+                                            if (value) {
+                                              paymentInfo['amount'] = (room
+                                                          .price as int) *
+                                                      (checkOutDate.difference(
+                                                              checkInDate))
+                                                          .inDays -
+                                                  snapshot.data! * 100;
+                                              useScore = true;
+                                            } else {
+                                              paymentInfo['amount'] =
+                                                  (room.price as int) *
+                                                      (checkOutDate.difference(
+                                                              checkInDate))
+                                                          .inDays;
+                                              useScore = false;
+                                            }
+                                            context.read<PaymentBloc>().add(
+                                                ToggleUseScore(
+                                                    value,
+                                                    paymentInfo['amount']
+                                                        as int));
+                                          }
+                                        },
+                                      ),
+                                      Text('Sử dụng điểm để thanh toán'),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                    return SizedBox
+                        .shrink(); // Hide if not in PaymentLoaded state
+                  },
+                ),
+              ],
+            ),
             SubmitButton(
               label: 'Thanh toán',
               onTap: () async {
@@ -282,7 +390,8 @@ class HotelPaymentScreen extends StatelessWidget {
                       AccountLogin.fromJson(jsonDecode(userJson)).accessToken;
 
                   final response = await http.post(
-                    Uri.parse('http://10.0.2.2:8080/payment/create/'),
+                    Uri.parse(
+                        'http://10.0.2.2:8080/payment/create/?use_score=${useScore}'),
                     body: json.encode(paymentInfo),
                     headers: {
                       'Content-Type': 'application/json',
@@ -394,7 +503,22 @@ class HotelPaymentScreen extends StatelessWidget {
                     );
                   }
                 } else {
-                  Navigator.pushNamed(context, '/login');
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Thông báo"),
+                      content: Text("Bạn cần đăng nhập để thanh toán."),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/login');
+                          },
+                          child: const Text("Đóng"),
+                        ),
+                      ],
+                    ),
+                  );
                 }
               },
             ),

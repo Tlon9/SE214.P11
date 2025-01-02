@@ -12,6 +12,7 @@ import 'package:travelowkey/widgets/notification_button.dart';
 import 'package:travelowkey/screens/home/notification_screen.dart';
 import 'package:travelowkey/models/accountLogin_model.dart';
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class FlightResultScreen extends StatelessWidget {
   final String departure;
@@ -65,7 +66,7 @@ class FlightResultScreen extends StatelessWidget {
                 },
               ),
               title: Text(
-                '$departure -> $destination ${date.toString().substring(0, 10)} - $seatClass - $passengers hành khách',
+                '$departure - $destination ${date.toString().substring(0, 10)} - $seatClass - $passengers hành khách',
                 maxLines: 2,
               ),
               actions: [
@@ -190,9 +191,16 @@ class FlightResultScreen extends StatelessWidget {
                                 ),
                               );
                             } else if (state is FlightResultError) {
-                              return Center(child: Text(state.message));
+                              return Center(
+                                  child: Text(
+                                      'Không thể tìm chuyến bay phù hợp.',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.red)));
                             }
-                            return Center(child: Text("No flights found."));
+                            return Center(
+                                child: Text('Không thể tìm chuyến bay phù hợp.',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.red)));
                           },
                         ),
                       ),
@@ -219,7 +227,8 @@ Future<String?> showFilterDialog(BuildContext context) async {
     context: context,
     builder: (BuildContext context) {
       return SimpleDialog(
-        title: const Text('Choose a filter option'),
+        title: const Text('Chọn hãng hàng không',
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         children: filterOptions.map((option) {
           return SimpleDialogOption(
             onPressed: () {
@@ -240,22 +249,37 @@ Future<String?> showSortDialog(BuildContext context) async {
     'time_departure_asc',
     'time_departure_desc'
   ];
+  final Map<String, String> sortOptionsText = {
+    'price_asc': 'Giá tăng dần',
+    'price_desc': 'Giá giảm dần',
+    'time_departure_asc': 'Thời gian khởi hành sớm nhất',
+    'time_departure_desc': 'Thời gian khởi hành muộn nhất',
+  };
   return await showDialog<String>(
     context: context,
     builder: (BuildContext context) {
       return SimpleDialog(
-        title: const Text('Choose a sort option'),
+        title: const Text('Sắp xếp theo',
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         children: sortOptions.map((option) {
           return SimpleDialogOption(
             onPressed: () {
               Navigator.pop(context, option); // Return selected option
             },
-            child: Text(option),
+            child: Text(sortOptionsText[option as String]!),
           );
         }).toList(),
       );
     },
   );
+}
+
+String formatPrice(String price) {
+  // Parse the string to an integer
+  int value = int.tryParse(price) ?? 0;
+
+  // Format the integer with a thousand separator
+  return NumberFormat("#,###", "en_US").format(value).replaceAll(",", ".");
 }
 
 class FlightCard extends StatelessWidget {
@@ -335,7 +359,7 @@ class FlightCard extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    "VND ${flight.price} /khách",
+                    "VND ${formatPrice("${flight.price}")} /khách",
                     style: TextStyle(
                         color: Colors.red, fontWeight: FontWeight.bold),
                   ),

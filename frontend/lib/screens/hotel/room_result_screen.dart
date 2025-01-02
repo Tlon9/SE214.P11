@@ -498,6 +498,7 @@ class RoomCard extends StatelessWidget {
                       'Chọn',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ),

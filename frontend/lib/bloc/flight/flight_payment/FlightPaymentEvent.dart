@@ -16,3 +16,13 @@ class SelectPaymentMethod extends PaymentEvent {
   @override
   List<Object?> get props => [method];
 }
+
+class ToggleUseScore extends PaymentEvent {
+  final bool useScore;
+  final int amount;
+
+  ToggleUseScore(this.useScore, this.amount);
+
+  @override
+  List<Object?> get props => [useScore, amount];
+}

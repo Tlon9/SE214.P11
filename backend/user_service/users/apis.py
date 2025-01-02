@@ -225,3 +225,26 @@ class GoogleLogin(APIView):
         
         except ValueError:
             return None
+        
+class VerifyUser(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        return Response({"message": "User is authenticated", "user_id": user.id}, status=status.HTTP_200_OK)
+
+
+class getScore(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        return Response({"score": user.score}, status=status.HTTP_200_OK)
+
+class updateScore(APIView):
+    permission_classes = [IsAuthenticated]
+    def put(self, request):
+        user = request.user
+        data = request.data
+        score = data.get('score')
+        user.score = score
+        user.save()
+        return Response({"message": "Score updated successfully"}, status=status.HTTP_200_OK)

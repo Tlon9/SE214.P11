@@ -44,6 +44,14 @@ Future<http.Response> fetchQRCode(String transactionId, String service) async {
   }
 }
 
+String formatPrice(String price) {
+  // Parse the string to an integer
+  int value = int.tryParse(price) ?? 0;
+
+  // Format the integer with a thousand separator
+  return NumberFormat("#,###", "en_US").format(value).replaceAll(",", ".");
+}
+
 class InvoiceScreen extends StatelessWidget {
   final String transactionId;
   final String service;
@@ -322,9 +330,12 @@ class InvoiceScreen extends StatelessWidget {
                                               style: TextStyle(fontSize: 15)),
                                           SizedBox(height: 10),
                                           Text(
-                                              '${transaction['amount']}' +
+                                              formatPrice(
+                                                      '${transaction['amount']}') +
                                                   ' VND',
-                                              style: TextStyle(fontSize: 15)),
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.red)),
                                         ],
                                       )
                                     ],
@@ -454,7 +465,8 @@ class InvoiceScreen extends StatelessWidget {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
-                                                        Text('${checkInDate}',
+                                                        Text(
+                                                            '${checkInDate.split('-').reversed.join('-')}',
                                                             style: TextStyle(
                                                                 fontSize: 15)),
                                                       ],
@@ -467,7 +479,8 @@ class InvoiceScreen extends StatelessWidget {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
-                                                        Text('${checkOutDate}',
+                                                        Text(
+                                                            '${checkOutDate.split('-').reversed.join('-')}',
                                                             style: TextStyle(
                                                                 fontSize: 15)),
                                                       ],
@@ -553,8 +566,12 @@ class InvoiceScreen extends StatelessWidget {
                                             style: TextStyle(fontSize: 15)),
                                         SizedBox(height: 10),
                                         Text(
-                                            '${transaction['amount']}' + ' VND',
-                                            style: TextStyle(fontSize: 15)),
+                                            formatPrice(
+                                                    '${transaction['amount']}') +
+                                                ' VND',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.red)),
                                       ],
                                     )
                                   ],

@@ -240,7 +240,7 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<AccountLogin?> getUserInfo() async {
-    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
     return AccountLogin(
         email: 'test@example.com',
         accessToken: 'token',
@@ -361,7 +361,7 @@ class UserDataProvider {
   }
 
   Future<AccountLogin?> getUserInfo() async {
-    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
     return AccountLogin(
         email: 'test@example.com',
         accessToken: 'token',

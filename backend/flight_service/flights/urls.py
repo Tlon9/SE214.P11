@@ -8,4 +8,5 @@ urlpatterns = [
     path('updateFlight', updateFlight.as_view(), name='updateFlight'),
     path('getFlight', getFlightId.as_view(), name='getFlight'),
     path('updateDB', updateDB.as_view(), name='updateDB'),
+    path('recommendation', getRecommendedFlights.as_view(), name='recommend'),
 ]

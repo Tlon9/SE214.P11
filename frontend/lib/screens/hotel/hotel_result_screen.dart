@@ -414,17 +414,21 @@ Future<String?> showSortDialog(BuildContext context) async {
     'price_asc',
     'price_desc',
   ];
+  final Map<String, String> sortLabels = {
+    'price_asc': 'Giá tăng dần',
+    'price_desc': 'Giá giảm dần',
+  };
   return await showDialog<String>(
     context: context,
     builder: (BuildContext context) {
       return SimpleDialog(
-        title: const Text('Choose a sort option'),
+        title: const Text('Sắp xếp theo'),
         children: sortOptions.map((option) {
           return SimpleDialogOption(
             onPressed: () {
               Navigator.pop(context, option); // Return selected option
             },
-            child: Text(option),
+            child: Text(sortLabels[option]!),
           );
         }).toList(),
       );

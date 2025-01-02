@@ -3,10 +3,13 @@ from rest_framework import status
 from datetime import datetime
 from .models import hotel_collection, room_collection, transaction_collection, flight_collection, area_collection
 from django.http import HttpResponse
+from .models import hotel_collection, room_collection
+from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from datetime import datetime, timedelta, timezone
 from collections import Counter, defaultdict
+import requests
 
 class getSearchInfo(APIView):
     def get(self, request):
@@ -367,3 +370,61 @@ class updateRoom(APIView):
                 {"message": "Failed to update room.", "error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+class getRecommendedHotels(APIView):
+    def get(self, request):
+        try:
+            user_id = request.query_params.get('user_id', None)
+            user_address = request.query_params.get('user_address', None)
+            is_new_user = requests.get(f'http://127.0.0.1:8080/payment/new_user?user_id={user_id}').json()['is_new_user'] if user_id else True
+            
+            recommendations = []
+            
+            if is_new_user:
+                # New user - recommend cheap hotels in popular areas
+                popular_areas = ["TP HCM", "Hà Nội", "Đà Nẵng"]
+                for dest in popular_areas:
+                    hotels = list(hotel_collection.find({"Area": dest}).sort("Price", 1).limit(3))
+                    recommendations.extend(hotels)
+                # recommendations = list(
+                #     hotel_collection.find({"Area": {"$in": popular_areas}})
+                #         .sort("Price", 1)
+                #         .limit(10)
+                
+            elif user_address:
+                # Known user address - recommend hotels near user's address
+                recommendations = list(
+                    hotel_collection.find({"Address": user_address})
+                        .sort("Price", 1)
+                        .limit(10)
+                )
+            else:
+                # Default recommendation logic (trending areas)
+                recommendation_areas = list(
+                    hotel_collection.aggregate([
+                        {"$group": {"_id": "$Area", "count": {"$sum": 1}}},
+                        {"$sort": {"count": -1}},
+                        {"$limit": 10}
+                    ])
+                )
+                sum_of_count = sum([area['count'] for area in recommendation_areas])
+                recommendations = []
+                for area in recommendation_areas:
+                    count = int(area['count'] / sum_of_count * 10)
+                    if count > 0:
+                        hotels = list(
+                            hotel_collection.find({"Area": area['_id']})
+                                .sort("Price", 1)
+                                .limit(count)
+                        )
+                        recommendations.extend(hotels)
+            for recommendation in recommendations:
+                recommendation['_id'] = str(recommendation['_id'])
+            response_data = {
+                "recommendations": recommendations
+            }
+            response = JsonResponse(response_data, status=status.HTTP_200_OK)
+            return response
+        except Exception as e:
+            print(f"Error: {e}")
+            return Response({"message": "Failed to get recommended hotels."}, status=status.HTTP_400_BAD_REQUEST)
