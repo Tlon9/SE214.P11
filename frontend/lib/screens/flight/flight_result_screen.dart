@@ -220,6 +220,7 @@ Future<String?> showFilterDialog(BuildContext context) async {
     'Vietnam Airlines',
     'VietJet Air',
     'Bamboo Airways',
+    'Vietravel Airlines',
     'Pacific Airlines'
   ];
 
@@ -311,8 +312,21 @@ class FlightCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(flight.name ?? '',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                children: [
+                  Image.asset(
+                    'assets/images/${flight.name}.png',
+                    height: 15,
+                    width: 25,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.image_not_supported, size: 50);
+                    },
+                  ),
+                  SizedBox(width: 8),
+                  Text(flight.name ?? '',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
               SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
