@@ -270,6 +270,52 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         ),
                                       ),
+                                      SizedBox(height: 16,),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed:() => {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/register',
+                                            )
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:Colors.blue,
+                                            foregroundColor: Colors.white,
+                                            minimumSize:
+                                                Size(double.infinity, 50),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Text("Đăng ký tài khoản mới"),
+                                        ),
+                                      ),
+                                      SizedBox(height: 16,),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed:() => {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/main',
+                                            )
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:Colors.blue,
+                                            foregroundColor: Colors.white,
+                                            minimumSize:
+                                                Size(double.infinity, 50),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Text("Tiếp tục sử dụng mà không đăng nhập"),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),

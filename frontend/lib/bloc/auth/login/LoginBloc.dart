@@ -37,8 +37,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         // Save access and refresh tokens
         await storage.write(key: 'access_token', value: data['access']);
         await storage.write(key: 'refresh_token', value: data['refresh']);
-        String? value = await storage.read(key: "email");
-        print(value.toString());
+        await storage.write(key: 'isGoogle', value: "false");
+        // String? value = await storage.read(key: "email");
+        // print(value.toString());
         emit(LoginSuccess());
       } else {
         emit(LoginFailure(error: 'Invalid credentials'));
@@ -52,7 +53,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     final email = await storage.read(key: 'email');
     final accessToken = await storage.read(key: 'access_token');
     final refreshToken = await storage.read(key: 'refresh_token');
-    return {'email': email, 'access': accessToken, 'refresh': refreshToken};
+    final isGoogle = await storage.read(key: 'isGoogle');
+    return {'email': email, 'access': accessToken, 'refresh': refreshToken, 'isGoogle': isGoogle};
   }
 
   Future<void> logout() async {
@@ -70,7 +72,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   );
 
   Future<void> _handleGoogleSignIn(
-      SignInWithGoogle event, Emitter<LoginState> emit) async {
+    SignInWithGoogle event, Emitter<LoginState> emit) async {
     try {
       // await storage.delete(key: 'user_info');
       final googleSignInAccount = await _googleSignIn.signIn();
@@ -99,7 +101,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           await storage.write(key: 'email', value: data["email"].toString());
           await storage.write(key: 'access_token', value: data['access']);
           await storage.write(key: 'refresh_token', value: data['refresh']);
-          String? value = await storage.read(key: "email");
+          await storage.write(key: 'isGoogle', value: "true");
+          String? value = await storage.read(key: "isGoogle");
           print(value.toString());
           emit(LoginSuccess());
         } else {

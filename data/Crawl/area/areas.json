@@ -1,0 +1,26 @@
+[
+    {
+       "Id": "SGN",
+       "Area": "TP HCM",
+       "Country": "Việt Nam",
+       "Img": "https://th.bing.com/th/id/OIP.z7zfrLoK6KRP3OfuS3P2ywHaE2?rs=1&pid=ImgDetMain"
+    },
+    {
+        "Id": "HAN",
+        "Area": "Hà Nội",
+        "Country": "Việt Nam",
+        "Img": "https://th.bing.com/th/id/OIP.CThTxJd8X3ma8vGVY78iQwHaEw?rs=1&pid=ImgDetMain"
+     },
+     {
+        "Id": "DAD",
+        "Area": "Đà Nẵng",
+        "Country": "Việt Nam",
+        "Img": "https://th.bing.com/th/id/OIP.wdbT6M2mBkQTu3dH7psDjgHaDs?rs=1&pid=ImgDetMain"
+     },
+     {
+        "Id": "DLI",
+        "Area": "Đà Lạt",
+        "Country": "Việt Nam",
+        "Img": "https://ik.imagekit.io/tvlk/blog/2023/01/canh-dep-da-lat-1.jpg?tr=dpr-2,w-675"
+     }
+]

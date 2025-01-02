@@ -5,6 +5,8 @@ import 'package:travelowkey/app_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travelowkey/services/api_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:flutter_localizations/flutter_localizations.dart';
+// import 'package:intl/intl.dart'; // For intl support
 
 void main() async {
   await Hive.initFlutter();
@@ -24,6 +26,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // locale: Locale('vi', 'VN'), // Set the default locale to Vietnamese
+      // supportedLocales: [
+      //   Locale('en', 'US'), // English locale
+      //   Locale('vi', 'VN'), // Vietnamese locale
+      // ],
+      // localizationsDelegates: [
+      //   GlobalMaterialLocalizations.delegate,
+      //   GlobalWidgetsLocalizations.delegate,
+      //   GlobalCupertinoLocalizations.delegate,
+      // ],
       title: 'travelowkey',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

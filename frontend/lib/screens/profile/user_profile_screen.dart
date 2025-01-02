@@ -34,6 +34,7 @@ class UserProfilePage extends StatelessWidget {
         else
         {
           bool isLoggedIn = userProvider.user != null;
+          String isGoogle = userProvider.user!.isGoogle;
           final apiUrl = 'http://10.0.2.2:8800/user/';
           return BlocProvider(
             create: (context) => UserProfileBloc(repository: UserResultRepository(dataProvider: UserDataProvider(apiUrl: apiUrl, accessToken: userProvider.user!.accessToken)))..add(LoadUserProfile()),
@@ -150,23 +151,28 @@ class UserProfilePage extends StatelessWidget {
                                           child: const Text('CẬP NHẬT'),
                                         ),
                                         const SizedBox(height: 16),
-                                        GestureDetector(
-                                          onTap: () {
-                                            // Add your logic here
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => PassWordChangePage(), // Replace with your change password screen
+                                        Column(
+                                          children: [
+                                            if (isGoogle == "false")
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => PassWordChangePage(),
+                                                    ),
+                                                  );
+                                                },
+                                                child: const Text(
+                                                  'Thay đổi mật khẩu',
+                                                  style: TextStyle(
+                                                    color: Colors.blue,
+                                                    decoration: TextDecoration.underline,
+                                                  ),
+                                                ),
                                               ),
-                                            );
-                                          },
-                                          child: const Text(
-                                            'Thay đổi mật khẩu',
-                                            style: TextStyle(
-                                              color: Colors.blue,
-                                              decoration: TextDecoration.underline,
-                                            ),
-                                          ),
+                                            const SizedBox(height: 16),
+                                          ],
                                         ),
                                       ],
                                     ),

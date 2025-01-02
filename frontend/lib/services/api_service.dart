@@ -1,6 +1,7 @@
 // flight_search_data_provider.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:travelowkey/models/area_model.dart';
 import 'package:travelowkey/models/flightSearch_model.dart';
 import 'package:travelowkey/models/flight_model.dart';
 import 'package:travelowkey/models/hotelSearch_model.dart';
@@ -146,6 +147,43 @@ class HotelResultDataProvider {
   }
 }
 
+class ExploreDataProvider {
+  // final String apiUrl;
+
+  // HotelResultDataProvider({required this.apiUrl});
+  ExploreDataProvider();
+
+  Future<Map<String, dynamic>> fetchResults({String? queryArea}) async {
+    var apiUrl = 'http://10.0.2.2:8008/hotels/getExploreHotel';
+    if (queryArea.toString() == "" || queryArea == null) {
+      apiUrl = 'http://10.0.2.2:8008/hotels/getExploreHotel';
+    }
+    else {
+      apiUrl = 'http://10.0.2.2:8008/hotels/getExploreHotel' + '?area=${queryArea.toString()}';
+    }
+    // final apiUrl = 'http://10.0.2.2:8008/hotels/getExploreHotel';
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      // Parse the JSON data
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      return {
+        'hotels': (data['hotels'] as List)
+            .map((json) => Hotel.fromJson(json))
+            .toList(),
+        'flights': (data['flights'] as List)
+            .map((json) => Flight.fromJson(json))
+            .toList(),
+        'areas': (data['areas'] as List)
+            .map((json) => Area.fromJson(json))
+            .toList(),
+      };
+    } else {
+      throw Exception("Failed to load hotel data");
+    }
+  }
+}
+
 class RoomResultDataProvider {
   final String apiUrl;
 
@@ -202,11 +240,12 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<AccountLogin?> getUserInfo() async {
-    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
     return AccountLogin(
         email: 'test@example.com',
         accessToken: 'token',
-        refreshToken: 'refresh_token');
+        refreshToken: 'refresh_token',
+        isGoogle: 'False');
   }
 
   // Save user info and notify listeners
@@ -322,11 +361,12 @@ class UserDataProvider {
   }
 
   Future<AccountLogin?> getUserInfo() async {
-    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
     return AccountLogin(
         email: 'test@example.com',
         accessToken: 'token',
-        refreshToken: 'refresh_token');
+        refreshToken: 'refresh_token',
+        isGoogle: 'false');
   }
 }
 

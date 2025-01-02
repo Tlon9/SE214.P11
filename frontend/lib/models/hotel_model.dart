@@ -7,6 +7,7 @@ class Hotel {
   String? address;
   int? rating;
   String? img;
+  String? area;
   int? price;
 
   Hotel({
@@ -16,6 +17,7 @@ class Hotel {
     this.address,
     this.rating,
     this.img,
+    this.area,
     this.price,
   });
 
@@ -28,6 +30,7 @@ class Hotel {
       address: json['Address'] as String?,
       rating: json['Rating'] as int?,
       img: json['Img'] as String?,
+      area: json['Area'] as String?,
       price: json['Price'] as int?,
     );
   }
@@ -41,6 +44,7 @@ class Hotel {
       'Address': address,
       'Rating': rating,
       'Img': img,
+      'Area': area,
       'Price': price,
     };
   }
